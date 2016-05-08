@@ -1,0 +1,40 @@
+.main {
+  width: 100vw;
+  /*height: 100vh;*/
+  background-color: gray;
+  position:relative;
+}
+
+.main h1 {
+  /*position: relative;*/
+  text-align: center;
+  font-size: 45px;
+  font-weight: bold;
+}
+
+.main .content {
+  display: flex;
+}
+
+.main canvas {
+  margin: 10px;
+  /*position: fixed;*/
+  /*left: 20px;*/
+  width: 65%;
+  height: 85vh;
+  top: 10%;
+  /*transform: translate(-50%, 0);*/
+  border: 1px solid black;
+  background-color: white;
+}
+
+.main .menu {
+  /*position: fixed;*/
+  /*right: 20px;*/
+  margin: 10px;
+  height: 85vh;
+  width: 30%;
+  top: 10%;
+  border: 1px solid green;
+  background-color: blue;
+}
