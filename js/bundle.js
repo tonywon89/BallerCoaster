@@ -78,6 +78,7 @@
 	
 	
 	Main.prototype.step = function () {
+	  this.checkCollisions();
 	  this.objects.forEach(function(object) {
 	    object.step(this.gravity);
 	  }.bind(this));
@@ -88,6 +89,19 @@
 	  this.objects.forEach(function(object) {
 	    object.draw(context);
 	  }.bind(this));
+	};
+	
+	Main.prototype.checkCollisions = function () {
+	  var main = this;
+	  this.objects.forEach(function(obj1) {
+	    main.objects.forEach(function(obj2) {
+	      if (obj1 === obj2) return;
+	
+	      if (obj1.isCollideWith(obj2)) {
+	        obj1.collideWith(obj2);
+	      }
+	    });
+	  })
 	};
 	
 	module.exports = Main;
@@ -160,12 +174,15 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var Ball = function (pos, radius) {
+	var Track = __webpack_require__(6);
+	
+	var Ball = function (pos, radius, velocity, acceleration) {
 	  this.pos = pos;
 	  this.radius = radius;
-	  this.velocity = {x: 0, y: 0};
+	  this.velocity = velocity
+	  this.acceleration = acceleration;
 	};
 	
 	Ball.prototype.draw = function (context) {
@@ -174,11 +191,29 @@
 	  context.stroke();
 	};
 	
-	Ball.prototype.step = function (gravity) {
-	  this.velocity.y += gravity;
+	Ball.prototype.step = function () {
+	  this.velocity.y += this.acceleration.y;
+	  this.velocity.x += this.acceleration.x;
 	  this.pos.y += this.velocity.y;
 	  this.pos.x += this.velocity.x;
 	};
+	
+	Ball.prototype.isCollideWith = function (otherObject) {
+	  if (otherObject instanceof Track) {
+	    return otherObject.containPoint({x: this.pos.x, y: this.pos.y + this.radius});
+	  } else {
+	    return false;
+	  }
+	};
+	
+	Ball.prototype.collideWith = function (otherObject) {
+	  if (otherObject instanceof Track) {
+	    this.velocity.x = 0;
+	    this.velocity.y = 0;
+	    this.acceleration = {x: 0, y: 0};
+	  }
+	};
+	
 	
 	
 	module.exports = Ball;
@@ -208,7 +243,7 @@
 	          var x = event.pageX - canvas.offsetLeft;
 	          var y = event.pageY - canvas.offsetTop;
 	
-	          var ball = new Ball({x: x, y: y}, 5);
+	          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, {x: 0, y: view.main.gravity});
 	          view.main.objects.push(ball);
 	          view.main.draw(view.context);
 	        });
@@ -335,6 +370,14 @@
 	
 	Track.prototype.distance = function (point1, point2) {
 	  return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+	};
+	
+	Track.prototype.isCollideWith = function (otherObject) {
+	
+	};
+	
+	Track.prototype.collideWith = function (otherObject) {
+	
 	};
 	
 	module.exports = Track;

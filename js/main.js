@@ -7,6 +7,7 @@ var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 
 
 Main.prototype.step = function () {
+  this.checkCollisions();
   this.objects.forEach(function(object) {
     object.step(this.gravity);
   }.bind(this));
@@ -17,6 +18,19 @@ Main.prototype.draw = function (context) {
   this.objects.forEach(function(object) {
     object.draw(context);
   }.bind(this));
+};
+
+Main.prototype.checkCollisions = function () {
+  var main = this;
+  this.objects.forEach(function(obj1) {
+    main.objects.forEach(function(obj2) {
+      if (obj1 === obj2) return;
+
+      if (obj1.isCollideWith(obj2)) {
+        obj1.collideWith(obj2);
+      }
+    });
+  })
 };
 
 module.exports = Main;
