@@ -1,8 +1,11 @@
-var Track = function (point1, point2) {
+var Track = function (point1, point2, gravity) {
     this.point1 = point1;
     this.point2 = point2;
-    this.dx = point2.x - point1.x;
-    this.dy = point2.y - point2.y;
+    this.theta = Math.atan2(point2.y - point1.y, point2.x - point1.x);
+    this.slopeGravity = gravity * Math.sin(this.theta);
+    this.xAccel = this.slopeGravity * Math.cos(this.theta);
+    this.yAccel = this.slopeGravity * Math.sin(this.theta);
+
 };
 
 Track.prototype.draw = function (context) {

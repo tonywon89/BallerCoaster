@@ -17,7 +17,7 @@ var ButtonListeners = {
           var x = event.pageX - canvas.offsetLeft;
           var y = event.pageY - canvas.offsetTop;
 
-          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, {x: 0, y: view.main.gravity});
+          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
           view.main.objects.push(ball);
           view.main.draw(view.context);
         });
@@ -54,7 +54,7 @@ var ButtonListeners = {
           point2 = {x: x, y: y};
 
           if (point1) {
-            track = new Track(point1, point2);
+            track = new Track(point1, point2, view.main.gravity);
 
             if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
               view.main.objects.pop();

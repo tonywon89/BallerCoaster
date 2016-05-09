@@ -9,7 +9,7 @@ var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 Main.prototype.step = function () {
   this.checkCollisions();
   this.objects.forEach(function(object) {
-    object.step(this.gravity);
+    object.step();
   }.bind(this));
 };
 

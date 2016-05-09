@@ -80,7 +80,7 @@
 	Main.prototype.step = function () {
 	  this.checkCollisions();
 	  this.objects.forEach(function(object) {
-	    object.step(this.gravity);
+	    object.step();
 	  }.bind(this));
 	};
 	
@@ -178,11 +178,13 @@
 
 	var Track = __webpack_require__(6);
 	
-	var Ball = function (pos, radius, velocity, acceleration) {
+	var Ball = function (pos, radius, velocity, main) {
 	  this.pos = pos;
 	  this.radius = radius;
 	  this.velocity = velocity
-	  this.acceleration = acceleration;
+	  this.acceleration = {x: 0, y: main.gravity};
+	  this.main = main;
+	  this.isCollided = false;
 	};
 	
 	Ball.prototype.draw = function (context) {
@@ -200,7 +202,13 @@
 	
 	Ball.prototype.isCollideWith = function (otherObject) {
 	  if (otherObject instanceof Track) {
-	    return otherObject.containPoint({x: this.pos.x, y: this.pos.y + this.radius});
+	    if (otherObject.containPoint({x: this.pos.x, y: this.pos.y + this.radius})) {
+	      return true
+	    } else {
+	      this.isCollided = false
+	      this.acceleration = { x: 0, y: this.main.gravity }
+	      return false;
+	    }
 	  } else {
 	    return false;
 	  }
@@ -208,9 +216,16 @@
 	
 	Ball.prototype.collideWith = function (otherObject) {
 	  if (otherObject instanceof Track) {
-	    this.velocity.x = 0;
-	    this.velocity.y = 0;
-	    this.acceleration = {x: 0, y: 0};
+	
+	    if (!this.isCollided) {
+	      this.isCollided = true;
+	      this.velocity.x = 0;
+	      this.velocity.y = 0;
+	      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+	    } else {
+	      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+	    }
+	
 	  }
 	};
 	
@@ -243,7 +258,7 @@
 	          var x = event.pageX - canvas.offsetLeft;
 	          var y = event.pageY - canvas.offsetTop;
 	
-	          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, {x: 0, y: view.main.gravity});
+	          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
 	          view.main.objects.push(ball);
 	          view.main.draw(view.context);
 	        });
@@ -280,7 +295,7 @@
 	          point2 = {x: x, y: y};
 	
 	          if (point1) {
-	            track = new Track(point1, point2);
+	            track = new Track(point1, point2, view.main.gravity);
 	
 	            if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
 	              view.main.objects.pop();
@@ -346,11 +361,14 @@
 /* 6 */
 /***/ function(module, exports) {
 
-	var Track = function (point1, point2) {
+	var Track = function (point1, point2, gravity) {
 	    this.point1 = point1;
 	    this.point2 = point2;
-	    this.dx = point2.x - point1.x;
-	    this.dy = point2.y - point2.y;
+	    this.theta = Math.atan2(point2.y - point1.y, point2.x - point1.x);
+	    this.slopeGravity = gravity * Math.sin(this.theta);
+	    this.xAccel = this.slopeGravity * Math.cos(this.theta);
+	    this.yAccel = this.slopeGravity * Math.sin(this.theta);
+	
 	};
 	
 	Track.prototype.draw = function (context) {

@@ -1,10 +1,12 @@
 var Track = require("./track.js");
 
-var Ball = function (pos, radius, velocity, acceleration) {
+var Ball = function (pos, radius, velocity, main) {
   this.pos = pos;
   this.radius = radius;
   this.velocity = velocity
-  this.acceleration = acceleration;
+  this.acceleration = {x: 0, y: main.gravity};
+  this.main = main;
+  this.isCollided = false;
 };
 
 Ball.prototype.draw = function (context) {
@@ -22,7 +24,13 @@ Ball.prototype.step = function () {
 
 Ball.prototype.isCollideWith = function (otherObject) {
   if (otherObject instanceof Track) {
-    return otherObject.containPoint({x: this.pos.x, y: this.pos.y + this.radius});
+    if (otherObject.containPoint({x: this.pos.x, y: this.pos.y + this.radius})) {
+      return true
+    } else {
+      this.isCollided = false
+      this.acceleration = { x: 0, y: this.main.gravity }
+      return false;
+    }
   } else {
     return false;
   }
@@ -30,9 +38,16 @@ Ball.prototype.isCollideWith = function (otherObject) {
 
 Ball.prototype.collideWith = function (otherObject) {
   if (otherObject instanceof Track) {
-    this.velocity.x = 0;
-    this.velocity.y = 0;
-    this.acceleration = {x: 0, y: 0};
+
+    if (!this.isCollided) {
+      this.isCollided = true;
+      this.velocity.x = 0;
+      this.velocity.y = 0;
+      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+    } else {
+      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+    }
+
   }
 };
 
