@@ -1,14 +1,13 @@
-
-
-var Main = function () {
-
+var Main = function (gravity, objects) {
+  this.gravity = gravity
+  this.objects = objects;
 };
 
-Main.DIM_X = 1000;
-Main.DIM_y = 1000;
 
-Main.prototype.test = function () {
-  alert("The main is here!");
+Main.prototype.step = function () {
+  this.objects.forEach(function(object) {
+    object.step();
+  });
 };
 
 module.exports = Main;

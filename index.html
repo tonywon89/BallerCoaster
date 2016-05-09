@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Musical Balls</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link href='https://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/00_reset.css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="css/01_master.css" media="screen" title="no title" charset="utf-8">
@@ -15,10 +17,12 @@
       <div class="content">
         <canvas id="main-canvas"></canvas>
         <div class="menu">
-          <button type="button" id="play-btn" class="btn">Play</button>
-          <button type="button" id="place-ball-btn" class="btn">Place Balls</button>
+          <button type="button" id="play-btn" class="menu-btn">Play</button>
+          <button type="button" id="place-ball-btn" class="menu-btn" data-toggle="collapse" data-target="#place-ball-content" aria-expanded="false" aria-controls="place-ball-content">Place Balls</button>
+          <div id="place-ball-content" class="collapse btn-content">Click the canvas to place balls!</div>
         </div>
       </div>
     </div>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
   </body>
 </html>

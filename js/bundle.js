@@ -47,8 +47,10 @@
 	var Main = __webpack_require__(1);
 	var View = __webpack_require__(2);
 	var Ball = __webpack_require__(3);
+	var ButtonListeners = __webpack_require__(5);
+	
 	$(function () {
-	  var main = new Main();
+	  var main = new Main(5);
 	
 	  var canvasEl = document.getElementById("main-canvas");
 	  canvasEl.width = window.innerWidth * 0.65
@@ -56,52 +58,10 @@
 	  var context = canvasEl.getContext('2d');
 	  var view = new View(context, [], canvasEl.width, canvasEl.height);
 	
-	  var isPlaying = false;
-	  $('#place-ball-btn').click(function(event) {
-	    event.preventDefault();
-	    $('#main-canvas').on("click", function (event) {
-	      var x = event.pageX - canvasEl.offsetLeft;
-	      var y = event.pageY - canvasEl.offsetTop;
-	
-	      var ball = new Ball({x: x, y: y}, 5);
-	      view.objects.push(ball);
-	      view.draw();
-	    });
-	
-	  });
-	
-	  var requestAnimationFrame =
-	      window.requestAnimationFrame ||
-	      window.webkitRequestAnimationFrame ||
-	      window.mozRequestAnimationFrame ||
-	      window.msRequestAnimationFrame ||
-	      window.oRequestAnimationFrame ||
-	      function(callback) {
-	        return setTimeout(callback, 1);
-	      };
-	
-	  var requestId;
-	  $('#play-btn').click(function(event) {
-	    event.preventDefault();
-	    $('#main-canvas').off("click");
-	    if (isPlaying) {
-	      isPlaying = false;
-	      $(this).text("Play");
-	      view.stop();
-	    } else {
-	      isPlaying = true;
-	      $(this).text("Stop");
-	      view.start();
-	    }
+	  ButtonListeners.addBallListener(view, canvasEl);
+	  ButtonListeners.addPlayListener(view);
 	
 	
-	  });
-	
-	  // var render = function() {
-	  //   requestAnimationFrame(view.animate.bind(view));
-	  // };
-	  //
-	  // render();
 	});
 
 
@@ -109,17 +69,16 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	
-	
-	var Main = function () {
-	
+	var Main = function (gravity, objects) {
+	  this.gravity = gravity
+	  this.objects = objects;
 	};
 	
-	Main.DIM_X = 1000;
-	Main.DIM_y = 1000;
 	
-	Main.prototype.test = function () {
-	  alert("The main is here!");
+	Main.prototype.step = function () {
+	  this.objects.forEach(function(object) {
+	    object.step();
+	  });
 	};
 	
 	module.exports = Main;
@@ -213,6 +172,59 @@
 	
 	
 	module.exports = Ball;
+
+
+/***/ },
+/* 4 */,
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Ball = __webpack_require__(3);
+	
+	var ButtonListeners = {
+	  addBallListener: function (view, canvas) {
+	    var isPlacingBall = false;
+	    $('#place-ball-btn').click(function(event) {
+	      event.preventDefault();
+	
+	      if (!isPlacingBall) {
+	        $('#main-canvas').on("click", function (event) {
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	
+	          var ball = new Ball({x: x, y: y}, 5);
+	          view.objects.push(ball);
+	          view.draw();
+	        });
+	
+	        $(this).text("Stop Placing Balls");
+	        isPlacingBall = true;
+	      } else {
+	        $('#main-canvas').off("click");
+	        isPlacingBall = false;
+	        $(this).text("Place Balls");
+	      }
+	    });
+	  },
+	
+	  addPlayListener: function (view) {
+	    var isPlaying = false;
+	    $('#play-btn').click(function(event) {
+	      event.preventDefault();
+	      if (isPlaying) {
+	        isPlaying = false;
+	        $(this).text("Play");
+	        view.stop();
+	      } else {
+	        isPlaying = true;
+	        $(this).text("Stop");
+	        view.start();
+	      }
+	    });
+	  }
+	}
+	
+	module.exports = ButtonListeners;
 
 
 /***/ }
