@@ -1,16 +1,14 @@
-var View = function (context, objects, canvasWidth, canvasHeight) {
+var View = function (context, main) {
   this.context = context;
-  this.objects = objects;
-  this.canvasWidth = canvasWidth;
-  this.canvasHeight = canvasHeight;
+  this.main = main;
 };
 
-View.prototype.draw = function () {
-  this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-  this.objects.forEach(function(object) {
-    object.draw(this.context, this);
-  }.bind(this));
-};
+// View.prototype.draw = function () {
+//   this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+//   this.objects.forEach(function(object) {
+//     object.draw(this.context, this);
+//   }.bind(this));
+// };
 
 var requestAnimationFrame =
     window.requestAnimationFrame ||
@@ -33,8 +31,8 @@ var cancelAnimationFrame =
 
 var requestId;
 View.prototype.animate = function () {
-    this.step();
-    this.draw();
+    this.main.step();
+    this.main.draw(this.context);
     requestId = requestAnimationFrame(this.animate.bind(this));
 };
 

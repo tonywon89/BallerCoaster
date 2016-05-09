@@ -46,22 +46,19 @@
 
 	var Main = __webpack_require__(1);
 	var View = __webpack_require__(2);
-	var Ball = __webpack_require__(3);
 	var ButtonListeners = __webpack_require__(5);
 	
 	$(function () {
-	  var main = new Main(5);
-	
 	  var canvasEl = document.getElementById("main-canvas");
 	  canvasEl.width = window.innerWidth * 0.65
 	  canvasEl.height = window.innerHeight * 0.85;
 	  var context = canvasEl.getContext('2d');
-	  var view = new View(context, [], canvasEl.width, canvasEl.height);
+	  
+	  var main = new Main(5, [], canvasEl.width, canvasEl.height);
+	  var view = new View(context, main);
 	
 	  ButtonListeners.addBallListener(view, canvasEl);
 	  ButtonListeners.addPlayListener(view);
-	
-	
 	});
 
 
@@ -69,16 +66,25 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	var Main = function (gravity, objects) {
+	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 	  this.gravity = gravity
 	  this.objects = objects;
+	  this.canvasWidth = canvasWidth;
+	  this.canvasHeight = canvasHeight;
 	};
 	
 	
 	Main.prototype.step = function () {
 	  this.objects.forEach(function(object) {
-	    object.step();
+	    object.step(this.gravity);
 	  });
+	};
+	
+	Main.prototype.draw = function (context) {
+	  context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+	  this.objects.forEach(function(object) {
+	    object.draw(context);
+	  }.bind(this));
 	};
 	
 	module.exports = Main;
@@ -88,19 +94,17 @@
 /* 2 */
 /***/ function(module, exports) {
 
-	var View = function (context, objects, canvasWidth, canvasHeight) {
+	var View = function (context, main) {
 	  this.context = context;
-	  this.objects = objects;
-	  this.canvasWidth = canvasWidth;
-	  this.canvasHeight = canvasHeight;
+	  this.main = main;
 	};
 	
-	View.prototype.draw = function () {
-	  this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-	  this.objects.forEach(function(object) {
-	    object.draw(this.context, this);
-	  }.bind(this));
-	};
+	// View.prototype.draw = function () {
+	//   this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+	//   this.objects.forEach(function(object) {
+	//     object.draw(this.context, this);
+	//   }.bind(this));
+	// };
 	
 	var requestAnimationFrame =
 	    window.requestAnimationFrame ||
@@ -123,8 +127,8 @@
 	
 	var requestId;
 	View.prototype.animate = function () {
-	    this.step();
-	    this.draw();
+	    this.main.step();
+	    this.main.draw(this.context);
 	    requestId = requestAnimationFrame(this.animate.bind(this));
 	};
 	
@@ -193,8 +197,8 @@
 	          var y = event.pageY - canvas.offsetTop;
 	
 	          var ball = new Ball({x: x, y: y}, 5);
-	          view.objects.push(ball);
-	          view.draw();
+	          view.main.objects.push(ball);
+	          view.main.draw(view.context);
 	        });
 	
 	        $(this).text("Stop Placing Balls");

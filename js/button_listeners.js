@@ -12,8 +12,8 @@ var ButtonListeners = {
           var y = event.pageY - canvas.offsetTop;
 
           var ball = new Ball({x: x, y: y}, 5);
-          view.objects.push(ball);
-          view.draw();
+          view.main.objects.push(ball);
+          view.main.draw(view.context);
         });
 
         $(this).text("Stop Placing Balls");
