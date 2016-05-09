@@ -53,12 +53,13 @@
 	  canvasEl.width = window.innerWidth * 0.65
 	  canvasEl.height = window.innerHeight * 0.85;
 	  var context = canvasEl.getContext('2d');
-	  
-	  var main = new Main(5, [], canvasEl.width, canvasEl.height);
+	
+	  var main = new Main(0.2, [], canvasEl.width, canvasEl.height);
 	  var view = new View(context, main);
 	
 	  ButtonListeners.addBallListener(view, canvasEl);
 	  ButtonListeners.addPlayListener(view);
+	  ButtonListeners.addTrackListener(view, canvasEl);
 	});
 
 
@@ -67,7 +68,7 @@
 /***/ function(module, exports) {
 
 	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
-	  this.gravity = gravity
+	  this.gravity = gravity;
 	  this.objects = objects;
 	  this.canvasWidth = canvasWidth;
 	  this.canvasHeight = canvasHeight;
@@ -77,7 +78,7 @@
 	Main.prototype.step = function () {
 	  this.objects.forEach(function(object) {
 	    object.step(this.gravity);
-	  });
+	  }.bind(this));
 	};
 	
 	Main.prototype.draw = function (context) {
@@ -162,6 +163,7 @@
 	var Ball = function (pos, radius) {
 	  this.pos = pos;
 	  this.radius = radius;
+	  this.velocity = {x: 0, y: 0};
 	};
 	
 	Ball.prototype.draw = function (context) {
@@ -170,8 +172,10 @@
 	  context.stroke();
 	};
 	
-	Ball.prototype.step = function () {
-	  this.pos.y += 1;
+	Ball.prototype.step = function (gravity) {
+	  this.velocity.y += gravity;
+	  this.pos.y += this.velocity.y;
+	  this.pos.x += this.velocity.x;
 	};
 	
 	
@@ -184,11 +188,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Ball = __webpack_require__(3);
+	var Track = __webpack_require__(6);
 	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
 	    var isPlacingBall = false;
-	    $('#place-ball-btn').click(function(event) {
+	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
 	
 	      if (!isPlacingBall) {
@@ -211,6 +216,60 @@
 	    });
 	  },
 	
+	  addTrackListener: function (view, canvas) {
+	    var isDrawingTracks = false;
+	    var point1, point2, track;
+	
+	    $('#draw-tracks-btn').click(function (event) {
+	      event.preventDefault();
+	      if (!isDrawingTracks) {
+	        $('#main-canvas').on("mousedown", function (event) {
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	
+	          point1 = {x: x, y: y};
+	
+	        }).on("mousemove", function (event) {
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	          point2 = {x: x, y: y};
+	
+	          if (point1) {
+	            track = new Track(point1, point2);
+	
+	            if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
+	              view.main.objects.pop();
+	              view.main.objects.push(track);
+	              view.main.draw(view.context);
+	            } else {
+	              view.main.objects.push(track);
+	              view.main.draw(view.context);
+	            }
+	          }
+	        }).on("mouseup", function (event) {
+	          // Will make sure the next drawing will pop the copy of it
+	          if (track) {
+	            view.main.objects.push(track);
+	          }
+	
+	          point1 = 0;
+	          point2 = 0;
+	
+	        });
+	        $(this).text("Stop Drawing Tracks");
+	        isDrawingTracks = true;
+	      } else {
+	
+	        $('#main-canvas').off();
+	        isDrawingTracks = false;
+	        $(this).text("Draw Tracks")
+	      }
+	    });
+	
+	
+	
+	  },
+	
 	  addPlayListener: function (view) {
 	    var isPlaying = false;
 	    $('#play-btn').click(function(event) {
@@ -226,9 +285,44 @@
 	      }
 	    });
 	  }
+	
+	
 	}
 	
 	module.exports = ButtonListeners;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	var Track = function (point1, point2) {
+	    this.point1 = point1;
+	    this.point2 = point2;
+	    this.dx = point2.x - point1.x;
+	    this.dy = point2.y - point2.y;
+	};
+	
+	Track.prototype.draw = function (context) {
+	  context.beginPath();
+	  context.moveTo(this.point1.x, this.point1.y);
+	  context.lineTo(this.point2.x, this.point2.y);
+	  context.stroke();
+	};
+	
+	Track.prototype.step = function () {
+	
+	};
+	
+	Track.prototype.containPoint =  function (point) {
+	  return Math.round(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.round(this.distance(this.point1, this.point2));
+	};
+	
+	Track.prototype.distance = function (point1, point2) {
+	  return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+	};
+	
+	module.exports = Track;
 
 
 /***/ }

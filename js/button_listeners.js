@@ -1,9 +1,10 @@
 var Ball = require("./ball.js");
+var Track = require("./track.js");
 
 var ButtonListeners = {
   addBallListener: function (view, canvas) {
     var isPlacingBall = false;
-    $('#place-ball-btn').click(function(event) {
+    $('#place-ball-btn').click(function (event) {
       event.preventDefault();
 
       if (!isPlacingBall) {
@@ -26,6 +27,60 @@ var ButtonListeners = {
     });
   },
 
+  addTrackListener: function (view, canvas) {
+    var isDrawingTracks = false;
+    var point1, point2, track;
+
+    $('#draw-tracks-btn').click(function (event) {
+      event.preventDefault();
+      if (!isDrawingTracks) {
+        $('#main-canvas').on("mousedown", function (event) {
+          var x = event.pageX - canvas.offsetLeft;
+          var y = event.pageY - canvas.offsetTop;
+
+          point1 = {x: x, y: y};
+
+        }).on("mousemove", function (event) {
+          var x = event.pageX - canvas.offsetLeft;
+          var y = event.pageY - canvas.offsetTop;
+          point2 = {x: x, y: y};
+
+          if (point1) {
+            track = new Track(point1, point2);
+
+            if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
+              view.main.objects.pop();
+              view.main.objects.push(track);
+              view.main.draw(view.context);
+            } else {
+              view.main.objects.push(track);
+              view.main.draw(view.context);
+            }
+          }
+        }).on("mouseup", function (event) {
+          // Will make sure the next drawing will pop the copy of it
+          if (track) {
+            view.main.objects.push(track);
+          }
+
+          point1 = 0;
+          point2 = 0;
+
+        });
+        $(this).text("Stop Drawing Tracks");
+        isDrawingTracks = true;
+      } else {
+
+        $('#main-canvas').off();
+        isDrawingTracks = false;
+        $(this).text("Draw Tracks")
+      }
+    });
+
+
+
+  },
+
   addPlayListener: function (view) {
     var isPlaying = false;
     $('#play-btn').click(function(event) {
@@ -41,6 +96,8 @@ var ButtonListeners = {
       }
     });
   }
+
+
 }
 
 module.exports = ButtonListeners;

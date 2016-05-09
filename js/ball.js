@@ -1,6 +1,7 @@
 var Ball = function (pos, radius) {
   this.pos = pos;
   this.radius = radius;
+  this.velocity = {x: 0, y: 0};
 };
 
 Ball.prototype.draw = function (context) {
@@ -9,8 +10,10 @@ Ball.prototype.draw = function (context) {
   context.stroke();
 };
 
-Ball.prototype.step = function () {
-  this.pos.y += 1;
+Ball.prototype.step = function (gravity) {
+  this.velocity.y += gravity;
+  this.pos.y += this.velocity.y;
+  this.pos.x += this.velocity.x;
 };
 
 

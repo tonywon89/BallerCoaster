@@ -1,5 +1,5 @@
 var Main = function (gravity, objects, canvasWidth, canvasHeight) {
-  this.gravity = gravity
+  this.gravity = gravity;
   this.objects = objects;
   this.canvasWidth = canvasWidth;
   this.canvasHeight = canvasHeight;
@@ -9,7 +9,7 @@ var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 Main.prototype.step = function () {
   this.objects.forEach(function(object) {
     object.step(this.gravity);
-  });
+  }.bind(this));
 };
 
 Main.prototype.draw = function (context) {

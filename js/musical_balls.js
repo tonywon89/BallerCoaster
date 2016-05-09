@@ -7,10 +7,11 @@ $(function () {
   canvasEl.width = window.innerWidth * 0.65
   canvasEl.height = window.innerHeight * 0.85;
   var context = canvasEl.getContext('2d');
-  
-  var main = new Main(5, [], canvasEl.width, canvasEl.height);
+
+  var main = new Main(0.2, [], canvasEl.width, canvasEl.height);
   var view = new View(context, main);
 
   ButtonListeners.addBallListener(view, canvasEl);
   ButtonListeners.addPlayListener(view);
+  ButtonListeners.addTrackListener(view, canvasEl);
 });
