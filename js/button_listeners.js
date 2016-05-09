@@ -1,12 +1,17 @@
 var Ball = require("./ball.js");
 var Track = require("./track.js");
 
+var closeOtherButtons = function (element) {
+
+};
+
 var ButtonListeners = {
   addBallListener: function (view, canvas) {
     var isPlacingBall = false;
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-
+      $('.menu-btn').prop("disabled", true);
+      $(this).prop("disabled", false);
       if (!isPlacingBall) {
         $('#main-canvas').on("click", function (event) {
           var x = event.pageX - canvas.offsetLeft;
@@ -20,6 +25,7 @@ var ButtonListeners = {
         $(this).text("Stop Placing Balls");
         isPlacingBall = true;
       } else {
+        $('.menu-btn').prop("disabled", false);
         $('#main-canvas').off("click");
         isPlacingBall = false;
         $(this).text("Place Balls");
@@ -33,6 +39,8 @@ var ButtonListeners = {
 
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
+      $('.menu-btn').prop("disabled", true);
+      $(this).prop("disabled", false);
       if (!isDrawingTracks) {
         $('#main-canvas').on("mousedown", function (event) {
           var x = event.pageX - canvas.offsetLeft;
@@ -65,20 +73,16 @@ var ButtonListeners = {
 
           point1 = 0;
           point2 = 0;
-
         });
         $(this).text("Stop Drawing Tracks");
         isDrawingTracks = true;
       } else {
-
+        $('.menu-btn').prop("disabled", false);
         $('#main-canvas').off();
         isDrawingTracks = false;
         $(this).text("Draw Tracks")
       }
     });
-
-
-
   },
 
   addPlayListener: function (view) {
@@ -95,9 +99,15 @@ var ButtonListeners = {
         view.start();
       }
     });
+  },
+
+  clearListener: function (main, context, canvas) {
+    $('#clear-btn').click(function (event) {
+      event.preventDefault();
+      main.objects = [];
+      main.draw(context);
+    })
   }
-
-
 }
 
 module.exports = ButtonListeners;

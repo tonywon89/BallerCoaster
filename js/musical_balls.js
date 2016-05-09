@@ -14,4 +14,6 @@ $(function () {
   ButtonListeners.addBallListener(view, canvasEl);
   ButtonListeners.addPlayListener(view);
   ButtonListeners.addTrackListener(view, canvasEl);
+  ButtonListeners.clearListener(main, context, canvasEl);
+
 });

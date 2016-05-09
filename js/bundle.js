@@ -60,6 +60,8 @@
 	  ButtonListeners.addBallListener(view, canvasEl);
 	  ButtonListeners.addPlayListener(view);
 	  ButtonListeners.addTrackListener(view, canvasEl);
+	  ButtonListeners.clearListener(main, context, canvasEl);
+	
 	});
 
 
@@ -190,12 +192,17 @@
 	var Ball = __webpack_require__(3);
 	var Track = __webpack_require__(6);
 	
+	var closeOtherButtons = function (element) {
+	
+	};
+	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
 	    var isPlacingBall = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	
+	      $('.menu-btn').prop("disabled", true);
+	      $(this).prop("disabled", false);
 	      if (!isPlacingBall) {
 	        $('#main-canvas').on("click", function (event) {
 	          var x = event.pageX - canvas.offsetLeft;
@@ -209,6 +216,7 @@
 	        $(this).text("Stop Placing Balls");
 	        isPlacingBall = true;
 	      } else {
+	        $('.menu-btn').prop("disabled", false);
 	        $('#main-canvas').off("click");
 	        isPlacingBall = false;
 	        $(this).text("Place Balls");
@@ -222,6 +230,8 @@
 	
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
+	      $('.menu-btn').prop("disabled", true);
+	      $(this).prop("disabled", false);
 	      if (!isDrawingTracks) {
 	        $('#main-canvas').on("mousedown", function (event) {
 	          var x = event.pageX - canvas.offsetLeft;
@@ -254,20 +264,16 @@
 	
 	          point1 = 0;
 	          point2 = 0;
-	
 	        });
 	        $(this).text("Stop Drawing Tracks");
 	        isDrawingTracks = true;
 	      } else {
-	
+	        $('.menu-btn').prop("disabled", false);
 	        $('#main-canvas').off();
 	        isDrawingTracks = false;
 	        $(this).text("Draw Tracks")
 	      }
 	    });
-	
-	
-	
 	  },
 	
 	  addPlayListener: function (view) {
@@ -284,9 +290,15 @@
 	        view.start();
 	      }
 	    });
+	  },
+	
+	  clearListener: function (main, context, canvas) {
+	    $('#clear-btn').click(function (event) {
+	      event.preventDefault();
+	      main.objects = [];
+	      main.draw(context);
+	    })
 	  }
-	
-	
 	}
 	
 	module.exports = ButtonListeners;
