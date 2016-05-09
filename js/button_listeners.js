@@ -40,7 +40,7 @@ var ButtonListeners = {
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
       $('.menu-btn').prop("disabled", true);
-      $(this).prop("disabled", false);
+      $('#draw-tracks-btn').prop("disabled", false);
       if (!isDrawingTracks) {
         $('#main-canvas').on("mousedown", function (event) {
           var x = event.pageX - canvas.offsetLeft;
@@ -89,14 +89,17 @@ var ButtonListeners = {
     var isPlaying = false;
     $('#play-btn').click(function(event) {
       event.preventDefault();
-      if (isPlaying) {
-        isPlaying = false;
-        $(this).text("Play");
-        view.stop();
-      } else {
+      if (!isPlaying) {
+        $('.menu-btn').prop("disabled", true);
+        $(this).prop("disabled", false);
         isPlaying = true;
         $(this).text("Stop");
         view.start();
+      } else {
+        $('.menu-btn').prop("disabled", false);
+        isPlaying = false;
+        $(this).text("Play");
+        view.stop();
       }
     });
   },
