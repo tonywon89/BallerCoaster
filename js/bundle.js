@@ -61,7 +61,7 @@
 	  ButtonListeners.addPlayListener(view);
 	  ButtonListeners.addTrackListener(view, canvasEl);
 	  ButtonListeners.clearListener(main, context, canvasEl);
-	  ButtonListeners.addBallGeneratorListener(view, canvasEl);
+	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
 	});
 
 
@@ -373,7 +373,7 @@
 	    });
 	  },
 	
-	  addBallGeneratorListener: function (view, canvas) {
+	  addBallGeneratorListener: function (view, canvas, main) {
 	    var isBallGenerating = false;
 	    $('#ball-generator-btn').click(function (event) {
 	      event.preventDefault();
@@ -393,7 +393,7 @@
 	
 	          var frequency = $('#ball-generator-frequncy').val();
 	
-	          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency);
+	          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, main);
 	          view.main.objects.push(ballGenerator);
 	          view.main.draw(view.context);
 	        });
@@ -466,15 +466,19 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var BallGenerator = function (pos, angle, ballVelocity, frequency) {
+	var Ball = __webpack_require__(3);
+	
+	var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
 	  this.pos = pos;
 	  this.angle = -angle;
 	  this.ballVelocity = ballVelocity;
 	  this.frequency = frequency;
 	  this.width = 40;
 	  this.height = 15;
+	  this.radius = 5;
+	  this.main = main;
 	};
 	
 	BallGenerator.prototype.draw = function (context) {
@@ -492,7 +496,19 @@
 	  context.lineTo(fourthX, fourthY);
 	  context.closePath();
 	  context.stroke();
+	
+	  var angle = (this.angle + Math.PI / 2) - Math.atan(this.radius/(this.height / 2));
+	  var z = Math.sqrt(Math.pow(this.radius, 2) + Math.pow((this.height / 2), 2));
+	  var posX = secondX + z * Math.cos(angle);
+	  var posY = secondY + z * Math.sin(angle);
+	
+	  var ball = new Ball({x: posX, y: posY}, this.radius, {x: 0, y: 0}, this.main);
+	  ball.draw(context);
 	}
+	
+	BallGenerator.prototype.step = function () {
+	
+	},
 	
 	module.exports = BallGenerator;
 

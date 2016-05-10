@@ -101,7 +101,7 @@ var ButtonListeners = {
     });
   },
 
-  addBallGeneratorListener: function (view, canvas) {
+  addBallGeneratorListener: function (view, canvas, main) {
     var isBallGenerating = false;
     $('#ball-generator-btn').click(function (event) {
       event.preventDefault();
@@ -121,7 +121,7 @@ var ButtonListeners = {
 
           var frequency = $('#ball-generator-frequncy').val();
 
-          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency);
+          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, main);
           view.main.objects.push(ballGenerator);
           view.main.draw(view.context);
         });
