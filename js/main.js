@@ -27,7 +27,7 @@ Main.prototype.checkCollisions = function () {
   this.objects.forEach(function(obj1) {
     if (!(obj1 instanceof Ball)) return
     main.objects.some(function(obj2) {
-      if (obj1 === obj2) return true;
+      // if (obj1 === obj2) return true;
 
       if (obj1.isCollideWith(obj2)) {
         obj1.collideWith(obj2);

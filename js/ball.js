@@ -49,6 +49,7 @@ Ball.prototype.isCollideWith = function (otherObject) {
       this.collidedObject = otherObject;
       return true
     } else {
+
       if (this.collidedObject === otherObject) {
         this.collidedObject = undefined;
         this.isCollided = false;
@@ -67,7 +68,6 @@ Ball.prototype.isCollideWith = function (otherObject) {
 
 Ball.prototype.collideWith = function (otherObject) {
   if (otherObject instanceof Track) {
-    // console.log(this.isCollided);
     if (!this.isCollided) {
         this.isCollided = true;
         this.velocity.x = 0;
