@@ -274,7 +274,6 @@
 	var Track = __webpack_require__(6);
 	var BallGenerator = __webpack_require__(7);
 	
-	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
 	    var isPlacingBall = false;
@@ -384,9 +383,19 @@
 	        isBallGenerating = true;
 	        $(this).text("Stop Making Ball Generators");
 	        $('#main-canvas').on("click", function (event) {
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	
 	          var angle = $('#ball-generator-angle').val();
 	          var radianAngle = angle * (Math.PI / 180);
-	          console.log(radianAngle);
+	
+	          var velocity = $('#ball-generator-velocity').val();
+	
+	          var frequency = $('#ball-generator-frequncy').val();
+	
+	          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency);
+	          view.main.objects.push(ballGenerator);
+	          view.main.draw(view.context);
 	        });
 	
 	      } else {
@@ -459,11 +468,31 @@
 /* 7 */
 /***/ function(module, exports) {
 
-	var BallGenerator = function (angle, ballVelocity, frequency) {
-	  this.angle = angle;
+	var BallGenerator = function (pos, angle, ballVelocity, frequency) {
+	  this.pos = pos;
+	  this.angle = -angle;
 	  this.ballVelocity = ballVelocity;
 	  this.frequency = frequency;
+	  this.width = 40;
+	  this.height = 15;
 	};
+	
+	BallGenerator.prototype.draw = function (context) {
+	
+	  context.beginPath();
+	  context.moveTo(this.pos.x, this.pos.y);
+	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
+	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+	  context.lineTo(secondX, secondY);
+	  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
+	  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
+	  context.lineTo(thirdX, thirdY);
+	  var fourthX = thirdX + this.width * Math.cos(this.angle + Math.PI);
+	  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
+	  context.lineTo(fourthX, fourthY);
+	  context.closePath();
+	  context.stroke();
+	}
 	
 	module.exports = BallGenerator;
 
