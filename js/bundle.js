@@ -67,8 +67,10 @@
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var Ball = __webpack_require__(3);
+	
 	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 	  this.gravity = gravity;
 	  this.objects = objects;
@@ -94,12 +96,15 @@
 	Main.prototype.checkCollisions = function () {
 	  var main = this;
 	  this.objects.forEach(function(obj1) {
-	    main.objects.forEach(function(obj2) {
-	      if (obj1 === obj2) return;
+	    if (!(obj1 instanceof Ball)) return
+	    main.objects.some(function(obj2) {
+	      if (obj1 === obj2) return true;
 	
 	      if (obj1.isCollideWith(obj2)) {
 	        obj1.collideWith(obj2);
+	        return true;
 	      }
+	      return false;
 	    });
 	  })
 	};
@@ -217,26 +222,26 @@
 	
 	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2))
 	
-	
-	
-	    // var theta = otherObject.theta;
-	    // var Cx = A.x - C.x;
-	    // var Cy = A.y - C.y;
-	    // var gamma = Math.atan(Cx, Cy);
-	    // var beta = gamma - theta;
-	    // var BC = Math.sin(beta) * Math.abs(otherObject.distance(C, A));
-	
-	    // console.log(BC);
 	    var largerX = B.x > A.x ? B.x : A.x
 	    var smallerX = B.x >= A.x ? A.x : B.x
 	
-	    if (LEC <= this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX)) {
-	      // this.collidedTrack = otherObject;
+	    var largerY = B.y > A.y ? B.y : A.y
+	    var smallerY = B.y >= A.y ? A.y : B.y
+	
+	    if (LEC <= this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
+	      this.collidedObject = otherObject;
 	      return true
 	    } else {
-	      this.isCollided = false
-	      this.acceleration = { x: 0, y: this.main.gravity }
-	      return false;
+	      if (this.collidedObject === otherObject) {
+	        this.collidedObject = undefined;
+	        this.isCollided = false;
+	        this.acceleration = { x: 0, y: this.main.gravity }
+	        return false;
+	      } else {
+	        this.acceleration = { x: 0, y: this.main.gravity }
+	        return false;
+	      }
+	
 	    }
 	  } else {
 	    return false;
@@ -245,16 +250,15 @@
 	
 	Ball.prototype.collideWith = function (otherObject) {
 	  if (otherObject instanceof Track) {
-	
+	    // console.log(this.isCollided);
 	    if (!this.isCollided) {
-	      this.isCollided = true;
-	      this.velocity.x = 0;
-	      this.velocity.y = 0;
-	      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
-	    } else {
-	      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
-	    }
-	
+	        this.isCollided = true;
+	        this.velocity.x = 0;
+	        this.velocity.y = 0;
+	        this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+	      } else {
+	        this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+	      }
 	  }
 	};
 	
