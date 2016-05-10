@@ -1,9 +1,7 @@
 var Ball = require("./ball.js");
 var Track = require("./track.js");
+var BallGenerator = require("./ball_generator.js");
 
-var closeOtherButtons = function (element) {
-
-};
 
 var ButtonListeners = {
   addBallListener: function (view, canvas) {
@@ -102,6 +100,31 @@ var ButtonListeners = {
         view.stop();
       }
     });
+  },
+
+  addBallGeneratorListener: function (view, canvas) {
+    var isBallGenerating = false;
+    $('#ball-generator-btn').click(function (event) {
+      event.preventDefault();
+      if (!isBallGenerating) {
+        $('.menu-btn').prop("disabled", true);
+        $(this).prop("disabled", false);
+        isBallGenerating = true;
+        $(this).text("Stop Making Ball Generators");
+        $('#main-canvas').on("click", function (event) {
+          var angle = $('#ball-generator-angle').val();
+          var radianAngle = angle * (Math.PI / 180);
+          console.log(radianAngle);
+        });
+
+      } else {
+        $('#main-canvas').off();
+        $('.menu-btn').prop("disabled", false);
+        isBallGenerating = false;
+
+        $(this).text("Construct Ball Generators");
+      }
+    })
   },
 
   clearListener: function (main, context, canvas) {

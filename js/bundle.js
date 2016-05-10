@@ -61,7 +61,7 @@
 	  ButtonListeners.addPlayListener(view);
 	  ButtonListeners.addTrackListener(view, canvasEl);
 	  ButtonListeners.clearListener(main, context, canvasEl);
-	
+	  ButtonListeners.addBallGeneratorListener(view, canvasEl);
 	});
 
 
@@ -272,10 +272,8 @@
 
 	var Ball = __webpack_require__(3);
 	var Track = __webpack_require__(6);
+	var BallGenerator = __webpack_require__(7);
 	
-	var closeOtherButtons = function (element) {
-	
-	};
 	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
@@ -376,6 +374,31 @@
 	    });
 	  },
 	
+	  addBallGeneratorListener: function (view, canvas) {
+	    var isBallGenerating = false;
+	    $('#ball-generator-btn').click(function (event) {
+	      event.preventDefault();
+	      if (!isBallGenerating) {
+	        $('.menu-btn').prop("disabled", true);
+	        $(this).prop("disabled", false);
+	        isBallGenerating = true;
+	        $(this).text("Stop Making Ball Generators");
+	        $('#main-canvas').on("click", function (event) {
+	          var angle = $('#ball-generator-angle').val();
+	          var radianAngle = angle * (Math.PI / 180);
+	          console.log(radianAngle);
+	        });
+	
+	      } else {
+	        $('#main-canvas').off();
+	        $('.menu-btn').prop("disabled", false);
+	        isBallGenerating = false;
+	
+	        $(this).text("Construct Ball Generators");
+	      }
+	    })
+	  },
+	
 	  clearListener: function (main, context, canvas) {
 	    $('#clear-btn').click(function (event) {
 	      event.preventDefault();
@@ -430,6 +453,19 @@
 	};
 	
 	module.exports = Track;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	var BallGenerator = function (angle, ballVelocity, frequency) {
+	  this.angle = angle;
+	  this.ballVelocity = ballVelocity;
+	  this.frequency = frequency;
+	};
+	
+	module.exports = BallGenerator;
 
 
 /***/ }
