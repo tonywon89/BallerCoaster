@@ -136,6 +136,29 @@ var ButtonListeners = {
     })
   },
 
+  addMusicalLoopListener: function (view, canvas, main) {
+    var isAddingMusicalHoop = false;
+    
+    $('#add-musical-hoop-btn').click(function (event) {
+      if (!isAddingMusicalHoop) {
+        isAddingMusicalHoop = true;
+        $('.menu-btn').prop("disabled", true);
+        $(this).prop("disabled", false);
+        $(this).text("Stop Adding Musical Hoops");
+        $('#main-canvas').on("click", function (event) {
+
+        });
+      } else {
+        $('#main-canvas').off();
+        $('.menu-btn').prop("disabled", false);
+        isAddingMusicalHoop = false;
+
+        $(this).text("Add Musical Hoops");
+      }
+    });
+
+  },
+
   clearListener: function (main, context, canvas) {
     $('#clear-btn').click(function (event) {
       event.preventDefault();

@@ -62,6 +62,7 @@
 	  ButtonListeners.addTrackListener(view, canvasEl);
 	  ButtonListeners.clearListener(main, context, canvasEl);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
+	  ButtonListeners.addMusicalLoopListener(view, canvasEl, main);
 	});
 
 
@@ -412,6 +413,29 @@
 	    })
 	  },
 	
+	  addMusicalLoopListener: function (view, canvas, main) {
+	    var isAddingMusicalHoop = false;
+	    
+	    $('#add-musical-hoop-btn').click(function (event) {
+	      if (!isAddingMusicalHoop) {
+	        isAddingMusicalHoop = true;
+	        $('.menu-btn').prop("disabled", true);
+	        $(this).prop("disabled", false);
+	        $(this).text("Stop Adding Musical Hoops");
+	        $('#main-canvas').on("click", function (event) {
+	
+	        });
+	      } else {
+	        $('#main-canvas').off();
+	        $('.menu-btn').prop("disabled", false);
+	        isAddingMusicalHoop = false;
+	
+	        $(this).text("Add Musical Hoops");
+	      }
+	    });
+	
+	  },
+	
 	  clearListener: function (main, context, canvas) {
 	    $('#clear-btn').click(function (event) {
 	      event.preventDefault();
@@ -541,9 +565,7 @@
 	
 	BallGenerator.prototype.step = function () {
 	  this.time += this.frequency;
-	  // debugger;
 	  if (this.time >= 100000000000000000000000) {
-	    // debugger;
 	    this.fire();
 	    this.ball = this.generateBall();
 	    this.time = 0;
