@@ -201,6 +201,10 @@
 	  this.velocity.x += this.acceleration.x;
 	  this.pos.y += this.velocity.y;
 	  this.pos.x += this.velocity.x;
+	  if (this.pos.y > this.main.canvasHeight || this.pos.x > this.main.canvasWidth) {
+	    var idx = this.main.objects.indexOf(this);
+	    this.main.objects.splice(idx, 1);
+	  }
 	};
 	
 	Ball.prototype.isCollideWith = function (otherObject) {
@@ -391,7 +395,7 @@
 	
 	          var velocity = $('#ball-generator-velocity').val();
 	
-	          var frequency = $('#ball-generator-frequncy').val();
+	          var frequency = $('#ball-generator-frequency').val();
 	
 	          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, main);
 	          view.main.objects.push(ballGenerator);
@@ -536,8 +540,9 @@
 	};
 	
 	BallGenerator.prototype.step = function () {
-	  this.time += 1;
-	  if (this.time == 100) {
+	  this.time += this.frequency;
+	  // debugger;
+	  if (this.time >= 100000000000000) {
 	    // debugger;
 	    this.fire();
 	    this.ball = this.generateBall();

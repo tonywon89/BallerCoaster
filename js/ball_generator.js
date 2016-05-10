@@ -66,8 +66,9 @@ BallGenerator.prototype.fire = function () {
 };
 
 BallGenerator.prototype.step = function () {
-  this.time += 1;
-  if (this.time == 100) {
+  this.time += this.frequency;
+  // debugger;
+  if (this.time >= 100000000000000) {
     // debugger;
     this.fire();
     this.ball = this.generateBall();

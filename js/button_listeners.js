@@ -119,7 +119,7 @@ var ButtonListeners = {
 
           var velocity = $('#ball-generator-velocity').val();
 
-          var frequency = $('#ball-generator-frequncy').val();
+          var frequency = $('#ball-generator-frequency').val();
 
           var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, main);
           view.main.objects.push(ballGenerator);

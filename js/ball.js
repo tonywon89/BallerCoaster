@@ -20,6 +20,10 @@ Ball.prototype.step = function () {
   this.velocity.x += this.acceleration.x;
   this.pos.y += this.velocity.y;
   this.pos.x += this.velocity.x;
+  if (this.pos.y > this.main.canvasHeight || this.pos.x > this.main.canvasWidth) {
+    var idx = this.main.objects.indexOf(this);
+    this.main.objects.splice(idx, 1);
+  }
 };
 
 Ball.prototype.isCollideWith = function (otherObject) {
