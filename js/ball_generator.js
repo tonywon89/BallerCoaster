@@ -9,6 +9,7 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
   this.height = 15;
   this.radius = 5;
   this.main = main;
+  this.time = 99;
 
   var secondX = this.pos.x + this.width * Math.cos(this.angle);
   var secondY = this.pos.y + this.width * Math.sin(this.angle);
@@ -21,7 +22,7 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
   var velX = this.ballVelocity * Math.cos(this.angle);
   var velY = this.ballVelocity * Math.sin(this.angle);
 
-  var ball = new Ball({x: posX, y: posY}, this.radius, {x: velX, y: velY}, this.main);
+  var ball = this.generateBall();
 
   this.ball = ball;
 };
@@ -45,9 +46,34 @@ BallGenerator.prototype.draw = function (context) {
   this.ball.draw(context);
 }
 
+BallGenerator.prototype.generateBall = function () {
+  var secondX = this.pos.x + this.width * Math.cos(this.angle);
+  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+
+  var angle = (this.angle + Math.PI / 2) - Math.atan(this.radius/(this.height / 2));
+  var z = Math.sqrt(Math.pow(this.radius, 2) + Math.pow((this.height / 2), 2));
+  var posX = secondX + z * Math.cos(angle);
+  var posY = secondY + z * Math.sin(angle);
+
+  var velX = this.ballVelocity * Math.cos(this.angle);
+  var velY = this.ballVelocity * Math.sin(this.angle);
+
+  return new Ball({x: posX, y: posY}, this.radius, {x: velX, y: velY}, this.main);
+};
+
+BallGenerator.prototype.fire = function () {
+  this.main.objects.push(this.ball);
+};
+
 BallGenerator.prototype.step = function () {
-  // this.main.objects.push(this.ball);
-  this.ball.step();
+  this.time += 1;
+  if (this.time == 100) {
+    // debugger;
+    this.fire();
+    this.ball = this.generateBall();
+    this.time = 0;
+  }
+
 },
 
 module.exports = BallGenerator;
