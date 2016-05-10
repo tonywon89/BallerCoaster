@@ -483,7 +483,7 @@
 	  this.height = 15;
 	  this.radius = 5;
 	  this.main = main;
-	  this.time = 99;
+	  this.time = 100000000000000000000000;
 	
 	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
 	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
@@ -542,7 +542,7 @@
 	BallGenerator.prototype.step = function () {
 	  this.time += this.frequency;
 	  // debugger;
-	  if (this.time >= 100000000000000) {
+	  if (this.time >= 100000000000000000000000) {
 	    // debugger;
 	    this.fire();
 	    this.ball = this.generateBall();
