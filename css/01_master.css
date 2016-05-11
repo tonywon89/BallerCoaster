@@ -76,6 +76,16 @@ input[type="number"] {
   margin: 3px;
 }
 
+#portal-menu > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#place-portal-txt {
+  font-size: 25px;
+}
+
 .wrapper {
   display: flex;
   justify-content: center;

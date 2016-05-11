@@ -1,6 +1,7 @@
 var Ball = require("./ball.js");
 var Track = require("./track.js");
 var BallGenerator = require("./ball_generator.js");
+var Portal = require("./portal.js");
 
 var ButtonListeners = {
   addBallListener: function (view, canvas) {
@@ -140,6 +141,7 @@ var ButtonListeners = {
     var isActive = false;
     var placingFirstPortal = true;
     var placingSecondPortal = false;
+    var portalId = 0;
     $("#portal-btn").click(function (event) {
       event.preventDefault();
 
@@ -150,19 +152,52 @@ var ButtonListeners = {
         $(this).text("Stop placing portals");
         $('#main-canvas').on("click", function (event) {
           if (placingFirstPortal) {
+            $("#place-portal-txt").text("Place Exit Portal");
+
             placingFirstPortal = false;
             placingSecondPortal = true;
-            console.log("First portal");
+
+            var x = event.pageX - canvas.offsetLeft;
+            var y = event.pageY - canvas.offsetTop;
+
+            var angle = $('#first-portal-angle').val();
+            var radianAngle = angle * (Math.PI / 180);
+
+            var color = "blue";
+
+            var width = parseInt($('#first-portal-width').val());
+
+
+            var entryPortal = new Portal(portalId, true, false, {x: x, y: y}, radianAngle, width, color, main)
+            main.objects.push(entryPortal);
+            entryPortal.draw(view.context);
+
           } else if (placingSecondPortal) {
+            $("#place-portal-txt").text("Place Entry Portal");
             placingFirstPortal = true;
             placingSecondPortal = false;
-            console.log("Second portal");
+
+            var x = event.pageX - canvas.offsetLeft;
+            var y = event.pageY - canvas.offsetTop;
+
+            var angle = $('#second-portal-angle').val();
+            var radianAngle = angle * (Math.PI / 180);
+
+            var width = parseInt($('#second-portal-width').val())
+
+            var color = "orange";
+
+            var exitPortal = new Portal(portalId, false, true, {x: x, y: y}, radianAngle, width, color, main);
+            main.objects.push(exitPortal);
+            exitPortal.draw(view.context);
+            portalId += 1;
           }
         });
 
       } else {
         $('#main-canvas').off();
         $('.menu-btn').prop("disabled", false);
+        $("#place-portal-txt").text("Place Entry Portal");
         isActive = false;
         placingFirstPortal = true;
         placingSecondPortal = false;
