@@ -60,7 +60,13 @@
               </div>
             </div>
           </div>
-          <button type="button" id="clear-btn" class="menu-btn">Clear</button>
+          <div class="remove-items-wrapper">
+            <button type="button" id="clear-btn" class="menu-btn">Clear All</button>
+            <button type="button" id="remove-item-btn" class="menu-btn" data-toggle="collapse" data-target="#remove-item-txt" aria-expanded="false" aria-controls="remove-item-txt">Remove item</button>
+          </div>
+          <div id="remove-item-txt" class="collapse btn-content">
+            Click on an item to remove it
+          </div>
         </div>
 
       </div>

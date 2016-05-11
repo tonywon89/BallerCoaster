@@ -75,4 +75,8 @@ BallGenerator.prototype.step = function () {
 
 },
 
+BallGenerator.prototype.containPoint = function (pos) {
+
+};
+
 module.exports = BallGenerator;

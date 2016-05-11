@@ -63,6 +63,7 @@
 	  ButtonListeners.clearListener(main, context, canvasEl);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
 	  ButtonListeners.addPortalGenerator(view, canvasEl, main);
+	  ButtonListeners.addRemoveItemListener(view, canvasEl, main);
 	});
 
 
@@ -106,6 +107,17 @@
 	      return false;
 	    });
 	  })
+	};
+	
+	Main.prototype.removeObject = function (pos, view) {
+	  for (var i = 0; i < this.objects.length; i++) {
+	    if (this.objects[i].containPoint(pos)) {
+	      this.objects.splice(i, 1);
+	      this.draw(view.context);
+	      return;
+	    };
+	  }
+	
 	};
 	
 	module.exports = Main;
@@ -265,7 +277,9 @@
 	  }
 	};
 	
+	Ball.prototype.containPoint = function (pos) {
 	
+	};
 	
 	module.exports = Ball;
 
@@ -354,6 +368,7 @@
 	      } else {
 	        $('.menu-btn').prop("disabled", false);
 	        $('#main-canvas').off();
+	        view.main.objects.pop();
 	        isDrawingTracks = false;
 	        $(this).text("Draw Tracks")
 	      }
@@ -486,6 +501,32 @@
 	    });
 	  },
 	
+	  addRemoveItemListener: function (view, canvas, main) {
+	    var isRemoving = false;
+	
+	    $('#remove-item-btn').click(function (event) {
+	      event.preventDefault();
+	
+	      if (!isRemoving) {
+	        $('.menu-btn').prop("disabled", true);
+	        $(this).prop("disabled", false);
+	        $(this).text("Stop Removing");
+	        isRemoving = true;
+	        $('#main-canvas').on("click", function (event) {
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	
+	          main.removeObject({x: x, y: y}, view);
+	        });
+	      } else {
+	        $('.menu-btn').prop("disabled", false);
+	        $('#main-canvas').off();
+	        isRemoving = false;
+	        $(this).text("Remove item");
+	      }
+	    });
+	  },
+	
 	  clearListener: function (main, context, canvas) {
 	    $('#clear-btn').click(function (event) {
 	      event.preventDefault();
@@ -524,7 +565,7 @@
 	};
 	
 	Track.prototype.containPoint =  function (point) {
-	  return Math.round(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.round(this.distance(this.point1, this.point2));
+	  return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
 	};
 	
 	Track.prototype.distance = function (point1, point2) {
@@ -622,6 +663,10 @@
 	  }
 	
 	},
+	
+	BallGenerator.prototype.containPoint = function (pos) {
+	
+	};
 	
 	module.exports = BallGenerator;
 

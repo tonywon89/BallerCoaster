@@ -83,6 +83,8 @@ Ball.prototype.collideWith = function (otherObject) {
   }
 };
 
+Ball.prototype.containPoint = function (pos) {
 
+};
 
 module.exports = Ball;

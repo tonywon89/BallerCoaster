@@ -77,6 +77,7 @@ var ButtonListeners = {
       } else {
         $('.menu-btn').prop("disabled", false);
         $('#main-canvas').off();
+        view.main.objects.pop();
         isDrawingTracks = false;
         $(this).text("Draw Tracks")
       }
@@ -206,6 +207,32 @@ var ButtonListeners = {
         $(this).text("Portals");
       }
 
+    });
+  },
+
+  addRemoveItemListener: function (view, canvas, main) {
+    var isRemoving = false;
+
+    $('#remove-item-btn').click(function (event) {
+      event.preventDefault();
+
+      if (!isRemoving) {
+        $('.menu-btn').prop("disabled", true);
+        $(this).prop("disabled", false);
+        $(this).text("Stop Removing");
+        isRemoving = true;
+        $('#main-canvas').on("click", function (event) {
+          var x = event.pageX - canvas.offsetLeft;
+          var y = event.pageY - canvas.offsetTop;
+
+          main.removeObject({x: x, y: y}, view);
+        });
+      } else {
+        $('.menu-btn').prop("disabled", false);
+        $('#main-canvas').off();
+        isRemoving = false;
+        $(this).text("Remove item");
+      }
     });
   },
 

@@ -20,7 +20,7 @@ Track.prototype.step = function () {
 };
 
 Track.prototype.containPoint =  function (point) {
-  return Math.round(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.round(this.distance(this.point1, this.point2));
+  return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
 };
 
 Track.prototype.distance = function (point1, point2) {

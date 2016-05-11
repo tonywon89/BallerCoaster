@@ -36,4 +36,15 @@ Main.prototype.checkCollisions = function () {
   })
 };
 
+Main.prototype.removeObject = function (pos, view) {
+  for (var i = 0; i < this.objects.length; i++) {
+    if (this.objects[i].containPoint(pos)) {
+      this.objects.splice(i, 1);
+      this.draw(view.context);
+      return;
+    };
+  }
+
+};
+
 module.exports = Main;
