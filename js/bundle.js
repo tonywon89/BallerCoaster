@@ -62,6 +62,7 @@
 	  ButtonListeners.addTrackListener(view, canvasEl);
 	  ButtonListeners.clearListener(main, context, canvasEl);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
+	  ButtonListeners.addPortalGenerator(view, canvasEl, main);
 	});
 
 
@@ -410,6 +411,42 @@
 	        $(this).text("Construct Ball Generators");
 	      }
 	    })
+	  },
+	
+	  addPortalGenerator: function (view, canvas, main) {
+	    var isActive = false;
+	    var placingFirstPortal = true;
+	    var placingSecondPortal = false;
+	    $("#portal-btn").click(function (event) {
+	      event.preventDefault();
+	
+	      if (!isActive) {
+	        $('.menu-btn').prop("disabled", true);
+	        $(this).prop("disabled", false);
+	        isActive = true;
+	        $(this).text("Stop placing portals");
+	        $('#main-canvas').on("click", function (event) {
+	          if (placingFirstPortal) {
+	            placingFirstPortal = false;
+	            placingSecondPortal = true;
+	            console.log("First portal");
+	          } else if (placingSecondPortal) {
+	            placingFirstPortal = true;
+	            placingSecondPortal = false;
+	            console.log("Second portal");
+	          }
+	        });
+	
+	      } else {
+	        $('#main-canvas').off();
+	        $('.menu-btn').prop("disabled", false);
+	        isActive = false;
+	        placingFirstPortal = true;
+	        placingSecondPortal = false;
+	        $(this).text("Portals");
+	      }
+	
+	    });
 	  },
 	
 	  clearListener: function (main, context, canvas) {
