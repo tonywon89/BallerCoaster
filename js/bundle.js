@@ -193,6 +193,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Track = __webpack_require__(6);
+	var Utils = __webpack_require__(12);
 	
 	var Ball = function (pos, radius, velocity, main) {
 	  this.pos = pos;
@@ -278,7 +279,12 @@
 	};
 	
 	Ball.prototype.containPoint = function (pos) {
-	
+	  var bounds = Utils.circleBounds(this);
+	  if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
+	    return true;
+	  } else {
+	    return false;
+	  }
 	};
 	
 	module.exports = Ball;
