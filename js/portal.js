@@ -31,7 +31,7 @@ Portal.prototype.draw = function (context) {
   context.fill()
   context.fillStyle = "none";
   if (this.exit) {
-    context.strokeStyle = "green"
+    context.strokeStyle = "yellow"
     context.beginPath();
     context.moveTo(thirdX, thirdY);
     context.lineTo(fourthX, fourthY);
