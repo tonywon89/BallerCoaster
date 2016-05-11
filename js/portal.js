@@ -29,4 +29,8 @@ Portal.prototype.draw = function (context) {
   context.fillStyle = "none";
 };
 
+Portal.prototype.step = function () {
+
+};
+
 module.exports = Portal;
