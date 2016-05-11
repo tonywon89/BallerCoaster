@@ -1,3 +1,5 @@
+var MusicalHoop = require("./musical_hoop");
+
 var View = function (context, main) {
   this.context = context;
   this.main = main;
@@ -46,6 +48,11 @@ View.prototype.stop = function () {
   if (requestId) {
     cancelAnimationFrame(requestId);
     requestId = undefined;
+    this.main.objects.forEach(function (object) {
+      if (object instanceof MusicalHoop) {
+        object.note.stop();
+      }
+    });
   }
 }
 

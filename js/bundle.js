@@ -116,8 +116,10 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var MusicalHoop = __webpack_require__(10);
+	
 	var View = function (context, main) {
 	  this.context = context;
 	  this.main = main;
@@ -166,6 +168,11 @@
 	  if (requestId) {
 	    cancelAnimationFrame(requestId);
 	    requestId = undefined;
+	    this.main.objects.forEach(function (object) {
+	      if (object instanceof MusicalHoop) {
+	        object.note.stop();
+	      }
+	    });
 	  }
 	}
 	
@@ -436,7 +443,13 @@
 	          var x = event.pageX - canvas.offsetLeft;
 	          var y = event.pageY - canvas.offsetTop;
 	
-	          var musicalHoop = new MusicalHoop({x: x, y: y}, note, main);
+	          var angle = $('#musical-hoop-angle').val();
+	          var radianAngle = angle * (Math.PI / 180);
+	
+	          var width = $('#musical-hoop-width').val()
+	          var height = $('#musical-hoop-height').val()
+	
+	          var musicalHoop = new MusicalHoop({x: x, y: y}, radianAngle, parseInt(width), parseInt(height), note, main);
 	          main.objects.push(musicalHoop);
 	          musicalHoop.draw(view.context);
 	        });
@@ -657,76 +670,63 @@
 	var Note = __webpack_require__(8);
 	var Ball = __webpack_require__(3);
 	
-	var MusicalHoop = function (point1, note, main) {
-	  this.point1 = point1;
-	  this.point2 = {x: point1.x + 100, y: point1.y};
-	  // this.angle = angle;
-	  // this.width = width;
-	  this.width = 100;
+	var MusicalHoop = function (pos, angle, width, height, note, main) {
+	  this.pos = pos;
+	  this.angle = -angle;
+	  this.width = width;
+	  this.height = height;
 	  this.note = note;
 	  this.main = main;
 	  this.isCollided = false;
 	};
-	
+	//
 	MusicalHoop.prototype.draw = function (context) {
 	  context.beginPath();
-	  context.moveTo(this.point1.x, this.point1.y);
-	  context.lineTo(this.point2.x, this.point2.y);
+	  context.moveTo(this.pos.x, this.pos.y);
+	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
+	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+	  context.lineTo(secondX, secondY);
+	  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
+	  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
+	  context.lineTo(thirdX, thirdY);
+	  var fourthX = thirdX + this.width * Math.cos(this.angle + Math.PI);
+	  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
+	  context.lineTo(fourthX, fourthY);
+	  context.closePath();
 	  context.strokeStyle = "red";
 	  context.stroke();
 	  context.strokeStyle = "black";
 	};
 	
 	MusicalHoop.prototype.step = function () {
-	  if (this.isCollided) {
-	    this.note.start();
-	  }
+	  // if (this.isCollided) {
+	  //   this.note.start();
+	  // } else {
+	  //   this.note.stop();
+	  // }
 	};
+	
+	MusicalHoop.prototype.bounds
 	
 	MusicalHoop.prototype.isCollideWith = function (otherObject) {
 	  if (otherObject instanceof Ball) {
-	    var A = { x: this.point1.x, y: this.point1.y };
-	    var B = { x: this.point2.x, y: this.point2.y };
-	    var C = { x: otherObject.pos.x, y: otherObject.pos.y }
-	    var LAB = Math.sqrt(Math.pow((B.x - A.x), 2) + Math.pow((B.y - A.y), 2));
+	    var ball = otherObject;
 	
-	    var Dx = (B.x - A.x) / LAB;
-	    var Dy = (B.y - A.y) / LAB;
-	
-	    var t = Dx * (C.x - A.x) + Dy * (C.y - A.y);
-	
-	    var Ex = t * Dx + A.x;
-	    var Ey = t * Dy + A.y;
-	
-	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2))
-	
-	    var largerX = B.x > A.x ? B.x : A.x
-	    var smallerX = B.x >= A.x ? A.x : B.x
-	
-	    var largerY = B.y > A.y ? B.y : A.y
-	    var smallerY = B.y >= A.y ? A.y : B.y
-	    // var LEC = this.point1.y - otherObject.pos.y;
-	
-	    if (LEC <= otherObject.radius){
-	      this.ball = otherObject;
-	      this.isCollided = true;
+	    if ((ball.pos.x <= this.pos.x + this.width && ball.pos.x >= this.pos.x) && (ball.pos.y <= this.pos.y + this.height && ball.pos.y >= this.pos.y)){
+	      debugger;
 	      return true
-	
 	    } else {
-	      if (this.ball === otherObject) {
-	        this.note.stop();
-	        this.ball === undefined;
-	        this.isCollided = false
-	      }
+	      this.note.stop();
 	      return false;
 	    }
 	  } else {
+	    this.note.stop();
 	    return false;
 	  }
 	};
 	
 	MusicalHoop.prototype.collideWith = function (otherObject) {
-	  this.isCollided = true;
+	  this.note.start()
 	};
 	
 	MusicalHoop.collideWith

@@ -62,7 +62,7 @@ body {
   background-color: white;
 }
 
-#ball-generator-menu > div {
+#ball-generator-menu > div, #musical-hoop-menu > div {
   display: flex;
   flex-direction: column;
   align-items: center;

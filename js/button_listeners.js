@@ -156,7 +156,13 @@ var ButtonListeners = {
           var x = event.pageX - canvas.offsetLeft;
           var y = event.pageY - canvas.offsetTop;
 
-          var musicalHoop = new MusicalHoop({x: x, y: y}, note, main);
+          var angle = $('#musical-hoop-angle').val();
+          var radianAngle = angle * (Math.PI / 180);
+
+          var width = $('#musical-hoop-width').val()
+          var height = $('#musical-hoop-height').val()
+
+          var musicalHoop = new MusicalHoop({x: x, y: y}, radianAngle, parseInt(width), parseInt(height), note, main);
           main.objects.push(musicalHoop);
           musicalHoop.draw(view.context);
         });
