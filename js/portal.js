@@ -1,3 +1,6 @@
+var Ball = require("./ball.js");
+var Utils = require("./utils.js");
+
 var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
   this.portalId = portalId;
   this.entry = entry
@@ -47,10 +50,42 @@ Portal.prototype.findPair = function () {
 };
 
 Portal.prototype.isCollideWith = function (otherObject) {
+  if (this.entry) {
+    if (otherObject instanceof Ball) {
+      var ball = otherObject;
+      // var ballBounds = Utils.circleBounds(ball);
+      // var topVertex = { x: ball.pos.x, y: ballBounds.top }
+      // var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom }
+      // var leftVertex = { x: ballBounds.left, y: ball.pos.y }
+      // var rightVertex = { x: ballBounds.right, y: ball.pos.y }
+
+      var portalBounds = Utils.rectBounds(this);
+
+      // if (bottomVertex.x >= portalBounds.left && bottomVertex.x <= portalBounds.right && bottomVertex.y >= portalBounds.top && bottomVertex.y <= portalBounds.bottom) {
+      //   return true;
+      // } else if (topVertex.x >= portalBounds.left && topVertex.x <= portalBounds.right && topVertex.y >= portalBounds.top && topVertex.y <= portalBounds.bottom) {
+      //   return true;
+      // } else if (leftVertex.x >= portalBounds.left && leftVertex.x <= portalBounds.right && leftVertex.y >= portalBounds.top && leftVertex.y <= portalBounds.bottom) {
+      //   return true;
+      // } else if (rightVertex.x >= portalBounds.left && rightVertex.x <= portalBounds.right && rightVertex.y >= portalBounds.top && rightVertex.y <= portalBounds.bottom) {
+      //   return true;
+      // } else {
+      //   return false;
+      // }
+      if (ball.pos.x >= portalBounds.left && ball.pos.x <= portalBounds.right && ball.pos.y >= portalBounds.top && ball.pos.y <= portalBounds.bottom) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  } else {
+    return false;
+  }
 
 };
 
 Portal.prototype.collideWith = function (otherObeject) {
-
+  console.log("It has collided");
 };
+
 module.exports = Portal;

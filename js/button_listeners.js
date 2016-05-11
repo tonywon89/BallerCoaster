@@ -153,6 +153,7 @@ var ButtonListeners = {
         $('#main-canvas').on("click", function (event) {
           if (placingFirstPortal) {
             $("#place-portal-txt").text("Place Exit Portal");
+            $("#portal-btn").prop("disabled", true);
 
             placingFirstPortal = false;
             placingSecondPortal = true;
@@ -173,6 +174,7 @@ var ButtonListeners = {
             entryPortal.draw(view.context);
 
           } else if (placingSecondPortal) {
+            $("#portal-btn").prop("disabled", false);
             $("#place-portal-txt").text("Place Entry Portal");
             placingFirstPortal = true;
             placingSecondPortal = false;
