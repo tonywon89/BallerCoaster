@@ -30,6 +30,15 @@ Portal.prototype.draw = function (context) {
   context.stroke();
   context.fill()
   context.fillStyle = "none";
+  if (this.exit) {
+    context.strokeStyle = "green"
+    context.beginPath();
+    context.moveTo(thirdX, thirdY);
+    context.lineTo(fourthX, fourthY);
+    context.stroke();
+    context.strokeStyle = "black";
+  }
+
 };
 
 Portal.prototype.step = function () {
@@ -74,11 +83,6 @@ Portal.prototype.isCollideWith = function (otherObject) {
       } else {
         return false;
       }
-      // if (ball.pos.x >= portalBounds.left && ball.pos.x <= portalBounds.right && ball.pos.y >= portalBounds.top && ball.pos.y <= portalBounds.bottom) {
-      //   return true;
-      // } else {
-      //   return false;
-      // }
     }
   } else {
     return false;
