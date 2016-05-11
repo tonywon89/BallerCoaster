@@ -1,5 +1,6 @@
 var Ball = require("./ball.js");
 var Portal = require("./portal.js");
+
 var Main = function (gravity, objects, canvasWidth, canvasHeight) {
   this.gravity = gravity;
   this.objects = objects;
@@ -39,9 +40,15 @@ Main.prototype.checkCollisions = function () {
 Main.prototype.removeObject = function (pos, view) {
   for (var i = 0; i < this.objects.length; i++) {
     if (this.objects[i].containPoint(pos)) {
-      this.objects.splice(i, 1);
-      this.draw(view.context);
-      return;
+      if (this.objects[i] instanceof Portal) {
+        var idx = this.objects.indexOf(this.objects[i].findPair());
+        idx < i ? this.objects.splice(idx, 2) : this.objects.splice(i, 2);
+        this.draw(view.context);
+      } else {
+        this.objects.splice(i, 1);
+        this.draw(view.context);
+        return;
+      }
     };
   }
 

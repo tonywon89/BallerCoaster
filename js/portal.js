@@ -106,4 +106,8 @@ Portal.prototype.collideWith = function (otherObject) {
   ball.velocity.y = speed * Math.sin(Math.PI / 2 + exitPortal.angle);
 };
 
+Portal.prototype.containPoint = function (pos) {
+  return Utils.containRect(this, pos);
+};
+
 module.exports = Portal;

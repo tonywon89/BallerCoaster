@@ -73,6 +73,7 @@
 
 	var Ball = __webpack_require__(3);
 	var Portal = __webpack_require__(11);
+	
 	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 	  this.gravity = gravity;
 	  this.objects = objects;
@@ -112,9 +113,15 @@
 	Main.prototype.removeObject = function (pos, view) {
 	  for (var i = 0; i < this.objects.length; i++) {
 	    if (this.objects[i].containPoint(pos)) {
-	      this.objects.splice(i, 1);
-	      this.draw(view.context);
-	      return;
+	      if (this.objects[i] instanceof Portal) {
+	        var idx = this.objects.indexOf(this.objects[i].findPair());
+	        idx < i ? this.objects.splice(idx, 2) : this.objects.splice(i, 2);
+	        this.draw(view.context);
+	      } else {
+	        this.objects.splice(i, 1);
+	        this.draw(view.context);
+	        return;
+	      }
 	    };
 	  }
 	
@@ -501,7 +508,7 @@
 	        isActive = false;
 	        placingFirstPortal = true;
 	        placingSecondPortal = false;
-	        $(this).text("Portals");
+	        $(this).text("Place Portals");
 	      }
 	
 	    });
@@ -594,6 +601,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Ball = __webpack_require__(3);
+	var Utils = __webpack_require__(12);
 	
 	var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
 	  this.pos = pos;
@@ -671,7 +679,7 @@
 	},
 	
 	BallGenerator.prototype.containPoint = function (pos) {
-	
+	  return Utils.containRect(this, pos);
 	};
 	
 	module.exports = BallGenerator;
@@ -792,6 +800,10 @@
 	  ball.velocity.y = speed * Math.sin(Math.PI / 2 + exitPortal.angle);
 	};
 	
+	Portal.prototype.containPoint = function (pos) {
+	  return Utils.containRect(this, pos);
+	};
+	
 	module.exports = Portal;
 
 
@@ -834,7 +846,16 @@
 	    bottom = Math.max(...yPositions);
 	
 	    return {left: left, right: right, top: top, bottom: bottom };
-	  }
+	  },
+	
+	  containRect: function (object, pos) {
+	    var bounds = this.rectBounds(object);
+	    if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
+	      return true
+	    } else {
+	      return false;
+	    }
+	  },
 	};
 	
 	module.exports = Utils;

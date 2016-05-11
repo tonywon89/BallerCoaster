@@ -33,7 +33,16 @@ var Utils = {
     bottom = Math.max(...yPositions);
 
     return {left: left, right: right, top: top, bottom: bottom };
-  }
+  },
+
+  containRect: function (object, pos) {
+    var bounds = this.rectBounds(object);
+    if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
+      return true
+    } else {
+      return false;
+    }
+  },
 };
 
 module.exports = Utils;

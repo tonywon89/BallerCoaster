@@ -1,4 +1,5 @@
 var Ball = require("./ball.js");
+var Utils = require("./utils.js");
 
 var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
   this.pos = pos;
@@ -76,7 +77,7 @@ BallGenerator.prototype.step = function () {
 },
 
 BallGenerator.prototype.containPoint = function (pos) {
-
+  return Utils.containRect(this, pos);
 };
 
 module.exports = BallGenerator;

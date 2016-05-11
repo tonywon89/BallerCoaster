@@ -204,7 +204,7 @@ var ButtonListeners = {
         isActive = false;
         placingFirstPortal = true;
         placingSecondPortal = false;
-        $(this).text("Portals");
+        $(this).text("Place Portals");
       }
 
     });
