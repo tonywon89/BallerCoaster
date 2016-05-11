@@ -638,7 +638,7 @@
 	  this.pos = pos;
 	  this.angle = -angle;
 	  this.width = width;
-	  this.height = 5;
+	  this.height = 10;
 	  this.color = color;
 	  this.main = main;
 	};
@@ -666,6 +666,26 @@
 	
 	};
 	
+	Portal.prototype.findPair = function () {
+	  this.main.objects.forEach(function (object) {
+	    if (object === this) return;
+	    if (object instanceof Portal) {
+	      if (object.portalId === this.portalId) {
+	        return object;
+	      }
+	    } else {
+	      return
+	    }
+	  }.bind(this));
+	};
+	
+	Portal.prototype.isCollideWith = function (otherObject) {
+	
+	};
+	
+	Portal.prototype.collideWith = function (otherObeject) {
+	
+	};
 	module.exports = Portal;
 
 
