@@ -725,10 +725,11 @@
 	  var exitPortal = this.findPair();
 	  var ball = otherObject;
 	  var portalBounds = Utils.rectBounds(exitPortal);
-	  var width = portalBounds.right - portalBounds.left;
-	  var height = portalBounds.bottom - portalBounds.top;
-	  ball.pos.x = exitPortal.pos.x + width / 2
-	  ball.pos.y = exitPortal.pos.y - height / 2
+	  var width = (portalBounds.right + portalBounds.left) / 2 ;
+	  var height = (portalBounds.bottom + portalBounds.top) / 2;
+	
+	  ball.pos.x = width;
+	  ball.pos.y = height;
 	
 	  var speed = Math.sqrt(Math.pow(ball.velocity.x, 2) + Math.pow(ball.velocity.y, 2));
 	
