@@ -17,4 +17,5 @@ $(function () {
   ButtonListeners.clearListener(main, context, canvasEl);
   ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
   ButtonListeners.addMusicalLoopListener(view, canvasEl, main);
+
 });

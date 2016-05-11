@@ -1,6 +1,9 @@
 var Ball = require("./ball.js");
 var Track = require("./track.js");
 var BallGenerator = require("./ball_generator.js");
+var Note = require("./util/Note.js");
+var TONES = require("./constants/tones.js");
+var MusicalHoop = require("./musical_hoop.js");
 
 var ButtonListeners = {
   addBallListener: function (view, canvas) {
@@ -138,7 +141,7 @@ var ButtonListeners = {
 
   addMusicalLoopListener: function (view, canvas, main) {
     var isAddingMusicalHoop = false;
-    
+
     $('#add-musical-hoop-btn').click(function (event) {
       if (!isAddingMusicalHoop) {
         isAddingMusicalHoop = true;
@@ -146,7 +149,16 @@ var ButtonListeners = {
         $(this).prop("disabled", false);
         $(this).text("Stop Adding Musical Hoops");
         $('#main-canvas').on("click", function (event) {
+          var noteLetter = $('#note-selected').val();
+          var noteFreq = TONES[noteLetter];
+          var note = new Note(noteFreq);
 
+          var x = event.pageX - canvas.offsetLeft;
+          var y = event.pageY - canvas.offsetTop;
+
+          var musicalHoop = new MusicalHoop({x: x, y: y}, note, main);
+          main.objects.push(musicalHoop);
+          musicalHoop.draw(view.context);
         });
       } else {
         $('#main-canvas').off();

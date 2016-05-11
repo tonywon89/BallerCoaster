@@ -63,6 +63,7 @@
 	  ButtonListeners.clearListener(main, context, canvasEl);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
 	  ButtonListeners.addMusicalLoopListener(view, canvasEl, main);
+	
 	});
 
 
@@ -71,6 +72,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Ball = __webpack_require__(3);
+	var MusicalHoop = __webpack_require__(10);
 	
 	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 	  this.gravity = gravity;
@@ -78,7 +80,7 @@
 	  this.canvasWidth = canvasWidth;
 	  this.canvasHeight = canvasHeight;
 	};
-	  
+	
 	Main.prototype.step = function () {
 	  this.checkCollisions();
 	  this.objects.forEach(function(object) {
@@ -96,7 +98,8 @@
 	Main.prototype.checkCollisions = function () {
 	  var main = this;
 	  this.objects.forEach(function(obj1) {
-	    if (!(obj1 instanceof Ball)) return
+	    // debugger;
+	    if (!(obj1 instanceof Ball) && !(obj1 instanceof MusicalHoop)) return
 	    main.objects.some(function(obj2) {
 	
 	      if (obj1.isCollideWith(obj2)) {
@@ -278,6 +281,9 @@
 	var Ball = __webpack_require__(3);
 	var Track = __webpack_require__(6);
 	var BallGenerator = __webpack_require__(7);
+	var Note = __webpack_require__(8);
+	var TONES = __webpack_require__(9);
+	var MusicalHoop = __webpack_require__(10);
 	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
@@ -415,7 +421,7 @@
 	
 	  addMusicalLoopListener: function (view, canvas, main) {
 	    var isAddingMusicalHoop = false;
-	    
+	
 	    $('#add-musical-hoop-btn').click(function (event) {
 	      if (!isAddingMusicalHoop) {
 	        isAddingMusicalHoop = true;
@@ -423,7 +429,16 @@
 	        $(this).prop("disabled", false);
 	        $(this).text("Stop Adding Musical Hoops");
 	        $('#main-canvas').on("click", function (event) {
+	          var noteLetter = $('#note-selected').val();
+	          var noteFreq = TONES[noteLetter];
+	          var note = new Note(noteFreq);
 	
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	
+	          var musicalHoop = new MusicalHoop({x: x, y: y}, note, main);
+	          main.objects.push(musicalHoop);
+	          musicalHoop.draw(view.context);
 	        });
 	      } else {
 	        $('#main-canvas').off();
@@ -574,6 +589,149 @@
 	},
 	
 	module.exports = BallGenerator;
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	var ctx = new (window.AudioContext || window.webkitAudioContext)();
+	
+	var createOscillator = function (freq) {
+	  var osc = ctx.createOscillator();
+	  osc.type = "sine";
+	  osc.frequency.value = freq;
+	  osc.detune.value = 0;
+	  osc.start(ctx.currentTime);
+	  return osc;
+	};
+	
+	var createGainNode = function () {
+	  var gainNode = ctx.createGain();
+	  gainNode.gain.value = 0;
+	  gainNode.connect(ctx.destination);
+	  return gainNode;
+	};
+	
+	var Note = function (freq) {
+	  this.oscillatorNode = createOscillator(freq);
+	  this.gainNode = createGainNode();
+	  this.oscillatorNode.connect(this.gainNode);
+	};
+	
+	Note.prototype = {
+	  start: function () {
+	    // can't explain 0.3, it is a reasonable value
+	    this.gainNode.gain.value = 0.3;
+	  },
+	
+	  stop: function () {
+	    this.gainNode.gain.value = 0;
+	  }
+	};
+	
+	module.exports = Note;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	var TONES = {
+	  C: 523.25,
+	  D: 587.33,
+	  E: 659.25,
+	  F: 698.46,
+	  G: 783.99,
+	  A: 880.00,
+	  B: 987.77
+	};
+	
+	module.exports = TONES;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Note = __webpack_require__(8);
+	var Ball = __webpack_require__(3);
+	
+	var MusicalHoop = function (point1, note, main) {
+	  this.point1 = point1;
+	  this.point2 = {x: point1.x + 100, y: point1.y};
+	  // this.angle = angle;
+	  // this.width = width;
+	  this.width = 100;
+	  this.note = note;
+	  this.main = main;
+	  this.isCollided = false;
+	};
+	
+	MusicalHoop.prototype.draw = function (context) {
+	  context.beginPath();
+	  context.moveTo(this.point1.x, this.point1.y);
+	  context.lineTo(this.point2.x, this.point2.y);
+	  context.strokeStyle = "red";
+	  context.stroke();
+	  context.strokeStyle = "black";
+	};
+	
+	MusicalHoop.prototype.step = function () {
+	  if (this.isCollided) {
+	    this.note.start();
+	  }
+	};
+	
+	MusicalHoop.prototype.isCollideWith = function (otherObject) {
+	  if (otherObject instanceof Ball) {
+	    var A = { x: this.point1.x, y: this.point1.y };
+	    var B = { x: this.point2.x, y: this.point2.y };
+	    var C = { x: otherObject.pos.x, y: otherObject.pos.y }
+	    var LAB = Math.sqrt(Math.pow((B.x - A.x), 2) + Math.pow((B.y - A.y), 2));
+	
+	    var Dx = (B.x - A.x) / LAB;
+	    var Dy = (B.y - A.y) / LAB;
+	
+	    var t = Dx * (C.x - A.x) + Dy * (C.y - A.y);
+	
+	    var Ex = t * Dx + A.x;
+	    var Ey = t * Dy + A.y;
+	
+	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2))
+	
+	    var largerX = B.x > A.x ? B.x : A.x
+	    var smallerX = B.x >= A.x ? A.x : B.x
+	
+	    var largerY = B.y > A.y ? B.y : A.y
+	    var smallerY = B.y >= A.y ? A.y : B.y
+	    // var LEC = this.point1.y - otherObject.pos.y;
+	
+	    if (LEC <= otherObject.radius){
+	      this.ball = otherObject;
+	      this.isCollided = true;
+	      return true
+	
+	    } else {
+	      if (this.ball === otherObject) {
+	        this.note.stop();
+	        this.ball === undefined;
+	        this.isCollided = false
+	      }
+	      return false;
+	    }
+	  } else {
+	    return false;
+	  }
+	};
+	
+	MusicalHoop.prototype.collideWith = function (otherObject) {
+	  this.isCollided = true;
+	};
+	
+	MusicalHoop.collideWith
+	
+	module.exports = MusicalHoop;
 
 
 /***/ }
