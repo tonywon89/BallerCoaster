@@ -1,5 +1,5 @@
-var Track = require("./track.js");
-
+var Ball = require("./ball.js");
+var Portal = require("./portal.js");
 var Main = function (gravity, objects, canvasWidth, canvasHeight) {
   this.gravity = gravity;
   this.objects = objects;
@@ -24,7 +24,7 @@ Main.prototype.draw = function (context) {
 Main.prototype.checkCollisions = function () {
   var main = this;
   this.objects.forEach(function(obj1) {
-    if ((obj1 instanceof Track)) return
+    if (!(obj1 instanceof Ball) && !(obj1 instanceof Portal)) return
     main.objects.some(function(obj2) {
 
       if (obj1.isCollideWith(obj2)) {
