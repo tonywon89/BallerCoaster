@@ -672,16 +672,18 @@
 	};
 	
 	Portal.prototype.findPair = function () {
+	  var pair;
 	  this.main.objects.forEach(function (object) {
 	    if (object === this) return;
 	    if (object instanceof Portal) {
 	      if (object.portalId === this.portalId) {
-	        return object;
+	        pair = object;
 	      }
 	    } else {
 	      return
 	    }
 	  }.bind(this));
+	  return pair;
 	};
 	
 	Portal.prototype.isCollideWith = function (otherObject) {
@@ -719,8 +721,15 @@
 	
 	};
 	
-	Portal.prototype.collideWith = function (otherObeject) {
-	  console.log("It has collided");
+	Portal.prototype.collideWith = function (otherObject) {
+	  var exitPortal = this.findPair();
+	  var ball = otherObject;
+	  var portalBounds = Utils.rectBounds(this);
+	  var width = portalBounds.right - portalBounds.left;
+	  var height = portalBounds.bottom - portalBounds.top;
+	  ball.pos.x = exitPortal.pos.x + width / 2
+	  ball.pos.y = exitPortal.pos.y - height / 2
+	
 	};
 	
 	module.exports = Portal;
