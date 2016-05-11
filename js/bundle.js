@@ -58,7 +58,7 @@
 	  var view = new View(context, main);
 	
 	  ButtonListeners.addBallListener(view, canvasEl);
-	  ButtonListeners.addPlayListener(view);
+	  ButtonListeners.addPlayListener(view, canvasEl);
 	  ButtonListeners.addTrackListener(view, canvasEl);
 	  ButtonListeners.clearListener(main, context, canvasEl);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
@@ -314,6 +314,7 @@
 	      event.preventDefault();
 	      $('.menu-btn').prop("disabled", true);
 	      $(this).prop("disabled", false);
+	      // $('#play-btn').prop("disabled", false);
 	      if (!isPlacingBall) {
 	        $('#main-canvas').on("click", function (event) {
 	          var x = event.pageX - canvas.offsetLeft;
@@ -388,18 +389,29 @@
 	    });
 	  },
 	
-	  addPlayListener: function (view) {
+	  addPlayListener: function (view, canvas) {
 	    var isPlaying = false;
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
 	      if (!isPlaying) {
 	        $('.menu-btn').prop("disabled", true);
 	        $(this).prop("disabled", false);
+	        // $('#place-ball-btn').prop("disabled", false);
 	        isPlaying = true;
 	        $(this).text("Stop");
 	        view.start();
+	
+	        $('#main-canvas').on("click", function (event) {
+	          var x = event.pageX - canvas.offsetLeft;
+	          var y = event.pageY - canvas.offsetTop;
+	
+	          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
+	          view.main.objects.push(ball);
+	          view.main.draw(view.context);
+	        });
 	      } else {
 	        $('.menu-btn').prop("disabled", false);
+	        $('#main-canvas').off();
 	        isPlaying = false;
 	        $(this).text("Play");
 	        view.stop();

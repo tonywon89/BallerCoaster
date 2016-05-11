@@ -17,7 +17,8 @@
       <div class="content">
         <canvas id="main-canvas"></canvas>
         <div class="menu">
-          <button type="button" id="play-btn" class="menu-btn">Play</button>
+          <button type="button" id="play-btn" class="menu-btn" data-toggle="collapse" data-target="#play-content" aria-expanded="false" aria-controls="play-content">Play</button>
+          <div id="play-content" class="collapse btn-content">Click on the canvas to place live balls</div>
           <button type="button" id="place-ball-btn" class="menu-btn" data-toggle="collapse" data-target="#place-ball-content" aria-expanded="false" aria-controls="place-ball-content">Place Balls</button>
           <div id="place-ball-content" class="collapse btn-content">Click the canvas to place balls!</div>
           <button type="button" id="draw-tracks-btn" class="menu-btn" data-toggle="collapse" data-target="#draw-tracks-content" aria-expanded="false" aria-controls="draw-tracks-content">Draw Tracks</button>

@@ -12,7 +12,7 @@ $(function () {
   var view = new View(context, main);
 
   ButtonListeners.addBallListener(view, canvasEl);
-  ButtonListeners.addPlayListener(view);
+  ButtonListeners.addPlayListener(view, canvasEl);
   ButtonListeners.addTrackListener(view, canvasEl);
   ButtonListeners.clearListener(main, context, canvasEl);
   ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
