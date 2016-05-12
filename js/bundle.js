@@ -47,6 +47,10 @@
 	var Main = __webpack_require__(1);
 	var View = __webpack_require__(2);
 	var ButtonListeners = __webpack_require__(5);
+	var Ball = __webpack_require__(3);
+	var Track = __webpack_require__(6);
+	var BallGenerator = __webpack_require__(7);
+	var Portal = __webpack_require__(11);
 	
 	$(function () {
 	  var canvasEl = document.getElementById("main-canvas");
@@ -137,14 +141,7 @@
 	var View = function (context, main) {
 	  this.context = context;
 	  this.main = main;
-	};
-	
-	// View.prototype.draw = function () {
-	//   this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-	//   this.objects.forEach(function(object) {
-	//     object.draw(this.context, this);
-	//   }.bind(this));
-	// };
+	}; 
 	
 	var requestAnimationFrame =
 	    window.requestAnimationFrame ||
@@ -314,7 +311,6 @@
 	      event.preventDefault();
 	      $('.menu-btn').prop("disabled", true);
 	      $(this).prop("disabled", false);
-	      // $('#play-btn').prop("disabled", false);
 	      if (!isPlacingBall) {
 	        $('#main-canvas').on("click", function (event) {
 	          var x = event.pageX - canvas.offsetLeft;

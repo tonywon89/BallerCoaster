@@ -1,6 +1,10 @@
 var Main = require("./main.js");
 var View = require("./view.js");
 var ButtonListeners = require("./button_listeners.js");
+var Ball = require("./ball.js");
+var Track = require("./track.js");
+var BallGenerator = require("./ball_generator.js");
+var Portal = require("./portal.js");
 
 $(function () {
   var canvasEl = document.getElementById("main-canvas");

@@ -1,14 +1,7 @@
 var View = function (context, main) {
   this.context = context;
   this.main = main;
-};
-
-// View.prototype.draw = function () {
-//   this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-//   this.objects.forEach(function(object) {
-//     object.draw(this.context, this);
-//   }.bind(this));
-// };
+}; 
 
 var requestAnimationFrame =
     window.requestAnimationFrame ||

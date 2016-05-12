@@ -10,7 +10,6 @@ var ButtonListeners = {
       event.preventDefault();
       $('.menu-btn').prop("disabled", true);
       $(this).prop("disabled", false);
-      // $('#play-btn').prop("disabled", false);
       if (!isPlacingBall) {
         $('#main-canvas').on("click", function (event) {
           var x = event.pageX - canvas.offsetLeft;
