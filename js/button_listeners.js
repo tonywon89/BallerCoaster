@@ -92,7 +92,6 @@ var ButtonListeners = {
       if (!isPlaying) {
         $('.menu-btn').prop("disabled", true);
         $(this).prop("disabled", false);
-        // $('#place-ball-btn').prop("disabled", false);
         isPlaying = true;
         $(this).text("Stop");
         view.start();
@@ -162,10 +161,10 @@ var ButtonListeners = {
         $('.menu-btn').prop("disabled", true);
         $(this).prop("disabled", false);
         isActive = true;
-        $(this).text("Stop placing portals");
+        $(this).text("Stop making portals");
         $('#main-canvas').on("click", function (event) {
           if (placingFirstPortal) {
-            $("#place-portal-txt").text("Place Exit Portal");
+            $("#place-portal-txt").text("Make Exit Portal");
             $("#portal-btn").prop("disabled", true);
 
             placingFirstPortal = false;
@@ -188,7 +187,7 @@ var ButtonListeners = {
 
           } else if (placingSecondPortal) {
             $("#portal-btn").prop("disabled", false);
-            $("#place-portal-txt").text("Place Entry Portal");
+            $("#place-portal-txt").text("Make Entry Portal");
             placingFirstPortal = true;
             placingSecondPortal = false;
 
@@ -212,11 +211,11 @@ var ButtonListeners = {
       } else {
         $('#main-canvas').off();
         $('.menu-btn').prop("disabled", false);
-        $("#place-portal-txt").text("Place Entry Portal");
+        $("#place-portal-txt").text("Make Entry Portal");
         isActive = false;
         placingFirstPortal = true;
         placingSecondPortal = false;
-        $(this).text("Place Portals");
+        $(this).text("Make Portals");
       }
 
     });
