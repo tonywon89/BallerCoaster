@@ -37,6 +37,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   background-color: #BFBEBE;
 }
 
@@ -104,5 +105,19 @@ input[type="number"] {
 }
 
 .remove-items-wrapper button {
+  width: 100%;
+}
+
+.bottom-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.top-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
 }
