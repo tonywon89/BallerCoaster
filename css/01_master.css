@@ -34,11 +34,10 @@ body {
   width: 30%;
   top: 10%;
   border: 1px solid black;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+
   background-color: #BFBEBE;
+  overflow-y: auto;
+
 }
 
 .menu-btn {
@@ -113,6 +112,7 @@ input[type="number"] {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  margin-top: 120px;
 }
 
 .top-btns {
