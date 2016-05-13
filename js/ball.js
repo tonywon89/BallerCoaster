@@ -50,7 +50,7 @@ Ball.prototype.isCollideWith = function (otherObject) {
     var largerY = B.y > A.y ? B.y : A.y
     var smallerY = B.y >= A.y ? A.y : B.y
 
-    if (LEC <= this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
+    if (LEC <= 1.3 * this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
       this.collidedObject = otherObject;
       return true
     } else {

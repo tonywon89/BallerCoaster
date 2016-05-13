@@ -87,7 +87,6 @@ Portal.prototype.isCollideWith = function (otherObject) {
   } else {
     return false;
   }
-
 };
 
 Portal.prototype.collideWith = function (otherObject) {
