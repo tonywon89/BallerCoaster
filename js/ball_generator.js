@@ -10,7 +10,7 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
   this.height = 15;
   this.radius = 5;
   this.main = main;
-  this.time = Math.pow(10, 30);
+  this.time = Math.pow(10, 3);
 
   var secondX = this.pos.x + this.width * Math.cos(this.angle);
   var secondY = this.pos.y + this.width * Math.sin(this.angle);
@@ -68,9 +68,10 @@ BallGenerator.prototype.fire = function () {
 
 BallGenerator.prototype.step = function () {
   this.time += this.frequency;
-  if (this.time >= Math.pow(10, 30)) {
+  if (this.time >= Math.pow(10, 3)) {
     this.fire();
     this.ball = this.generateBall();
+    debugger;
     this.time = 0;
   }
 

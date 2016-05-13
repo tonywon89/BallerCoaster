@@ -34,10 +34,8 @@ body {
   width: 30%;
   top: 10%;
   border: 1px solid black;
-
   background-color: #BFBEBE;
   overflow-y: auto;
-
 }
 
 .menu-btn {
