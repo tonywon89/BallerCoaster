@@ -45,12 +45,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Main = __webpack_require__(1);
-	var View = __webpack_require__(2);
-	var ButtonListeners = __webpack_require__(5);
-	var Ball = __webpack_require__(3);
-	var Track = __webpack_require__(6);
-	var BallGenerator = __webpack_require__(7);
-	var Portal = __webpack_require__(11);
+	var View = __webpack_require__(6);
+	var ButtonListeners = __webpack_require__(7);
+	var Ball = __webpack_require__(2);
+	var Track = __webpack_require__(3);
+	var BallGenerator = __webpack_require__(8);
+	var Portal = __webpack_require__(5);
 	
 	$(function () {
 	  var canvasEl = document.getElementById("main-canvas");
@@ -68,6 +68,7 @@
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
 	  ButtonListeners.addPortalGenerator(view, canvasEl, main);
 	  ButtonListeners.addRemoveItemListener(view, canvasEl, main);
+	  ButtonListeners.demoListener(view, canvasEl, main);
 	});
 
 
@@ -75,8 +76,8 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Ball = __webpack_require__(3);
-	var Portal = __webpack_require__(11);
+	var Ball = __webpack_require__(2);
+	var Portal = __webpack_require__(5);
 	
 	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
 	  this.gravity = gravity;
@@ -136,68 +137,10 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
-
-	var View = function (context, main) {
-	  this.context = context;
-	  this.main = main;
-	}; 
-	
-	var requestAnimationFrame =
-	    window.requestAnimationFrame ||
-	    window.webkitRequestAnimationFrame ||
-	    window.mozRequestAnimationFrame ||
-	    window.msRequestAnimationFrame ||
-	    window.oRequestAnimationFrame ||
-	    function(callback) {
-	      return setTimeout(callback, 1);
-	    };
-	var cancelAnimationFrame =
-	    window.cancelAnimationFrame ||
-	    window.webkitCancelAnimationFrame ||
-	    window.mozCancelAnimationFrame ||
-	    window.msCancelAnimationFrame ||
-	    window.oCancelAnimationFrame ||
-	    function(callback) {
-	      return setTimeout(callback, 1);
-	    };
-	
-	var requestId;
-	View.prototype.animate = function () {
-	    this.main.step();
-	    this.main.draw(this.context);
-	    requestId = requestAnimationFrame(this.animate.bind(this));
-	};
-	
-	View.prototype.start = function () {
-	  if (!requestId) {
-	    this.animate();
-	  }
-	}
-	
-	View.prototype.stop = function () {
-	  if (requestId) {
-	    cancelAnimationFrame(requestId);
-	    requestId = undefined;
-	  }
-	}
-	
-	
-	View.prototype.step = function () {
-	  this.objects.forEach(function(object) {
-	    object.step();
-	  });
-	};
-	
-	module.exports = View;
-
-
-/***/ },
-/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Track = __webpack_require__(6);
-	var Utils = __webpack_require__(12);
+	var Track = __webpack_require__(3);
+	var Utils = __webpack_require__(4);
 	
 	var Ball = function (pos, radius, velocity, main) {
 	  this.pos = pos;
@@ -295,14 +238,287 @@
 
 
 /***/ },
-/* 4 */,
+/* 3 */
+/***/ function(module, exports) {
+
+	var Track = function (point1, point2, gravity) {
+	    this.point1 = point1;
+	    this.point2 = point2;
+	    this.theta = Math.atan2(point2.y - point1.y, point2.x - point1.x);
+	    this.slopeGravity = gravity * Math.sin(this.theta);
+	    this.xAccel = this.slopeGravity * Math.cos(this.theta);
+	    this.yAccel = this.slopeGravity * Math.sin(this.theta);
+	
+	};
+	
+	Track.prototype.draw = function (context) {
+	  context.beginPath();
+	  context.moveTo(this.point1.x, this.point1.y);
+	  context.lineTo(this.point2.x, this.point2.y);
+	  context.stroke();
+	};
+	
+	Track.prototype.step = function () {
+	
+	};
+	
+	Track.prototype.containPoint =  function (point) {
+	  return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
+	};
+	
+	Track.prototype.distance = function (point1, point2) {
+	  return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+	};
+	
+	Track.prototype.isCollideWith = function (otherObject) {
+	
+	};
+	
+	Track.prototype.collideWith = function (otherObject) {
+	
+	};
+	
+	module.exports = Track;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var Utils = {
+	  circleBounds: function (object) {
+	    var left, right, top, bottom;
+	
+	    left = object.pos.x - object.radius;
+	    right = object.pos.x + object.radius;
+	    top = object.pos.y - object.radius;
+	    bottom = object.pos.y + object.radius;
+	
+	    return {left: left, right: right, top: top, bottom: bottom };
+	  },
+	
+	  rectBounds: function (object) {
+	    var left, right, top, bottom;
+	
+	    var firstX = object.pos.x;
+	    var firstY = object.pos.y;
+	
+	    var secondX = object.pos.x + object.width * Math.cos(object.angle);
+	    var secondY = object.pos.y + object.width * Math.sin(object.angle);
+	
+	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
+	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
+	
+	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
+	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
+	
+	    var xPositions = [firstX, secondX, thirdX, fourthX];
+	    var yPositions = [firstY, secondY, thirdY, fourthY];
+	    left = Math.min(...xPositions);
+	    right = Math.max(...xPositions);
+	    top = Math.min(...yPositions);
+	    bottom = Math.max(...yPositions);
+	
+	    return {left: left, right: right, top: top, bottom: bottom };
+	  },
+	
+	  containRect: function (object, pos) {
+	    var bounds = this.rectBounds(object);
+	    if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
+	      return true
+	    } else {
+	      return false;
+	    }
+	  },
+	};
+	
+	module.exports = Utils;
+
+
+/***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Ball = __webpack_require__(3);
-	var Track = __webpack_require__(6);
-	var BallGenerator = __webpack_require__(7);
-	var Portal = __webpack_require__(11);
+	var Ball = __webpack_require__(2);
+	var Utils = __webpack_require__(4);
+	
+	var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
+	  this.portalId = portalId;
+	  this.entry = entry
+	  this.exit = exit;
+	  this.pos = pos;
+	  this.angle = -angle;
+	  this.width = width;
+	  this.height = 10;
+	  this.color = color;
+	  this.main = main;
+	};
+	
+	Portal.prototype.draw = function (context) {
+	  context.beginPath();
+	  context.moveTo(this.pos.x, this.pos.y);
+	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
+	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+	  context.lineTo(secondX, secondY);
+	  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
+	  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
+	  context.lineTo(thirdX, thirdY);
+	  var fourthX = thirdX + this.width * Math.cos(this.angle + Math.PI);
+	  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
+	  context.lineTo(fourthX, fourthY);
+	  context.closePath();
+	  context.fillStyle = this.color;
+	  context.stroke();
+	  context.fill()
+	  context.fillStyle = "none";
+	  if (this.exit) {
+	    context.strokeStyle = "yellow"
+	    context.beginPath();
+	    context.moveTo(thirdX, thirdY);
+	    context.lineTo(fourthX, fourthY);
+	    context.stroke();
+	    context.strokeStyle = "black";
+	  }
+	
+	};
+	
+	Portal.prototype.step = function () {
+	
+	};
+	
+	Portal.prototype.findPair = function () {
+	  var pair;
+	  this.main.objects.forEach(function (object) {
+	    if (object === this) return;
+	    if (object instanceof Portal) {
+	      if (object.portalId === this.portalId) {
+	        pair = object;
+	      }
+	    } else {
+	      return
+	    }
+	  }.bind(this));
+	  return pair;
+	};
+	
+	Portal.prototype.isCollideWith = function (otherObject) {
+	  if (this.entry) {
+	    if (otherObject instanceof Ball) {
+	      var ball = otherObject;
+	      var ballBounds = Utils.circleBounds(ball);
+	      var topVertex = { x: ball.pos.x, y: ballBounds.top }
+	      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom }
+	      var leftVertex = { x: ballBounds.left, y: ball.pos.y }
+	      var rightVertex = { x: ballBounds.right, y: ball.pos.y }
+	
+	      var portalBounds = Utils.rectBounds(this);
+	
+	      if (bottomVertex.x >= portalBounds.left && bottomVertex.x <= portalBounds.right && bottomVertex.y >= portalBounds.top && bottomVertex.y <= portalBounds.bottom) {
+	        return true;
+	      } else if (topVertex.x >= portalBounds.left && topVertex.x <= portalBounds.right && topVertex.y >= portalBounds.top && topVertex.y <= portalBounds.bottom) {
+	        return true;
+	      } else if (leftVertex.x >= portalBounds.left && leftVertex.x <= portalBounds.right && leftVertex.y >= portalBounds.top && leftVertex.y <= portalBounds.bottom) {
+	        return true;
+	      } else if (rightVertex.x >= portalBounds.left && rightVertex.x <= portalBounds.right && rightVertex.y >= portalBounds.top && rightVertex.y <= portalBounds.bottom) {
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    }
+	  } else {
+	    return false;
+	  }
+	};
+	
+	Portal.prototype.collideWith = function (otherObject) {
+	  var exitPortal = this.findPair();
+	  var ball = otherObject;
+	  var portalBounds = Utils.rectBounds(exitPortal);
+	  var width = (portalBounds.right + portalBounds.left) / 2 ;
+	  var height = (portalBounds.bottom + portalBounds.top) / 2;
+	
+	  ball.pos.x = width;
+	  ball.pos.y = height;
+	
+	  var speed = Math.sqrt(Math.pow(ball.velocity.x, 2) + Math.pow(ball.velocity.y, 2));
+	
+	  ball.velocity.x = speed * Math.cos(Math.PI / 2 + exitPortal.angle);
+	  ball.velocity.y = speed * Math.sin(Math.PI / 2 + exitPortal.angle);
+	};
+	
+	Portal.prototype.containPoint = function (pos) {
+	  return Utils.containRect(this, pos);
+	};
+	
+	module.exports = Portal;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	var View = function (context, main) {
+	  this.context = context;
+	  this.main = main;
+	}; 
+	
+	var requestAnimationFrame =
+	    window.requestAnimationFrame ||
+	    window.webkitRequestAnimationFrame ||
+	    window.mozRequestAnimationFrame ||
+	    window.msRequestAnimationFrame ||
+	    window.oRequestAnimationFrame ||
+	    function(callback) {
+	      return setTimeout(callback, 1);
+	    };
+	var cancelAnimationFrame =
+	    window.cancelAnimationFrame ||
+	    window.webkitCancelAnimationFrame ||
+	    window.mozCancelAnimationFrame ||
+	    window.msCancelAnimationFrame ||
+	    window.oCancelAnimationFrame ||
+	    function(callback) {
+	      return setTimeout(callback, 1);
+	    };
+	
+	var requestId;
+	View.prototype.animate = function () {
+	    this.main.step();
+	    this.main.draw(this.context);
+	    requestId = requestAnimationFrame(this.animate.bind(this));
+	};
+	
+	View.prototype.start = function () {
+	  if (!requestId) {
+	    this.animate();
+	  }
+	}
+	
+	View.prototype.stop = function () {
+	  if (requestId) {
+	    cancelAnimationFrame(requestId);
+	    requestId = undefined;
+	  }
+	}
+	
+	
+	View.prototype.step = function () {
+	  this.objects.forEach(function(object) {
+	    object.step();
+	  });
+	};
+	
+	module.exports = View;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Ball = __webpack_require__(2);
+	var Track = __webpack_require__(3);
+	var BallGenerator = __webpack_require__(8);
+	var Portal = __webpack_require__(5);
 	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
@@ -521,6 +737,25 @@
 	    });
 	  },
 	
+	  demoListener: function (view, canvas, main) {
+	    var isDemoing = false;
+	
+	    $('#demo-btn').click(function (event) {
+	      event.preventDefault();
+	
+	      if (!isDemoing) {
+	        $('.menu-btn').prop("disabled", true);
+	        $(this).prop("disabled", false);
+	        $(this).text("Stop Demo");
+	        isDemoing = true;
+	      } else {
+	        $('.menu-btn').prop("disabled", false);
+	        $(this).text("Demo");
+	        isDemoing = false;
+	      }
+	    });
+	  },
+	
 	  addRemoveItemListener: function (view, canvas, main) {
 	    var isRemoving = false;
 	
@@ -560,55 +795,11 @@
 
 
 /***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	var Track = function (point1, point2, gravity) {
-	    this.point1 = point1;
-	    this.point2 = point2;
-	    this.theta = Math.atan2(point2.y - point1.y, point2.x - point1.x);
-	    this.slopeGravity = gravity * Math.sin(this.theta);
-	    this.xAccel = this.slopeGravity * Math.cos(this.theta);
-	    this.yAccel = this.slopeGravity * Math.sin(this.theta);
-	
-	};
-	
-	Track.prototype.draw = function (context) {
-	  context.beginPath();
-	  context.moveTo(this.point1.x, this.point1.y);
-	  context.lineTo(this.point2.x, this.point2.y);
-	  context.stroke();
-	};
-	
-	Track.prototype.step = function () {
-	
-	};
-	
-	Track.prototype.containPoint =  function (point) {
-	  return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
-	};
-	
-	Track.prototype.distance = function (point1, point2) {
-	  return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
-	};
-	
-	Track.prototype.isCollideWith = function (otherObject) {
-	
-	};
-	
-	Track.prototype.collideWith = function (otherObject) {
-	
-	};
-	
-	module.exports = Track;
-
-
-/***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Ball = __webpack_require__(3);
-	var Utils = __webpack_require__(12);
+	var Ball = __webpack_require__(2);
+	var Utils = __webpack_require__(4);
 	
 	var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
 	  this.pos = pos;
@@ -690,181 +881,6 @@
 	};
 	
 	module.exports = BallGenerator;
-
-
-/***/ },
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Ball = __webpack_require__(3);
-	var Utils = __webpack_require__(12);
-	
-	var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
-	  this.portalId = portalId;
-	  this.entry = entry
-	  this.exit = exit;
-	  this.pos = pos;
-	  this.angle = -angle;
-	  this.width = width;
-	  this.height = 10;
-	  this.color = color;
-	  this.main = main;
-	};
-	
-	Portal.prototype.draw = function (context) {
-	  context.beginPath();
-	  context.moveTo(this.pos.x, this.pos.y);
-	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
-	  context.lineTo(secondX, secondY);
-	  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
-	  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
-	  context.lineTo(thirdX, thirdY);
-	  var fourthX = thirdX + this.width * Math.cos(this.angle + Math.PI);
-	  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
-	  context.lineTo(fourthX, fourthY);
-	  context.closePath();
-	  context.fillStyle = this.color;
-	  context.stroke();
-	  context.fill()
-	  context.fillStyle = "none";
-	  if (this.exit) {
-	    context.strokeStyle = "yellow"
-	    context.beginPath();
-	    context.moveTo(thirdX, thirdY);
-	    context.lineTo(fourthX, fourthY);
-	    context.stroke();
-	    context.strokeStyle = "black";
-	  }
-	
-	};
-	
-	Portal.prototype.step = function () {
-	
-	};
-	
-	Portal.prototype.findPair = function () {
-	  var pair;
-	  this.main.objects.forEach(function (object) {
-	    if (object === this) return;
-	    if (object instanceof Portal) {
-	      if (object.portalId === this.portalId) {
-	        pair = object;
-	      }
-	    } else {
-	      return
-	    }
-	  }.bind(this));
-	  return pair;
-	};
-	
-	Portal.prototype.isCollideWith = function (otherObject) {
-	  if (this.entry) {
-	    if (otherObject instanceof Ball) {
-	      var ball = otherObject;
-	      var ballBounds = Utils.circleBounds(ball);
-	      var topVertex = { x: ball.pos.x, y: ballBounds.top }
-	      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom }
-	      var leftVertex = { x: ballBounds.left, y: ball.pos.y }
-	      var rightVertex = { x: ballBounds.right, y: ball.pos.y }
-	
-	      var portalBounds = Utils.rectBounds(this);
-	
-	      if (bottomVertex.x >= portalBounds.left && bottomVertex.x <= portalBounds.right && bottomVertex.y >= portalBounds.top && bottomVertex.y <= portalBounds.bottom) {
-	        return true;
-	      } else if (topVertex.x >= portalBounds.left && topVertex.x <= portalBounds.right && topVertex.y >= portalBounds.top && topVertex.y <= portalBounds.bottom) {
-	        return true;
-	      } else if (leftVertex.x >= portalBounds.left && leftVertex.x <= portalBounds.right && leftVertex.y >= portalBounds.top && leftVertex.y <= portalBounds.bottom) {
-	        return true;
-	      } else if (rightVertex.x >= portalBounds.left && rightVertex.x <= portalBounds.right && rightVertex.y >= portalBounds.top && rightVertex.y <= portalBounds.bottom) {
-	        return true;
-	      } else {
-	        return false;
-	      }
-	    }
-	  } else {
-	    return false;
-	  }
-	};
-	
-	Portal.prototype.collideWith = function (otherObject) {
-	  var exitPortal = this.findPair();
-	  var ball = otherObject;
-	  var portalBounds = Utils.rectBounds(exitPortal);
-	  var width = (portalBounds.right + portalBounds.left) / 2 ;
-	  var height = (portalBounds.bottom + portalBounds.top) / 2;
-	
-	  ball.pos.x = width;
-	  ball.pos.y = height;
-	
-	  var speed = Math.sqrt(Math.pow(ball.velocity.x, 2) + Math.pow(ball.velocity.y, 2));
-	
-	  ball.velocity.x = speed * Math.cos(Math.PI / 2 + exitPortal.angle);
-	  ball.velocity.y = speed * Math.sin(Math.PI / 2 + exitPortal.angle);
-	};
-	
-	Portal.prototype.containPoint = function (pos) {
-	  return Utils.containRect(this, pos);
-	};
-	
-	module.exports = Portal;
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-	var Utils = {
-	  circleBounds: function (object) {
-	    var left, right, top, bottom;
-	
-	    left = object.pos.x - object.radius;
-	    right = object.pos.x + object.radius;
-	    top = object.pos.y - object.radius;
-	    bottom = object.pos.y + object.radius;
-	
-	    return {left: left, right: right, top: top, bottom: bottom };
-	  },
-	
-	  rectBounds: function (object) {
-	    var left, right, top, bottom;
-	
-	    var firstX = object.pos.x;
-	    var firstY = object.pos.y;
-	
-	    var secondX = object.pos.x + object.width * Math.cos(object.angle);
-	    var secondY = object.pos.y + object.width * Math.sin(object.angle);
-	
-	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
-	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
-	
-	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
-	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
-	
-	    var xPositions = [firstX, secondX, thirdX, fourthX];
-	    var yPositions = [firstY, secondY, thirdY, fourthY];
-	    left = Math.min(...xPositions);
-	    right = Math.max(...xPositions);
-	    top = Math.min(...yPositions);
-	    bottom = Math.max(...yPositions);
-	
-	    return {left: left, right: right, top: top, bottom: bottom };
-	  },
-	
-	  containRect: function (object, pos) {
-	    var bounds = this.rectBounds(object);
-	    if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
-	      return true
-	    } else {
-	      return false;
-	    }
-	  },
-	};
-	
-	module.exports = Utils;
 
 
 /***/ }

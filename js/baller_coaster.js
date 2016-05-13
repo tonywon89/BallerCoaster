@@ -22,4 +22,5 @@ $(function () {
   ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
   ButtonListeners.addPortalGenerator(view, canvasEl, main);
   ButtonListeners.addRemoveItemListener(view, canvasEl, main);
+  ButtonListeners.demoListener(view, canvasEl, main);
 });

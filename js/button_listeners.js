@@ -220,6 +220,25 @@ var ButtonListeners = {
     });
   },
 
+  demoListener: function (view, canvas, main) {
+    var isDemoing = false;
+
+    $('#demo-btn').click(function (event) {
+      event.preventDefault();
+
+      if (!isDemoing) {
+        $('.menu-btn').prop("disabled", true);
+        $(this).prop("disabled", false);
+        $(this).text("Stop Demo");
+        isDemoing = true;
+      } else {
+        $('.menu-btn').prop("disabled", false);
+        $(this).text("Demo");
+        isDemoing = false;
+      }
+    });
+  },
+
   addRemoveItemListener: function (view, canvas, main) {
     var isRemoving = false;
 
