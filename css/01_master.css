@@ -6,12 +6,11 @@ body {
   background-color: gray;
 }
 
-.main {
+/*.main {
   width: 100vw;
-}
+}*/
 
 .main h1 {
-  /*position: relative;*/
   text-align: center;
   font-size: 45px;
   font-weight: bold;
