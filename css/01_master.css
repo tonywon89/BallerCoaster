@@ -117,7 +117,7 @@ input[type="number"] {
   background-color: green;
 }
 
-#play-btn.active, #demon-btn.active {
+#play-btn.active, #demo-btn.active {
   background-color: red;
 }
 
