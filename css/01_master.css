@@ -113,6 +113,22 @@ input[type="number"] {
   margin-top: 120px;
 }
 
+#play-btn {
+  background-color: green;
+}
+
+#play-btn.active, #demon-btn.active {
+  background-color: red;
+}
+
+#play-btn:hover, #demo-btn:hover  {
+  background-color: white;
+}
+
+#demo-btn {
+  background-color: teal;
+}
+
 .top-btns {
   display: flex;
   flex-direction: column;

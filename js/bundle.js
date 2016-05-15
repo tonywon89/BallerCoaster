@@ -610,11 +610,12 @@
 	        $(this).prop("disabled", false);
 	        isPlaying = true;
 	        $(this).text("Stop");
+	        $(this).toggleClass("active");
 	        view.start();
 	
-	        $('#main-canvas').on("click", function (event) {
-	          var x = event.pageX - canvas.offsetLeft;
-	          var y = event.pageY - canvas.offsetTop;
+	        $('#main-canvas').on("click", function (e) {
+	          var x = e.pageX - canvas.offsetLeft;
+	          var y = e.pageY - canvas.offsetTop;
 	
 	          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
 	          view.main.objects.push(ball);
@@ -625,6 +626,7 @@
 	        $('#main-canvas').off();
 	        isPlaying = false;
 	        $(this).text("Play");
+	        $(this).toggleClass("active");
 	        view.stop();
 	      }
 	    });
@@ -747,6 +749,7 @@
 	        $('.menu-btn').prop("disabled", true);
 	        $(this).prop("disabled", false);
 	        $(this).text("Stop Demo");
+	        $(this).toggleClass("active");
 	        isDemoing = true;
 	        main.objects = [];
 	        main.draw(view.context);
@@ -778,6 +781,7 @@
 	      } else {
 	        $('.menu-btn').prop("disabled", false);
 	        $(this).text("Demo");
+	        $(this).toggleClass("active");
 	        isDemoing = false;
 	        view.stop();
 	      }
@@ -899,7 +903,6 @@
 	  if (this.time >= Math.pow(10, 3)) {
 	    this.fire();
 	    this.ball = this.generateBall();
-	    debugger;
 	    this.time = 0;
 	  }
 	

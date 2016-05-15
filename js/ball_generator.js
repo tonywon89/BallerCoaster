@@ -71,7 +71,6 @@ BallGenerator.prototype.step = function () {
   if (this.time >= Math.pow(10, 3)) {
     this.fire();
     this.ball = this.generateBall();
-    debugger;
     this.time = 0;
   }
 
