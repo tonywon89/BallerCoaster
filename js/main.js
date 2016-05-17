@@ -12,20 +12,20 @@ Main.prototype.step = function () {
   this.checkCollisions();
   this.objects.forEach(function(object) {
     object.step();
-  }.bind(this));
+  });
 };
 
 Main.prototype.draw = function (context) {
   context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   this.objects.forEach(function(object) {
     object.draw(context);
-  }.bind(this));
+  });
 };
 
 Main.prototype.checkCollisions = function () {
   var main = this;
   this.objects.forEach(function(obj1) {
-    if (!(obj1 instanceof Ball) && !(obj1 instanceof Portal)) return
+    if (!(obj1 instanceof Ball) && !(obj1 instanceof Portal)) return;
     main.objects.some(function(obj2) {
 
       if (obj1.isCollideWith(obj2)) {
@@ -34,7 +34,7 @@ Main.prototype.checkCollisions = function () {
       }
       return false;
     });
-  })
+  });
 };
 
 Main.prototype.removeObject = function (pos, view) {
@@ -49,7 +49,7 @@ Main.prototype.removeObject = function (pos, view) {
         this.draw(view.context);
         return;
       }
-    };
+    }
   }
 
 };

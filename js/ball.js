@@ -58,10 +58,10 @@ Ball.prototype.isCollideWith = function (otherObject) {
       if (this.collidedObject === otherObject) {
         this.collidedObject = undefined;
         this.isCollided = false;
-        this.acceleration = { x: 0, y: this.main.gravity }
+        this.acceleration = { x: 0, y: this.main.gravity };
         return false;
       } else {
-        this.acceleration = { x: 0, y: this.main.gravity }
+        this.acceleration = { x: 0, y: this.main.gravity };
         return false;
       }
 

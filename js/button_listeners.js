@@ -11,9 +11,9 @@ var ButtonListeners = {
       $('.menu-btn').prop("disabled", true);
       $(this).prop("disabled", false);
       if (!isPlacingBall) {
-        $('#main-canvas').on("click", function (event) {
-          var x = event.pageX - canvas.offsetLeft;
-          var y = event.pageY - canvas.offsetTop;
+        $('#main-canvas').on("click", function (e) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
 
           var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
           view.main.objects.push(ball);
@@ -40,15 +40,15 @@ var ButtonListeners = {
       $('.menu-btn').prop("disabled", true);
       $('#draw-tracks-btn').prop("disabled", false);
       if (!isDrawingTracks) {
-        $('#main-canvas').on("mousedown", function (event) {
-          var x = event.pageX - canvas.offsetLeft;
-          var y = event.pageY - canvas.offsetTop;
+        $('#main-canvas').on("mousedown", function (e) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
 
           point1 = {x: x, y: y};
 
-        }).on("mousemove", function (event) {
-          var x = event.pageX - canvas.offsetLeft;
-          var y = event.pageY - canvas.offsetTop;
+        }).on("mousemove", function (e) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
           point2 = {x: x, y: y};
 
           if (point1) {
@@ -63,7 +63,7 @@ var ButtonListeners = {
               view.main.draw(view.context);
             }
           }
-        }).on("mouseup", function (event) {
+        }).on("mouseup", function (e) {
           // Will make sure the next drawing will pop the copy of it
           if (track) {
             view.main.objects.push(track);
@@ -79,7 +79,7 @@ var ButtonListeners = {
         $('#main-canvas').off();
         view.main.objects.pop();
         isDrawingTracks = false;
-        $(this).text("Draw Tracks")
+        $(this).text("Draw Tracks");
       }
     });
   },
@@ -124,9 +124,9 @@ var ButtonListeners = {
         $(this).prop("disabled", false);
         isBallGenerating = true;
         $(this).text("Stop Making Ball Generators");
-        $('#main-canvas').on("click", function (event) {
-          var x = event.pageX - canvas.offsetLeft;
-          var y = event.pageY - canvas.offsetTop;
+        $('#main-canvas').on("click", function (e) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
 
           var angle = $('#ball-generator-angle').val();
           var radianAngle = angle * (Math.PI / 180);
@@ -147,7 +147,7 @@ var ButtonListeners = {
 
         $(this).text("Construct Ball Generators");
       }
-    })
+    });
   },
 
   addPortalGenerator: function (view, canvas, main) {
@@ -163,7 +163,7 @@ var ButtonListeners = {
         $(this).prop("disabled", false);
         isActive = true;
         $(this).text("Stop making portals");
-        $('#main-canvas').on("click", function (event) {
+        $('#main-canvas').on("click", function (e) {
           if (placingFirstPortal) {
             $("#place-portal-txt").text("Make Exit Portal");
             $("#portal-btn").prop("disabled", true);
@@ -171,8 +171,8 @@ var ButtonListeners = {
             placingFirstPortal = false;
             placingSecondPortal = true;
 
-            var x = event.pageX - canvas.offsetLeft;
-            var y = event.pageY - canvas.offsetTop;
+            var x = e.pageX - canvas.offsetLeft;
+            var y = e.pageY - canvas.offsetTop;
 
             var angle = $('#first-portal-angle').val();
             var radianAngle = angle * (Math.PI / 180);
@@ -182,7 +182,7 @@ var ButtonListeners = {
             var width = parseInt($('#first-portal-width').val());
 
 
-            var entryPortal = new Portal(portalId, true, false, {x: x, y: y}, radianAngle, width, color, main)
+            var entryPortal = new Portal(portalId, true, false, {x: x, y: y}, radianAngle, width, color, main);
             main.objects.push(entryPortal);
             entryPortal.draw(view.context);
 
@@ -198,7 +198,7 @@ var ButtonListeners = {
             var angle = $('#second-portal-angle').val();
             var radianAngle = angle * (Math.PI / 180);
 
-            var width = parseInt($('#second-portal-width').val())
+            var width = parseInt($('#second-portal-width').val());
 
             var color = "orange";
 
@@ -282,10 +282,9 @@ var ButtonListeners = {
         $(this).prop("disabled", false);
         $(this).text("Stop Removing");
         isRemoving = true;
-        $('#main-canvas').on("click", function (event) {
-          var x = event.pageX - canvas.offsetLeft;
-          var y = event.pageY - canvas.offsetTop;
-
+        $('#main-canvas').on("click", function (e) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
           main.removeObject({x: x, y: y}, view);
         });
       } else {
@@ -302,8 +301,8 @@ var ButtonListeners = {
       event.preventDefault();
       main.objects = [];
       main.draw(context);
-    })
+    });
   }
-}
+};
 
 module.exports = ButtonListeners;

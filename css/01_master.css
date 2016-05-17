@@ -17,19 +17,19 @@ body {
 }
 
 .main .content {
-  display: flex;
-  justify-content: center;
-}
 
+}
 .main canvas {
+  display: inline-block;
   margin: 10px;
   border: 1px solid black;
   background-color: white;
 }
 
 .main .menu {
+  display: inline-block;
   margin: 10px;
-  height: 85vh;
+  height: 570px;
   width: 30%;
   top: 10%;
   border: 1px solid black;
