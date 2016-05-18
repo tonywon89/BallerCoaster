@@ -22,24 +22,45 @@ var addBall = function (event, view) {
   view.main.draw(view.context);
 };
 
+var addBallGenerator = function (event, view) {
+  var x = event.pageX - view.main.canvas.offsetLeft;
+  var y = event.pageY - view.main.canvas.offsetTop;
+
+  var angle = $('#ball-generator-angle').val();
+  var radianAngle = angle * (Math.PI / 180);
+
+  var velocity = parseInt($('#ball-generator-velocity').val());
+
+  var frequency = parseInt($('#ball-generator-frequency').val());
+
+  var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, view.main);
+  view.main.objects.push(ballGenerator);
+  view.main.draw(view.context);
+};
+
+var toggleCanvasClickListener = function (activeBtn, active, view, activeText, inactiveText, callback) {
+  disableInactiveBtns(activeBtn);
+  if (!active) {
+    $('#main-canvas').on("click", function (e) {
+      callback(e, view);
+    });
+
+    $(activeBtn).text(activeText);
+    active = true;
+  } else {
+    enableBtns();
+    active = false;
+    $(activeBtn).text(inactiveText);
+  }
+};
+
 var ButtonListeners = {
   addBallListener: function (view) {
-    var isPlacingBall = false;
+    var active = false;
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      disableInactiveBtns('#place-ball-btn');
-      if (!isPlacingBall) {
-        $('#main-canvas').on("click", function (e) {
-          addBall(e, view);
-        });
-
-        $(this).text("Stop Placing Balls");
-        isPlacingBall = true;
-      } else {
-        enableBtns();
-        isPlacingBall = false;
-        $(this).text("Place Balls");
-      }
+      toggleCanvasClickListener('#place-ball-btn', active, view, "Stop Placing Balls", "Place Balls", addBall);
+      active = !active;
     });
   },
 
@@ -126,35 +147,12 @@ var ButtonListeners = {
     });
   },
 
-  addBallGeneratorListener: function (view, canvas, main) {
-    var isBallGenerating = false;
+  addBallGeneratorListener: function (view) {
+    var active = false;
     $('#ball-generator-btn').click(function (event) {
       event.preventDefault();
-      if (!isBallGenerating) {
-        disableInactiveBtns('#ball-generator-btn');
-        isBallGenerating = true;
-        $(this).text("Stop Making Ball Generators");
-        $('#main-canvas').on("click", function (e) {
-          var x = e.pageX - canvas.offsetLeft;
-          var y = e.pageY - canvas.offsetTop;
-
-          var angle = $('#ball-generator-angle').val();
-          var radianAngle = angle * (Math.PI / 180);
-
-          var velocity = parseInt($('#ball-generator-velocity').val());
-
-          var frequency = parseInt($('#ball-generator-frequency').val());
-
-          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, main);
-          view.main.objects.push(ballGenerator);
-          view.main.draw(view.context);
-        });
-
-      } else {
-        enableBtns();
-        isBallGenerating = false;
-        $(this).text("Construct Ball Generators");
-      }
+      toggleCanvasClickListener("#ball-generator-btn", active, view, "Stop Making Ball Generators", "Construct Ball Generators", addBallGenerator);
+      active = !active;
     });
   },
 

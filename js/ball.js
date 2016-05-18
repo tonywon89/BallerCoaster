@@ -21,7 +21,7 @@ Ball.prototype.step = function () {
   this.velocity.x += this.acceleration.x;
   this.pos.y += this.velocity.y;
   this.pos.x += this.velocity.x;
-  if (this.pos.y > this.main.canvasHeight || this.pos.x > this.main.canvasWidth) {
+  if (this.pos.y > this.main.canvas.height || this.pos.x > this.main.canvas.width) {
     var idx = this.main.objects.indexOf(this);
     this.main.objects.splice(idx, 1);
   }
@@ -31,7 +31,7 @@ Ball.prototype.isCollideWith = function (otherObject) {
   if (otherObject instanceof Track) {
     var A = { x: otherObject.point1.x, y: otherObject.point1.y };
     var B = { x: otherObject.point2.x, y: otherObject.point2.y };
-    var C = { x: this.pos.x, y: this.pos.y }
+    var C = { x: this.pos.x, y: this.pos.y };
     var LAB = Math.sqrt(Math.pow((B.x - A.x), 2) + Math.pow((B.y - A.y), 2));
 
     var Dx = (B.x - A.x) / LAB;
@@ -42,17 +42,17 @@ Ball.prototype.isCollideWith = function (otherObject) {
     var Ex = t * Dx + A.x;
     var Ey = t * Dy + A.y;
 
-    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2))
+    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2));
 
-    var largerX = B.x > A.x ? B.x : A.x
-    var smallerX = B.x >= A.x ? A.x : B.x
+    var largerX = B.x > A.x ? B.x : A.x;
+    var smallerX = B.x >= A.x ? A.x : B.x;
 
-    var largerY = B.y > A.y ? B.y : A.y
-    var smallerY = B.y >= A.y ? A.y : B.y
+    var largerY = B.y > A.y ? B.y : A.y;
+    var smallerY = B.y >= A.y ? A.y : B.y;
 
     if (LEC <= 1.3 * this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
       this.collidedObject = otherObject;
-      return true
+      return true;
     } else {
 
       if (this.collidedObject === otherObject) {

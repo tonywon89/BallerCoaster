@@ -159,7 +159,7 @@
 	  this.velocity.x += this.acceleration.x;
 	  this.pos.y += this.velocity.y;
 	  this.pos.x += this.velocity.x;
-	  if (this.pos.y > this.main.canvasHeight || this.pos.x > this.main.canvasWidth) {
+	  if (this.pos.y > this.main.canvas.height || this.pos.x > this.main.canvas.width) {
 	    var idx = this.main.objects.indexOf(this);
 	    this.main.objects.splice(idx, 1);
 	  }
@@ -169,7 +169,7 @@
 	  if (otherObject instanceof Track) {
 	    var A = { x: otherObject.point1.x, y: otherObject.point1.y };
 	    var B = { x: otherObject.point2.x, y: otherObject.point2.y };
-	    var C = { x: this.pos.x, y: this.pos.y }
+	    var C = { x: this.pos.x, y: this.pos.y };
 	    var LAB = Math.sqrt(Math.pow((B.x - A.x), 2) + Math.pow((B.y - A.y), 2));
 	
 	    var Dx = (B.x - A.x) / LAB;
@@ -180,17 +180,17 @@
 	    var Ex = t * Dx + A.x;
 	    var Ey = t * Dy + A.y;
 	
-	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2))
+	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2));
 	
-	    var largerX = B.x > A.x ? B.x : A.x
-	    var smallerX = B.x >= A.x ? A.x : B.x
+	    var largerX = B.x > A.x ? B.x : A.x;
+	    var smallerX = B.x >= A.x ? A.x : B.x;
 	
-	    var largerY = B.y > A.y ? B.y : A.y
-	    var smallerY = B.y >= A.y ? A.y : B.y
+	    var largerY = B.y > A.y ? B.y : A.y;
+	    var smallerY = B.y >= A.y ? A.y : B.y;
 	
 	    if (LEC <= 1.3 * this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
 	      this.collidedObject = otherObject;
-	      return true
+	      return true;
 	    } else {
 	
 	      if (this.collidedObject === otherObject) {
@@ -536,24 +536,45 @@
 	  view.main.draw(view.context);
 	};
 	
+	var addBallGenerator = function (event, view) {
+	  var x = event.pageX - view.main.canvas.offsetLeft;
+	  var y = event.pageY - view.main.canvas.offsetTop;
+	
+	  var angle = $('#ball-generator-angle').val();
+	  var radianAngle = angle * (Math.PI / 180);
+	
+	  var velocity = parseInt($('#ball-generator-velocity').val());
+	
+	  var frequency = parseInt($('#ball-generator-frequency').val());
+	
+	  var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, view.main);
+	  view.main.objects.push(ballGenerator);
+	  view.main.draw(view.context);
+	};
+	
+	var toggleCanvasClickListener = function (activeBtn, active, view, activeText, inactiveText, callback) {
+	  disableInactiveBtns(activeBtn);
+	  if (!active) {
+	    $('#main-canvas').on("click", function (e) {
+	      callback(e, view);
+	    });
+	
+	    $(activeBtn).text(activeText);
+	    active = true;
+	  } else {
+	    enableBtns();
+	    active = false;
+	    $(activeBtn).text(inactiveText);
+	  }
+	};
+	
 	var ButtonListeners = {
 	  addBallListener: function (view) {
-	    var isPlacingBall = false;
+	    var active = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      disableInactiveBtns('#place-ball-btn');
-	      if (!isPlacingBall) {
-	        $('#main-canvas').on("click", function (e) {
-	          addBall(e, view);
-	        });
-	
-	        $(this).text("Stop Placing Balls");
-	        isPlacingBall = true;
-	      } else {
-	        enableBtns();
-	        isPlacingBall = false;
-	        $(this).text("Place Balls");
-	      }
+	      toggleCanvasClickListener('#place-ball-btn', active, view, "Stop Placing Balls", "Place Balls", addBall);
+	      active = !active;
 	    });
 	  },
 	
@@ -640,35 +661,12 @@
 	    });
 	  },
 	
-	  addBallGeneratorListener: function (view, canvas, main) {
-	    var isBallGenerating = false;
+	  addBallGeneratorListener: function (view) {
+	    var active = false;
 	    $('#ball-generator-btn').click(function (event) {
 	      event.preventDefault();
-	      if (!isBallGenerating) {
-	        disableInactiveBtns('#ball-generator-btn');
-	        isBallGenerating = true;
-	        $(this).text("Stop Making Ball Generators");
-	        $('#main-canvas').on("click", function (e) {
-	          var x = e.pageX - canvas.offsetLeft;
-	          var y = e.pageY - canvas.offsetTop;
-	
-	          var angle = $('#ball-generator-angle').val();
-	          var radianAngle = angle * (Math.PI / 180);
-	
-	          var velocity = parseInt($('#ball-generator-velocity').val());
-	
-	          var frequency = parseInt($('#ball-generator-frequency').val());
-	
-	          var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, main);
-	          view.main.objects.push(ballGenerator);
-	          view.main.draw(view.context);
-	        });
-	
-	      } else {
-	        enableBtns();
-	        isBallGenerating = false;
-	        $(this).text("Construct Ball Generators");
-	      }
+	      toggleCanvasClickListener("#ball-generator-btn", active, view, "Stop Making Ball Generators", "Construct Ball Generators", addBallGenerator);
+	      active = !active;
 	    });
 	  },
 	
