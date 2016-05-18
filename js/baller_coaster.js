@@ -16,11 +16,11 @@ $(function () {
   var view = new View(context, main);
 
   ButtonListeners.addBallListener(view);
-  ButtonListeners.addPlayListener(view, canvasEl);
   ButtonListeners.addTrackListener(view);
-  ButtonListeners.clearListener(view);
   ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
   ButtonListeners.addPortalGenerator(view, canvasEl, main);
-  ButtonListeners.addRemoveItemListener(view, canvasEl);
+  ButtonListeners.addPlayListener(view);
   ButtonListeners.demoListener(view, canvasEl, main);
+  ButtonListeners.addRemoveItemListener(view, canvasEl);
+  ButtonListeners.clearListener(view);
 });

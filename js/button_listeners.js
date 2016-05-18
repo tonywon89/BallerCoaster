@@ -13,6 +13,15 @@ var enableBtns = function () {
   $('#main-canvas').off();
 };
 
+var addBall = function (event, view) {
+  var x = event.pageX - view.main.canvas.offsetLeft;
+  var y = event.pageY - view.main.canvas.offsetTop;
+
+  var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
+  view.main.objects.push(ball);
+  view.main.draw(view.context);
+};
+
 var ButtonListeners = {
   addBallListener: function (view) {
     var isPlacingBall = false;
@@ -21,12 +30,7 @@ var ButtonListeners = {
       disableInactiveBtns('#place-ball-btn');
       if (!isPlacingBall) {
         $('#main-canvas').on("click", function (e) {
-          var x = e.pageX - view.main.canvas.offsetLeft;
-          var y = e.pageY - view.main.canvas.offsetTop;
-
-          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
-          view.main.objects.push(ball);
-          view.main.draw(view.context);
+          addBall(e, view);
         });
 
         $(this).text("Stop Placing Balls");
@@ -97,8 +101,9 @@ var ButtonListeners = {
     });
   },
 
-  addPlayListener: function (view, canvas) {
+  addPlayListener: function (view) {
     var isPlaying = false;
+    var canvas = view.main.canvas;
     $('#play-btn').click(function(event) {
       event.preventDefault();
       if (!isPlaying) {
@@ -109,12 +114,7 @@ var ButtonListeners = {
         view.start();
 
         $('#main-canvas').on("click", function (e) {
-          var x = e.pageX - canvas.offsetLeft;
-          var y = e.pageY - canvas.offsetTop;
-
-          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
-          view.main.objects.push(ball);
-          view.main.draw(view.context);
+          addBall(e, view);
         });
       } else {
         enableBtns();
