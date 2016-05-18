@@ -551,6 +551,7 @@
 	  addTrackListener: function (view, canvas) {
 	    var isDrawingTracks = false;
 	    var point1, point2, track;
+	    var trackDrawn = false;
 	
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
@@ -584,6 +585,7 @@
 	          // Will make sure the next drawing will pop the copy of it
 	          if (track) {
 	            view.main.objects.push(track);
+	            trackDrawn = true;
 	          }
 	
 	          point1 = 0;
@@ -594,7 +596,10 @@
 	      } else {
 	        $('.menu-btn').prop("disabled", false);
 	        $('#main-canvas').off();
-	        view.main.objects.pop();
+	        if (trackDrawn) {
+	          view.main.objects.pop();
+	          trackDrawn = false;
+	        }
 	        isDrawingTracks = false;
 	        $(this).text("Draw Tracks");
 	      }
@@ -709,8 +714,8 @@
 	            placingFirstPortal = true;
 	            placingSecondPortal = false;
 	
-	            var x = event.pageX - canvas.offsetLeft;
-	            var y = event.pageY - canvas.offsetTop;
+	            var x = e.pageX - canvas.offsetLeft;
+	            var y = e.pageY - canvas.offsetTop;
 	
 	            var angle = $('#second-portal-angle').val();
 	            var radianAngle = angle * (Math.PI / 180);
