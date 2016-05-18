@@ -64,10 +64,10 @@
 	  ButtonListeners.addBallListener(view, canvasEl);
 	  ButtonListeners.addPlayListener(view, canvasEl);
 	  ButtonListeners.addTrackListener(view, canvasEl);
-	  ButtonListeners.clearListener(main, context, canvasEl);
+	  ButtonListeners.clearListener(view);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
 	  ButtonListeners.addPortalGenerator(view, canvasEl, main);
-	  ButtonListeners.addRemoveItemListener(view, canvasEl, main);
+	  ButtonListeners.addRemoveItemListener(view, canvasEl);
 	  ButtonListeners.demoListener(view, canvasEl, main);
 	});
 
@@ -115,16 +115,16 @@
 	  });
 	};
 	
-	Main.prototype.removeObject = function (pos, view) {
+	Main.prototype.removeObject = function (pos, context) {
 	  for (var i = 0; i < this.objects.length; i++) {
 	    if (this.objects[i].containPoint(pos)) {
 	      if (this.objects[i] instanceof Portal) {
 	        var idx = this.objects.indexOf(this.objects[i].findPair());
 	        idx < i ? this.objects.splice(idx, 2) : this.objects.splice(i, 2);
-	        this.draw(view.context);
+	        this.draw(context);
 	      } else {
 	        this.objects.splice(i, 1);
-	        this.draw(view.context);
+	        this.draw(context);
 	        return;
 	      }
 	    }
@@ -520,13 +520,22 @@
 	var BallGenerator = __webpack_require__(8);
 	var Portal = __webpack_require__(5);
 	
+	var disableInactiveBtns = function (activeBtn) {
+	  $('.menu-btn').prop("disabled", true);
+	  $(activeBtn).prop("disabled", false);
+	};
+	
+	var enableBtns = function () {
+	  $('.menu-btn').prop("disabled", false);
+	  $('#main-canvas').off();
+	};
+	
 	var ButtonListeners = {
 	  addBallListener: function (view, canvas) {
 	    var isPlacingBall = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      $('.menu-btn').prop("disabled", true);
-	      $(this).prop("disabled", false);
+	      disableInactiveBtns('#place-ball-btn');
 	      if (!isPlacingBall) {
 	        $('#main-canvas').on("click", function (e) {
 	          var x = e.pageX - canvas.offsetLeft;
@@ -540,8 +549,7 @@
 	        $(this).text("Stop Placing Balls");
 	        isPlacingBall = true;
 	      } else {
-	        $('.menu-btn').prop("disabled", false);
-	        $('#main-canvas').off("click");
+	        enableBtns();
 	        isPlacingBall = false;
 	        $(this).text("Place Balls");
 	      }
@@ -555,8 +563,7 @@
 	
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
-	      $('.menu-btn').prop("disabled", true);
-	      $('#draw-tracks-btn').prop("disabled", false);
+	      disableInactiveBtns('#draw-tracks-btn');
 	      if (!isDrawingTracks) {
 	        $('#main-canvas').on("mousedown", function (e) {
 	          var x = e.pageX - canvas.offsetLeft;
@@ -594,13 +601,13 @@
 	        $(this).text("Stop Drawing Tracks");
 	        isDrawingTracks = true;
 	      } else {
-	        $('.menu-btn').prop("disabled", false);
-	        $('#main-canvas').off();
+	        isDrawingTracks = false;
 	        if (trackDrawn) {
 	          view.main.objects.pop();
 	          trackDrawn = false;
 	        }
-	        isDrawingTracks = false;
+	        enableBtns();
+	
 	        $(this).text("Draw Tracks");
 	      }
 	    });
@@ -611,8 +618,7 @@
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
 	      if (!isPlaying) {
-	        $('.menu-btn').prop("disabled", true);
-	        $(this).prop("disabled", false);
+	        disableInactiveBtns('#play-btn');
 	        isPlaying = true;
 	        $(this).text("Stop");
 	        $(this).toggleClass("active");
@@ -627,8 +633,7 @@
 	          view.main.draw(view.context);
 	        });
 	      } else {
-	        $('.menu-btn').prop("disabled", false);
-	        $('#main-canvas').off();
+	        enableBtns();
 	        isPlaying = false;
 	        $(this).text("Play");
 	        $(this).toggleClass("active");
@@ -642,8 +647,7 @@
 	    $('#ball-generator-btn').click(function (event) {
 	      event.preventDefault();
 	      if (!isBallGenerating) {
-	        $('.menu-btn').prop("disabled", true);
-	        $(this).prop("disabled", false);
+	        disableInactiveBtns('#ball-generator-btn');
 	        isBallGenerating = true;
 	        $(this).text("Stop Making Ball Generators");
 	        $('#main-canvas').on("click", function (e) {
@@ -663,10 +667,8 @@
 	        });
 	
 	      } else {
-	        $('#main-canvas').off();
-	        $('.menu-btn').prop("disabled", false);
+	        enableBtns();
 	        isBallGenerating = false;
-	
 	        $(this).text("Construct Ball Generators");
 	      }
 	    });
@@ -702,7 +704,6 @@
 	            var color = "blue";
 	
 	            var width = parseInt($('#first-portal-width').val());
-	
 	
 	            var entryPortal = new Portal(portalId, true, false, {x: x, y: y}, radianAngle, width, color, main);
 	            main.objects.push(entryPortal);
@@ -793,36 +794,34 @@
 	    });
 	  },
 	
-	  addRemoveItemListener: function (view, canvas, main) {
+	  addRemoveItemListener: function (view, canvas) {
 	    var isRemoving = false;
 	
 	    $('#remove-item-btn').click(function (event) {
 	      event.preventDefault();
 	
 	      if (!isRemoving) {
-	        $('.menu-btn').prop("disabled", true);
-	        $(this).prop("disabled", false);
+	        disableInactiveBtns('#remove-item-btn');
 	        $(this).text("Stop Removing");
 	        isRemoving = true;
 	        $('#main-canvas').on("click", function (e) {
 	          var x = e.pageX - canvas.offsetLeft;
 	          var y = e.pageY - canvas.offsetTop;
-	          main.removeObject({x: x, y: y}, view);
+	          view.main.removeObject({x: x, y: y}, view.context);
 	        });
 	      } else {
-	        $('.menu-btn').prop("disabled", false);
-	        $('#main-canvas').off();
+	        enableBtns();
 	        isRemoving = false;
 	        $(this).text("Remove item");
 	      }
 	    });
 	  },
 	
-	  clearListener: function (main, context, canvas) {
+	  clearListener: function (view) {
 	    $('#clear-btn').click(function (event) {
 	      event.preventDefault();
-	      main.objects = [];
-	      main.draw(context);
+	      view.main.objects = [];
+	      view.main.draw(view.context);
 	    });
 	  }
 	};

@@ -3,13 +3,22 @@ var Track = require("./track.js");
 var BallGenerator = require("./ball_generator.js");
 var Portal = require("./portal.js");
 
+var disableInactiveBtns = function (activeBtn) {
+  $('.menu-btn').prop("disabled", true);
+  $(activeBtn).prop("disabled", false);
+};
+
+var enableBtns = function () {
+  $('.menu-btn').prop("disabled", false);
+  $('#main-canvas').off();
+};
+
 var ButtonListeners = {
   addBallListener: function (view, canvas) {
     var isPlacingBall = false;
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      $('.menu-btn').prop("disabled", true);
-      $(this).prop("disabled", false);
+      disableInactiveBtns('#place-ball-btn');
       if (!isPlacingBall) {
         $('#main-canvas').on("click", function (e) {
           var x = e.pageX - canvas.offsetLeft;
@@ -23,8 +32,7 @@ var ButtonListeners = {
         $(this).text("Stop Placing Balls");
         isPlacingBall = true;
       } else {
-        $('.menu-btn').prop("disabled", false);
-        $('#main-canvas').off("click");
+        enableBtns();
         isPlacingBall = false;
         $(this).text("Place Balls");
       }
@@ -38,8 +46,7 @@ var ButtonListeners = {
 
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
-      $('.menu-btn').prop("disabled", true);
-      $('#draw-tracks-btn').prop("disabled", false);
+      disableInactiveBtns('#draw-tracks-btn');
       if (!isDrawingTracks) {
         $('#main-canvas').on("mousedown", function (e) {
           var x = e.pageX - canvas.offsetLeft;
@@ -77,13 +84,13 @@ var ButtonListeners = {
         $(this).text("Stop Drawing Tracks");
         isDrawingTracks = true;
       } else {
-        $('.menu-btn').prop("disabled", false);
-        $('#main-canvas').off();
+        isDrawingTracks = false;
         if (trackDrawn) {
           view.main.objects.pop();
           trackDrawn = false;
         }
-        isDrawingTracks = false;
+        enableBtns();
+
         $(this).text("Draw Tracks");
       }
     });
@@ -94,8 +101,7 @@ var ButtonListeners = {
     $('#play-btn').click(function(event) {
       event.preventDefault();
       if (!isPlaying) {
-        $('.menu-btn').prop("disabled", true);
-        $(this).prop("disabled", false);
+        disableInactiveBtns('#play-btn');
         isPlaying = true;
         $(this).text("Stop");
         $(this).toggleClass("active");
@@ -110,8 +116,7 @@ var ButtonListeners = {
           view.main.draw(view.context);
         });
       } else {
-        $('.menu-btn').prop("disabled", false);
-        $('#main-canvas').off();
+        enableBtns();
         isPlaying = false;
         $(this).text("Play");
         $(this).toggleClass("active");
@@ -125,8 +130,7 @@ var ButtonListeners = {
     $('#ball-generator-btn').click(function (event) {
       event.preventDefault();
       if (!isBallGenerating) {
-        $('.menu-btn').prop("disabled", true);
-        $(this).prop("disabled", false);
+        disableInactiveBtns('#ball-generator-btn');
         isBallGenerating = true;
         $(this).text("Stop Making Ball Generators");
         $('#main-canvas').on("click", function (e) {
@@ -146,10 +150,8 @@ var ButtonListeners = {
         });
 
       } else {
-        $('#main-canvas').off();
-        $('.menu-btn').prop("disabled", false);
+        enableBtns();
         isBallGenerating = false;
-
         $(this).text("Construct Ball Generators");
       }
     });
@@ -185,7 +187,6 @@ var ButtonListeners = {
             var color = "blue";
 
             var width = parseInt($('#first-portal-width').val());
-
 
             var entryPortal = new Portal(portalId, true, false, {x: x, y: y}, radianAngle, width, color, main);
             main.objects.push(entryPortal);
@@ -276,36 +277,34 @@ var ButtonListeners = {
     });
   },
 
-  addRemoveItemListener: function (view, canvas, main) {
+  addRemoveItemListener: function (view, canvas) {
     var isRemoving = false;
 
     $('#remove-item-btn').click(function (event) {
       event.preventDefault();
 
       if (!isRemoving) {
-        $('.menu-btn').prop("disabled", true);
-        $(this).prop("disabled", false);
+        disableInactiveBtns('#remove-item-btn');
         $(this).text("Stop Removing");
         isRemoving = true;
         $('#main-canvas').on("click", function (e) {
           var x = e.pageX - canvas.offsetLeft;
           var y = e.pageY - canvas.offsetTop;
-          main.removeObject({x: x, y: y}, view);
+          view.main.removeObject({x: x, y: y}, view.context);
         });
       } else {
-        $('.menu-btn').prop("disabled", false);
-        $('#main-canvas').off();
+        enableBtns();
         isRemoving = false;
         $(this).text("Remove item");
       }
     });
   },
 
-  clearListener: function (main, context, canvas) {
+  clearListener: function (view) {
     $('#clear-btn').click(function (event) {
       event.preventDefault();
-      main.objects = [];
-      main.draw(context);
+      view.main.objects = [];
+      view.main.draw(view.context);
     });
   }
 };
