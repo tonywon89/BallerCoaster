@@ -58,10 +58,10 @@
 	  canvasEl.height = 570;
 	  var context = canvasEl.getContext('2d');
 	
-	  var main = new Main(0.2, [], canvasEl.width, canvasEl.height);
+	  var main = new Main(0.2, [], canvasEl);
 	  var view = new View(context, main);
 	
-	  ButtonListeners.addBallListener(view, canvasEl);
+	  ButtonListeners.addBallListener(view);
 	  ButtonListeners.addPlayListener(view, canvasEl);
 	  ButtonListeners.addTrackListener(view, canvasEl);
 	  ButtonListeners.clearListener(view);
@@ -79,11 +79,10 @@
 	var Ball = __webpack_require__(2);
 	var Portal = __webpack_require__(5);
 	
-	var Main = function (gravity, objects, canvasWidth, canvasHeight) {
+	var Main = function (gravity, objects, canvas) {
 	  this.gravity = gravity;
 	  this.objects = objects;
-	  this.canvasWidth = canvasWidth;
-	  this.canvasHeight = canvasHeight;
+	  this.canvas = canvas;
 	};
 	
 	Main.prototype.step = function () {
@@ -94,7 +93,7 @@
 	};
 	
 	Main.prototype.draw = function (context) {
-	  context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+	  context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	  this.objects.forEach(function(object) {
 	    object.draw(context);
 	  });
@@ -105,7 +104,6 @@
 	  this.objects.forEach(function(obj1) {
 	    if (!(obj1 instanceof Ball) && !(obj1 instanceof Portal)) return;
 	    main.objects.some(function(obj2) {
-	
 	      if (obj1.isCollideWith(obj2)) {
 	        obj1.collideWith(obj2);
 	        return true;
@@ -129,7 +127,6 @@
 	      }
 	    }
 	  }
-	
 	};
 	
 	module.exports = Main;
@@ -531,15 +528,15 @@
 	};
 	
 	var ButtonListeners = {
-	  addBallListener: function (view, canvas) {
+	  addBallListener: function (view) {
 	    var isPlacingBall = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
 	      disableInactiveBtns('#place-ball-btn');
 	      if (!isPlacingBall) {
 	        $('#main-canvas').on("click", function (e) {
-	          var x = e.pageX - canvas.offsetLeft;
-	          var y = e.pageY - canvas.offsetTop;
+	          var x = e.pageX - view.main.canvas.offsetLeft;
+	          var y = e.pageY - view.main.canvas.offsetTop;
 	
 	          var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
 	          view.main.objects.push(ball);

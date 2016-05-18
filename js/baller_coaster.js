@@ -12,10 +12,10 @@ $(function () {
   canvasEl.height = 570;
   var context = canvasEl.getContext('2d');
 
-  var main = new Main(0.2, [], canvasEl.width, canvasEl.height);
+  var main = new Main(0.2, [], canvasEl);
   var view = new View(context, main);
 
-  ButtonListeners.addBallListener(view, canvasEl);
+  ButtonListeners.addBallListener(view);
   ButtonListeners.addPlayListener(view, canvasEl);
   ButtonListeners.addTrackListener(view, canvasEl);
   ButtonListeners.clearListener(view);

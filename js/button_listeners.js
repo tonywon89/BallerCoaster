@@ -14,15 +14,15 @@ var enableBtns = function () {
 };
 
 var ButtonListeners = {
-  addBallListener: function (view, canvas) {
+  addBallListener: function (view) {
     var isPlacingBall = false;
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
       disableInactiveBtns('#place-ball-btn');
       if (!isPlacingBall) {
         $('#main-canvas').on("click", function (e) {
-          var x = e.pageX - canvas.offsetLeft;
-          var y = e.pageY - canvas.offsetTop;
+          var x = e.pageX - view.main.canvas.offsetLeft;
+          var y = e.pageY - view.main.canvas.offsetTop;
 
           var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
           view.main.objects.push(ball);

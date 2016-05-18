@@ -1,11 +1,10 @@
 var Ball = require("./ball.js");
 var Portal = require("./portal.js");
 
-var Main = function (gravity, objects, canvasWidth, canvasHeight) {
+var Main = function (gravity, objects, canvas) {
   this.gravity = gravity;
   this.objects = objects;
-  this.canvasWidth = canvasWidth;
-  this.canvasHeight = canvasHeight;
+  this.canvas = canvas;
 };
 
 Main.prototype.step = function () {
@@ -16,7 +15,7 @@ Main.prototype.step = function () {
 };
 
 Main.prototype.draw = function (context) {
-  context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+  context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   this.objects.forEach(function(object) {
     object.draw(context);
   });
@@ -27,7 +26,6 @@ Main.prototype.checkCollisions = function () {
   this.objects.forEach(function(obj1) {
     if (!(obj1 instanceof Ball) && !(obj1 instanceof Portal)) return;
     main.objects.some(function(obj2) {
-
       if (obj1.isCollideWith(obj2)) {
         obj1.collideWith(obj2);
         return true;
@@ -51,7 +49,6 @@ Main.prototype.removeObject = function (pos, context) {
       }
     }
   }
-
 };
 
 module.exports = Main;
