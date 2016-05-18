@@ -63,7 +63,7 @@
 	
 	  ButtonListeners.addBallListener(view);
 	  ButtonListeners.addPlayListener(view, canvasEl);
-	  ButtonListeners.addTrackListener(view, canvasEl);
+	  ButtonListeners.addTrackListener(view);
 	  ButtonListeners.clearListener(view);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
 	  ButtonListeners.addPortalGenerator(view, canvasEl, main);
@@ -553,10 +553,11 @@
 	    });
 	  },
 	
-	  addTrackListener: function (view, canvas) {
+	  addTrackListener: function (view) {
 	    var isDrawingTracks = false;
 	    var point1, point2, track;
 	    var trackDrawn = false;
+	    var canvas = view.main.canvas;
 	
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();

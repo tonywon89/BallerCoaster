@@ -39,10 +39,11 @@ var ButtonListeners = {
     });
   },
 
-  addTrackListener: function (view, canvas) {
+  addTrackListener: function (view) {
     var isDrawingTracks = false;
     var point1, point2, track;
     var trackDrawn = false;
+    var canvas = view.main.canvas;
 
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();

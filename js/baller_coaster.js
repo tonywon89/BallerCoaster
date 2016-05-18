@@ -17,7 +17,7 @@ $(function () {
 
   ButtonListeners.addBallListener(view);
   ButtonListeners.addPlayListener(view, canvasEl);
-  ButtonListeners.addTrackListener(view, canvasEl);
+  ButtonListeners.addTrackListener(view);
   ButtonListeners.clearListener(view);
   ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
   ButtonListeners.addPortalGenerator(view, canvasEl, main);
