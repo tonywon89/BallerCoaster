@@ -3,6 +3,10 @@ var Track = require("./track.js");
 var BallGenerator = require("./ball_generator.js");
 var Portal = require("./portal.js");
 
+var placingFirstPortal = true;
+var placingSecondPortal = false;
+var portalId = 0;
+
 var ButtonActions = {
   disableInactiveBtns: function (activeBtn) {
     $('.menu-btn').prop("disabled", true);
@@ -39,7 +43,7 @@ var ButtonActions = {
     view.main.draw(view.context);
   },
 
-  addPortal: function (event, view, portalType, portalId) {
+  addPortal: function (event, view, portalType, id) {
     var isEntry = portalType === 'entry';
     var portalAngleId = isEntry ? '#first-portal-angle' : '#second-portal-angle';
     var portalWidthId = isEntry ? '#first-portal-width' : '#second-portal-width';
@@ -47,15 +51,34 @@ var ButtonActions = {
 
     var x = event.pageX - view.main.canvas.offsetLeft;
     var y = event.pageY - view.main.canvas.offsetTop;
-
     var angle = $(portalAngleId).val();
     var radianAngle = angle * (Math.PI / 180);
-
     var width = parseInt($(portalWidthId).val());
 
-    var portal = new Portal(portalId, isEntry, !isEntry, {x: x, y: y}, radianAngle, width, portalColor, view.main);
+    var portal = new Portal(id, isEntry, !isEntry, {x: x, y: y}, radianAngle, width, portalColor, view.main);
     view.main.objects.push(portal);
     portal.draw(view.context);
+  },
+
+  addBothPortals: function (event, view) {
+    if (placingFirstPortal) {
+      $("#portal-btn").prop("disabled", true);
+      $("#place-portal-txt").text("Make Exit Portal");
+
+      this.addPortal(event, view, 'entry', portalId);
+
+      placingFirstPortal = false;
+      placingSecondPortal = true;
+    } else if (placingSecondPortal) {
+      $("#portal-btn").prop("disabled", false);
+      $("#place-portal-txt").text("Make Entry Portal");
+
+      this.addPortal(event, view, 'exit', portalId);
+
+      placingFirstPortal = true;
+      placingSecondPortal = false;
+      portalId += 1;
+    }
   },
 
   toggleCanvasClickListener: function (activeBtn, active, view, activeText, inactiveText, callback) {
@@ -65,10 +88,8 @@ var ButtonActions = {
         callback(e, view);
       });
       $(activeBtn).text(activeText);
-      active = true;
     } else {
       this.enableBtns();
-      active = false;
       $(activeBtn).text(inactiveText);
     }
   }

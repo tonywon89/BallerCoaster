@@ -115,47 +115,18 @@ var ButtonListeners = {
   },
 
   addPortalListener: function (view) {
-    var isActive = false;
-    var placingFirstPortal = true;
-    var placingSecondPortal = false;
-    var portalId = 0;
+    var active = false;
     $("#portal-btn").click(function (event) {
       event.preventDefault();
-
-      if (!isActive) {
-        ButtonActions.disableInactiveBtns('#portal-btn');
-        isActive = true;
-        $(this).text("Stop making portals");
-        $('#main-canvas').on("click", function (e) {
-          if (placingFirstPortal) {
-            $("#place-portal-txt").text("Make Exit Portal");
-            $("#portal-btn").prop("disabled", true);
-
-            placingFirstPortal = false;
-            placingSecondPortal = true;
-
-            ButtonActions.addPortal(e, view, 'entry', portalId);
-
-          } else if (placingSecondPortal) {
-            $("#portal-btn").prop("disabled", false);
-            $("#place-portal-txt").text("Make Entry Portal");
-            placingFirstPortal = true;
-            placingSecondPortal = false;
-
-            ButtonActions.addPortal(e, view, 'exit', portalId);
-            portalId += 1;
-          }
-        });
-
-      } else {
-        ButtonActions.enableBtns();
-        $("#place-portal-txt").text("Make Entry Portal");
-        isActive = false;
-        placingFirstPortal = true;
-        placingSecondPortal = false;
-        $(this).text("Make Portals");
-      }
-
+      ButtonActions.toggleCanvasClickListener(
+        "#portal-btn",
+        active,
+        view,
+        "Stop Making Portals",
+        "Make Portals",
+        ButtonActions.addBothPortals.bind(ButtonActions)
+      );
+      active = !active;
     });
   },
 
