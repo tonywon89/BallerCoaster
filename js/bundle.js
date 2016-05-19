@@ -511,12 +511,15 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Ball = __webpack_require__(2);
-	var Track = __webpack_require__(3);
-	var BallGenerator = __webpack_require__(8);
-	var Portal = __webpack_require__(5);
-	
 	var ButtonActions = __webpack_require__(9);
+	var createDemoObjects = __webpack_require__(10);
+	
+	var resetDemo = function (view) {
+	  view.main.objects = [];
+	  view.main.draw(view.context);
+	
+	  view.main.objects = createDemoObjects(view);
+	};
 	
 	var ButtonListeners = {
 	  addBallListener: function (view) {
@@ -542,7 +545,7 @@
 	    var canvas = view.main.canvas;
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
-	      ButtonActions.play(view, '#play-btn', active);
+	      ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
 	      active = !active;
 	    });
 	  },
@@ -584,47 +587,8 @@
 	
 	    $('#demo-btn').click(function (event) {
 	      event.preventDefault();
-	
-	      if (!active) {
-	        ButtonActions.disableInactiveBtns('#demo-btn');
-	        active = true;
-	        
-	        main.objects = [];
-	        main.draw(view.context);
-	
-	        var angle = 60;
-	        var radianAngle = angle * (Math.PI / 180);
-	        var velocity = 5;
-	        var frequency = 60;
-	
-	        var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, main);
-	        view.main.objects.push(ballGenerator);
-	
-	        var entryPortal = new Portal(1000, true, false, {x: 250, y: 300}, 0, 50, "blue", main);
-	        view.main.objects.push(entryPortal);
-	        var exitPortal = new Portal(1000, false, true, {x: 500, y: 100}, radianAngle, 50, "orange", main);
-	        view.main.objects.push(exitPortal);
-	
-	        var track = new Track({x: 800, y: 300}, {x: 500, y: 400}, view.main.gravity);
-	        view.main.objects.push(track);
-	        track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
-	        view.main.objects.push(track);
-	
-	        entryPortal = new Portal(1001, true, false, {x: 600, y: 550}, 0, 100, "blue", main);
-	        view.main.objects.push(entryPortal);
-	        exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", main);
-	        view.main.objects.push(exitPortal);
-	
-	        $(this).text("Stop Demo");
-	        $(this).toggleClass("active");
-	        view.start();
-	      } else {
-	        $('.menu-btn').prop("disabled", false);
-	        $(this).text("Demo");
-	        $(this).toggleClass("active");
-	        active = false;
-	        view.stop();
-	      }
+	      ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
+	      active = !active;
 	    });
 	  },
 	
@@ -857,11 +821,14 @@
 	    view.main.removeObject({x: x, y: y}, view.context);
 	  },
 	
-	  play: function (view, activeBtn, active) {
+	  play: function (view, activeBtn, activeText, inactiveText, active, callback) {
 	    if (!active) {
-	      this.disableInactiveBtns('#play-btn');
-	      $('#play-btn').text("Stop");
-	      $('#play-btn').toggleClass("active");
+	      this.disableInactiveBtns(activeBtn);
+	      $(activeBtn).text(activeText);
+	      $(activeBtn).toggleClass("active");
+	      if (callback) {
+	        callback(view);
+	      }
 	      view.start();
 	
 	      $('#main-canvas').on("click", function (e) {
@@ -869,8 +836,8 @@
 	      }.bind(this));
 	    } else {
 	      this.enableBtns();
-	      $('#play-btn').text("Play");
-	      $('#play-btn').toggleClass("active");
+	      $(activeBtn).text(inactiveText);
+	      $(activeBtn).toggleClass("active");
 	      view.stop();
 	    }
 	  },
@@ -918,6 +885,44 @@
 	};
 	
 	module.exports = ButtonActions;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Track = __webpack_require__(3);
+	var BallGenerator = __webpack_require__(8);
+	var Portal = __webpack_require__(5);
+	
+	var demoObjects = [];
+	var createDemoObjects = function (view) {
+	  var angle = 60;
+	  var radianAngle = angle * (Math.PI / 180);
+	  var velocity = 5;
+	  var frequency = 60;
+	
+	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, view.main);
+	  demoObjects.push(ballGenerator);
+	
+	  var entryPortal = new Portal(1000, true, false, {x: 250, y: 300}, 0, 50, "blue", view.main);
+	  demoObjects.push(entryPortal);
+	  var exitPortal = new Portal(1000, false, true, {x: 500, y: 100}, radianAngle, 50, "orange", view.main);
+	  demoObjects.push(exitPortal);
+	
+	  var track = new Track({x: 800, y: 300}, {x: 500, y: 400}, view.main.gravity);
+	  demoObjects.push(track);
+	  track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
+	  demoObjects.push(track);
+	
+	  entryPortal = new Portal(1001, true, false, {x: 600, y: 550}, 0, 100, "blue", view.main);
+	  demoObjects.push(entryPortal);
+	  exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", view.main);
+	  demoObjects.push(exitPortal);
+	  return demoObjects;
+	};
+	
+	module.exports = createDemoObjects;
 
 
 /***/ }

@@ -113,11 +113,14 @@ var ButtonActions = {
     view.main.removeObject({x: x, y: y}, view.context);
   },
 
-  play: function (view, activeBtn, active) {
+  play: function (view, activeBtn, activeText, inactiveText, active, callback) {
     if (!active) {
-      this.disableInactiveBtns('#play-btn');
-      $('#play-btn').text("Stop");
-      $('#play-btn').toggleClass("active");
+      this.disableInactiveBtns(activeBtn);
+      $(activeBtn).text(activeText);
+      $(activeBtn).toggleClass("active");
+      if (callback) {
+        callback(view);
+      }
       view.start();
 
       $('#main-canvas').on("click", function (e) {
@@ -125,8 +128,8 @@ var ButtonActions = {
       }.bind(this));
     } else {
       this.enableBtns();
-      $('#play-btn').text("Play");
-      $('#play-btn').toggleClass("active");
+      $(activeBtn).text(inactiveText);
+      $(activeBtn).toggleClass("active");
       view.stop();
     }
   },

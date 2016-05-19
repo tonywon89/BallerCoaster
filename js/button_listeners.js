@@ -1,9 +1,12 @@
-var Ball = require("./ball.js");
-var Track = require("./track.js");
-var BallGenerator = require("./ball_generator.js");
-var Portal = require("./portal.js");
-
 var ButtonActions = require("./button_actions.js");
+var createDemoObjects = require("./demo_objects.js");
+
+var resetDemo = function (view) {
+  view.main.objects = [];
+  view.main.draw(view.context);
+
+  view.main.objects = createDemoObjects(view);
+};
 
 var ButtonListeners = {
   addBallListener: function (view) {
@@ -29,7 +32,7 @@ var ButtonListeners = {
     var canvas = view.main.canvas;
     $('#play-btn').click(function(event) {
       event.preventDefault();
-      ButtonActions.play(view, '#play-btn', active);
+      ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
       active = !active;
     });
   },
@@ -71,47 +74,8 @@ var ButtonListeners = {
 
     $('#demo-btn').click(function (event) {
       event.preventDefault();
-
-      if (!active) {
-        ButtonActions.disableInactiveBtns('#demo-btn');
-        active = true;
-        
-        main.objects = [];
-        main.draw(view.context);
-
-        var angle = 60;
-        var radianAngle = angle * (Math.PI / 180);
-        var velocity = 5;
-        var frequency = 60;
-
-        var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, main);
-        view.main.objects.push(ballGenerator);
-
-        var entryPortal = new Portal(1000, true, false, {x: 250, y: 300}, 0, 50, "blue", main);
-        view.main.objects.push(entryPortal);
-        var exitPortal = new Portal(1000, false, true, {x: 500, y: 100}, radianAngle, 50, "orange", main);
-        view.main.objects.push(exitPortal);
-
-        var track = new Track({x: 800, y: 300}, {x: 500, y: 400}, view.main.gravity);
-        view.main.objects.push(track);
-        track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
-        view.main.objects.push(track);
-
-        entryPortal = new Portal(1001, true, false, {x: 600, y: 550}, 0, 100, "blue", main);
-        view.main.objects.push(entryPortal);
-        exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", main);
-        view.main.objects.push(exitPortal);
-
-        $(this).text("Stop Demo");
-        $(this).toggleClass("active");
-        view.start();
-      } else {
-        $('.menu-btn').prop("disabled", false);
-        $(this).text("Demo");
-        $(this).toggleClass("active");
-        active = false;
-        view.stop();
-      }
+      ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
+      active = !active;
     });
   },
 
