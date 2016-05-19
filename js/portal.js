@@ -3,7 +3,7 @@ var Utils = require("./utils.js");
 
 var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
   this.portalId = portalId;
-  this.entry = entry
+  this.entry = entry;
   this.exit = exit;
   this.pos = pos;
   this.angle = -angle;
@@ -28,17 +28,16 @@ Portal.prototype.draw = function (context) {
   context.closePath();
   context.fillStyle = this.color;
   context.stroke();
-  context.fill()
+  context.fill();
   context.fillStyle = "none";
   if (this.exit) {
-    context.strokeStyle = "yellow"
+    context.strokeStyle = "yellow";
     context.beginPath();
     context.moveTo(thirdX, thirdY);
     context.lineTo(fourthX, fourthY);
     context.stroke();
     context.strokeStyle = "black";
   }
-
 };
 
 Portal.prototype.step = function () {
@@ -54,7 +53,7 @@ Portal.prototype.findPair = function () {
         pair = object;
       }
     } else {
-      return
+      return;
     }
   }.bind(this));
   return pair;
@@ -65,10 +64,10 @@ Portal.prototype.isCollideWith = function (otherObject) {
     if (otherObject instanceof Ball) {
       var ball = otherObject;
       var ballBounds = Utils.circleBounds(ball);
-      var topVertex = { x: ball.pos.x, y: ballBounds.top }
-      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom }
-      var leftVertex = { x: ballBounds.left, y: ball.pos.y }
-      var rightVertex = { x: ballBounds.right, y: ball.pos.y }
+      var topVertex = { x: ball.pos.x, y: ballBounds.top };
+      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom };
+      var leftVertex = { x: ballBounds.left, y: ball.pos.y };
+      var rightVertex = { x: ballBounds.right, y: ball.pos.y };
 
       var portalBounds = Utils.rectBounds(this);
 

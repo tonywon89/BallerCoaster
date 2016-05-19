@@ -64,7 +64,7 @@
 	  ButtonListeners.addBallListener(view);
 	  ButtonListeners.addTrackListener(view);
 	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
-	  ButtonListeners.addPortalGenerator(view, canvasEl, main);
+	  ButtonListeners.addPortalListener(view, canvasEl, main);
 	  ButtonListeners.addPlayListener(view);
 	  ButtonListeners.demoListener(view, canvasEl, main);
 	  ButtonListeners.addRemoveItemListener(view, canvasEl);
@@ -341,7 +341,7 @@
 	
 	var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
 	  this.portalId = portalId;
-	  this.entry = entry
+	  this.entry = entry;
 	  this.exit = exit;
 	  this.pos = pos;
 	  this.angle = -angle;
@@ -366,17 +366,16 @@
 	  context.closePath();
 	  context.fillStyle = this.color;
 	  context.stroke();
-	  context.fill()
+	  context.fill();
 	  context.fillStyle = "none";
 	  if (this.exit) {
-	    context.strokeStyle = "yellow"
+	    context.strokeStyle = "yellow";
 	    context.beginPath();
 	    context.moveTo(thirdX, thirdY);
 	    context.lineTo(fourthX, fourthY);
 	    context.stroke();
 	    context.strokeStyle = "black";
 	  }
-	
 	};
 	
 	Portal.prototype.step = function () {
@@ -392,7 +391,7 @@
 	        pair = object;
 	      }
 	    } else {
-	      return
+	      return;
 	    }
 	  }.bind(this));
 	  return pair;
@@ -403,10 +402,10 @@
 	    if (otherObject instanceof Ball) {
 	      var ball = otherObject;
 	      var ballBounds = Utils.circleBounds(ball);
-	      var topVertex = { x: ball.pos.x, y: ballBounds.top }
-	      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom }
-	      var leftVertex = { x: ballBounds.left, y: ball.pos.y }
-	      var rightVertex = { x: ballBounds.right, y: ball.pos.y }
+	      var topVertex = { x: ball.pos.x, y: ballBounds.top };
+	      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom };
+	      var leftVertex = { x: ballBounds.left, y: ball.pos.y };
+	      var rightVertex = { x: ballBounds.right, y: ball.pos.y };
 	
 	      var portalBounds = Utils.rectBounds(this);
 	
@@ -517,63 +516,14 @@
 	var BallGenerator = __webpack_require__(8);
 	var Portal = __webpack_require__(5);
 	
-	var disableInactiveBtns = function (activeBtn) {
-	  $('.menu-btn').prop("disabled", true);
-	  $(activeBtn).prop("disabled", false);
-	};
-	
-	var enableBtns = function () {
-	  $('.menu-btn').prop("disabled", false);
-	  $('#main-canvas').off();
-	};
-	
-	var addBall = function (event, view) {
-	  var x = event.pageX - view.main.canvas.offsetLeft;
-	  var y = event.pageY - view.main.canvas.offsetTop;
-	
-	  var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
-	  view.main.objects.push(ball);
-	  view.main.draw(view.context);
-	};
-	
-	var addBallGenerator = function (event, view) {
-	  var x = event.pageX - view.main.canvas.offsetLeft;
-	  var y = event.pageY - view.main.canvas.offsetTop;
-	
-	  var angle = $('#ball-generator-angle').val();
-	  var radianAngle = angle * (Math.PI / 180);
-	
-	  var velocity = parseInt($('#ball-generator-velocity').val());
-	
-	  var frequency = parseInt($('#ball-generator-frequency').val());
-	
-	  var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, view.main);
-	  view.main.objects.push(ballGenerator);
-	  view.main.draw(view.context);
-	};
-	
-	var toggleCanvasClickListener = function (activeBtn, active, view, activeText, inactiveText, callback) {
-	  disableInactiveBtns(activeBtn);
-	  if (!active) {
-	    $('#main-canvas').on("click", function (e) {
-	      callback(e, view);
-	    });
-	
-	    $(activeBtn).text(activeText);
-	    active = true;
-	  } else {
-	    enableBtns();
-	    active = false;
-	    $(activeBtn).text(inactiveText);
-	  }
-	};
+	var ButtonActions = __webpack_require__(9);
 	
 	var ButtonListeners = {
 	  addBallListener: function (view) {
 	    var active = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      toggleCanvasClickListener('#place-ball-btn', active, view, "Stop Placing Balls", "Place Balls", addBall);
+	      ButtonActions.toggleCanvasClickListener('#place-ball-btn', active, view, "Stop Placing Balls", "Place Balls", ButtonActions.addBall);
 	      active = !active;
 	    });
 	  },
@@ -586,7 +536,7 @@
 	
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
-	      disableInactiveBtns('#draw-tracks-btn');
+	      ButtonActions.disableInactiveBtns('#draw-tracks-btn');
 	      if (!isDrawingTracks) {
 	        $('#main-canvas').on("mousedown", function (e) {
 	          var x = e.pageX - canvas.offsetLeft;
@@ -629,7 +579,7 @@
 	          view.main.objects.pop();
 	          trackDrawn = false;
 	        }
-	        enableBtns();
+	        ButtonActions.enableBtns();
 	
 	        $(this).text("Draw Tracks");
 	      }
@@ -642,17 +592,17 @@
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
 	      if (!isPlaying) {
-	        disableInactiveBtns('#play-btn');
+	        ButtonActions.disableInactiveBtns('#play-btn');
 	        isPlaying = true;
 	        $(this).text("Stop");
 	        $(this).toggleClass("active");
 	        view.start();
 	
 	        $('#main-canvas').on("click", function (e) {
-	          addBall(e, view);
+	          ButtonActions.addBall(e, view);
 	        });
 	      } else {
-	        enableBtns();
+	        ButtonActions.enableBtns();
 	        isPlaying = false;
 	        $(this).text("Play");
 	        $(this).toggleClass("active");
@@ -665,12 +615,19 @@
 	    var active = false;
 	    $('#ball-generator-btn').click(function (event) {
 	      event.preventDefault();
-	      toggleCanvasClickListener("#ball-generator-btn", active, view, "Stop Making Ball Generators", "Construct Ball Generators", addBallGenerator);
+	      ButtonActions.toggleCanvasClickListener(
+	        "#ball-generator-btn",
+	        active,
+	        view,
+	        "Stop Making Ball Generators",
+	        "Construct Ball Generators",
+	        ButtonActions.addBallGenerator
+	      );
 	      active = !active;
 	    });
 	  },
 	
-	  addPortalGenerator: function (view, canvas, main) {
+	  addPortalListener: function (view) {
 	    var isActive = false;
 	    var placingFirstPortal = true;
 	    var placingSecondPortal = false;
@@ -679,8 +636,7 @@
 	      event.preventDefault();
 	
 	      if (!isActive) {
-	        $('.menu-btn').prop("disabled", true);
-	        $(this).prop("disabled", false);
+	        ButtonActions.disableInactiveBtns('#portal-btn');
 	        isActive = true;
 	        $(this).text("Stop making portals");
 	        $('#main-canvas').on("click", function (e) {
@@ -691,19 +647,7 @@
 	            placingFirstPortal = false;
 	            placingSecondPortal = true;
 	
-	            var x = e.pageX - canvas.offsetLeft;
-	            var y = e.pageY - canvas.offsetTop;
-	
-	            var angle = $('#first-portal-angle').val();
-	            var radianAngle = angle * (Math.PI / 180);
-	
-	            var color = "blue";
-	
-	            var width = parseInt($('#first-portal-width').val());
-	
-	            var entryPortal = new Portal(portalId, true, false, {x: x, y: y}, radianAngle, width, color, main);
-	            main.objects.push(entryPortal);
-	            entryPortal.draw(view.context);
+	            ButtonActions.addPortal(e, view, 'entry', portalId);
 	
 	          } else if (placingSecondPortal) {
 	            $("#portal-btn").prop("disabled", false);
@@ -711,26 +655,13 @@
 	            placingFirstPortal = true;
 	            placingSecondPortal = false;
 	
-	            var x = e.pageX - canvas.offsetLeft;
-	            var y = e.pageY - canvas.offsetTop;
-	
-	            var angle = $('#second-portal-angle').val();
-	            var radianAngle = angle * (Math.PI / 180);
-	
-	            var width = parseInt($('#second-portal-width').val());
-	
-	            var color = "orange";
-	
-	            var exitPortal = new Portal(portalId, false, true, {x: x, y: y}, radianAngle, width, color, main);
-	            main.objects.push(exitPortal);
-	            exitPortal.draw(view.context);
+	            ButtonActions.addPortal(e, view, 'exit', portalId);
 	            portalId += 1;
 	          }
 	        });
 	
 	      } else {
-	        $('#main-canvas').off();
-	        $('.menu-btn').prop("disabled", false);
+	        ButtonActions.enableBtns();
 	        $("#place-portal-txt").text("Make Entry Portal");
 	        isActive = false;
 	        placingFirstPortal = true;
@@ -797,7 +728,7 @@
 	      event.preventDefault();
 	
 	      if (!isRemoving) {
-	        disableInactiveBtns('#remove-item-btn');
+	        ButtonActions.disableInactiveBtns('#remove-item-btn');
 	        $(this).text("Stop Removing");
 	        isRemoving = true;
 	        $('#main-canvas').on("click", function (e) {
@@ -806,7 +737,7 @@
 	          view.main.removeObject({x: x, y: y}, view.context);
 	        });
 	      } else {
-	        enableBtns();
+	        ButtonActions.enableBtns();
 	        isRemoving = false;
 	        $(this).text("Remove item");
 	      }
@@ -912,6 +843,89 @@
 	};
 	
 	module.exports = BallGenerator;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Ball = __webpack_require__(2);
+	var Track = __webpack_require__(3);
+	var BallGenerator = __webpack_require__(8);
+	var Portal = __webpack_require__(5);
+	
+	var ButtonActions = {
+	  disableInactiveBtns: function (activeBtn) {
+	    $('.menu-btn').prop("disabled", true);
+	    $(activeBtn).prop("disabled", false);
+	  },
+	
+	  enableBtns: function () {
+	    $('.menu-btn').prop("disabled", false);
+	    $('#main-canvas').off();
+	  },
+	
+	  addBall: function (event, view) {
+	    var x = event.pageX - view.main.canvas.offsetLeft;
+	    var y = event.pageY - view.main.canvas.offsetTop;
+	
+	    var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
+	    view.main.objects.push(ball);
+	    view.main.draw(view.context);
+	  },
+	
+	  addBallGenerator: function (event, view) {
+	    var x = event.pageX - view.main.canvas.offsetLeft;
+	    var y = event.pageY - view.main.canvas.offsetTop;
+	
+	    var angle = $('#ball-generator-angle').val();
+	    var radianAngle = angle * (Math.PI / 180);
+	
+	    var velocity = parseInt($('#ball-generator-velocity').val());
+	
+	    var frequency = parseInt($('#ball-generator-frequency').val());
+	
+	    var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, view.main);
+	    view.main.objects.push(ballGenerator);
+	    view.main.draw(view.context);
+	  },
+	
+	  addPortal: function (event, view, portalType, portalId) {
+	    var isEntry = portalType === 'entry';
+	    var portalAngleId = isEntry ? '#first-portal-angle' : '#second-portal-angle';
+	    var portalWidthId = isEntry ? '#first-portal-width' : '#second-portal-width';
+	    var portalColor = isEntry ? "blue" : "orange";
+	
+	    var x = event.pageX - view.main.canvas.offsetLeft;
+	    var y = event.pageY - view.main.canvas.offsetTop;
+	
+	    var angle = $(portalAngleId).val();
+	    var radianAngle = angle * (Math.PI / 180);
+	
+	    var width = parseInt($(portalWidthId).val());
+	
+	    var portal = new Portal(portalId, isEntry, !isEntry, {x: x, y: y}, radianAngle, width, portalColor, view.main);
+	    view.main.objects.push(portal);
+	    portal.draw(view.context);
+	  },
+	
+	  toggleCanvasClickListener: function (activeBtn, active, view, activeText, inactiveText, callback) {
+	    this.disableInactiveBtns(activeBtn);
+	    if (!active) {
+	      $('#main-canvas').on("click", function (e) {
+	        callback(e, view);
+	      });
+	      $(activeBtn).text(activeText);
+	      active = true;
+	    } else {
+	      this.enableBtns();
+	      active = false;
+	      $(activeBtn).text(inactiveText);
+	    }
+	  }
+	};
+	
+	module.exports = ButtonActions;
 
 
 /***/ }
