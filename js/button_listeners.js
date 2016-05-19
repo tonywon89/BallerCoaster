@@ -13,7 +13,7 @@ var ButtonListeners = {
     var active = false;
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      ButtonActions.toggleCanvasClickListener('#place-ball-btn', active, view, "Stop Placing Balls", "Place Balls", ButtonActions.addBall);
+      ButtonActions.toggleCanvasClickListener('#place-ball-btn', active, view, ButtonActions.addBall);
       active = !active;
     });
   },
@@ -22,7 +22,7 @@ var ButtonListeners = {
     var active = false;
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
-      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view, "Stop Drawing Tracks", "Draw Tracks");
+      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view);
       active = !active;
     });
   },
@@ -45,8 +45,6 @@ var ButtonListeners = {
         "#ball-generator-btn",
         active,
         view,
-        "Stop Making Ball Generators",
-        "Construct Ball Generators",
         ButtonActions.addBallGenerator
       );
       active = !active;
@@ -61,8 +59,6 @@ var ButtonListeners = {
         "#portal-btn",
         active,
         view,
-        "Stop Making Portals",
-        "Make Portals",
         ButtonActions.addBothPortals.bind(ButtonActions)
       );
       active = !active;
@@ -83,7 +79,7 @@ var ButtonListeners = {
     var active = false;
     $('#remove-item-btn').click(function (event) {
       event.preventDefault();
-      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, "Stop Removing", "Remove item", ButtonActions.removeObject);
+      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, ButtonActions.removeObject);
       active = !active;
     });
   },

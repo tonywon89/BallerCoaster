@@ -2,8 +2,8 @@ var Track = require("./track.js");
 var BallGenerator = require("./ball_generator.js");
 var Portal = require("./portal.js");
 
-var demoObjects = [];
 var createDemoObjects = function (view) {
+  var demoObjects = [];
   var angle = 60;
   var radianAngle = angle * (Math.PI / 180);
   var velocity = 5;

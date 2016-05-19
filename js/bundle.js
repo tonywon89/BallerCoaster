@@ -526,7 +526,7 @@
 	    var active = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.toggleCanvasClickListener('#place-ball-btn', active, view, "Stop Placing Balls", "Place Balls", ButtonActions.addBall);
+	      ButtonActions.toggleCanvasClickListener('#place-ball-btn', active, view, ButtonActions.addBall);
 	      active = !active;
 	    });
 	  },
@@ -535,7 +535,7 @@
 	    var active = false;
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view, "Stop Drawing Tracks", "Draw Tracks");
+	      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view);
 	      active = !active;
 	    });
 	  },
@@ -558,8 +558,6 @@
 	        "#ball-generator-btn",
 	        active,
 	        view,
-	        "Stop Making Ball Generators",
-	        "Construct Ball Generators",
 	        ButtonActions.addBallGenerator
 	      );
 	      active = !active;
@@ -574,8 +572,6 @@
 	        "#portal-btn",
 	        active,
 	        view,
-	        "Stop Making Portals",
-	        "Make Portals",
 	        ButtonActions.addBothPortals.bind(ButtonActions)
 	      );
 	      active = !active;
@@ -596,7 +592,7 @@
 	    var active = false;
 	    $('#remove-item-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, "Stop Removing", "Remove item", ButtonActions.removeObject);
+	      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, ButtonActions.removeObject);
 	      active = !active;
 	    });
 	  },
@@ -710,6 +706,8 @@
 	var Track = __webpack_require__(3);
 	var BallGenerator = __webpack_require__(8);
 	var Portal = __webpack_require__(5);
+	var TextConstants = __webpack_require__(11);
+	var HelperMethods = __webpack_require__(12);
 	
 	var placingFirstPortal = true;
 	var placingSecondPortal = false;
@@ -718,28 +716,11 @@
 	var point1, point2, drawnTrack;
 	var trackDrawn = false;
 	
-	var getPoint = function (event, view) {
-	  var x = event.pageX - view.main.canvas.offsetLeft;
-	  var y = event.pageY - view.main.canvas.offsetTop;
-	  return {x: x, y: y};
-	};
-	
 	var ButtonActions = {
-	  disableInactiveBtns: function (activeBtn) {
-	    $('.menu-btn').prop("disabled", true);
-	    $(activeBtn).prop("disabled", false);
-	  },
-	
-	  enableBtns: function () {
-	    $('.menu-btn').prop("disabled", false);
-	    $('#main-canvas').off();
-	  },
-	
 	  addBall: function (event, view) {
-	    var x = event.pageX - view.main.canvas.offsetLeft;
-	    var y = event.pageY - view.main.canvas.offsetTop;
+	    var point = HelperMethods.getPoint(event, view);
 	
-	    var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
+	    var ball = new Ball(point, 5, {x: 0, y: 0}, view.main);
 	    view.main.objects.push(ball);
 	    view.main.draw(view.context);
 	  },
@@ -762,17 +743,13 @@
 	  },
 	
 	  addBallGenerator: function (event, view) {
-	    var x = event.pageX - view.main.canvas.offsetLeft;
-	    var y = event.pageY - view.main.canvas.offsetTop;
-	
+	    var point = HelperMethods.getPoint(event, view);
 	    var angle = $('#ball-generator-angle').val();
 	    var radianAngle = angle * (Math.PI / 180);
-	
 	    var velocity = parseInt($('#ball-generator-velocity').val());
-	
 	    var frequency = parseInt($('#ball-generator-frequency').val());
 	
-	    var ballGenerator = new BallGenerator({x: x, y: y}, radianAngle, velocity, frequency, view.main);
+	    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, view.main);
 	    view.main.objects.push(ballGenerator);
 	    view.main.draw(view.context);
 	  },
@@ -783,13 +760,12 @@
 	    var portalWidthId = isEntry ? '#first-portal-width' : '#second-portal-width';
 	    var portalColor = isEntry ? "blue" : "orange";
 	
-	    var x = event.pageX - view.main.canvas.offsetLeft;
-	    var y = event.pageY - view.main.canvas.offsetTop;
+	    var point = HelperMethods.getPoint(event, view);
 	    var angle = $(portalAngleId).val();
 	    var radianAngle = angle * (Math.PI / 180);
 	    var width = parseInt($(portalWidthId).val());
 	
-	    var portal = new Portal(id, isEntry, !isEntry, {x: x, y: y}, radianAngle, width, portalColor, view.main);
+	    var portal = new Portal(id, isEntry, !isEntry, point, radianAngle, width, portalColor, view.main);
 	    view.main.objects.push(portal);
 	    portal.draw(view.context);
 	  },
@@ -823,7 +799,7 @@
 	
 	  play: function (view, activeBtn, activeText, inactiveText, active, callback) {
 	    if (!active) {
-	      this.disableInactiveBtns(activeBtn);
+	      HelperMethods.disableInactiveBtns(activeBtn);
 	      $(activeBtn).text(activeText);
 	      $(activeBtn).toggleClass("active");
 	      if (callback) {
@@ -835,51 +811,51 @@
 	        this.addBall(e, view);
 	      }.bind(this));
 	    } else {
-	      this.enableBtns();
+	      HelperMethods.enableBtns();
 	      $(activeBtn).text(inactiveText);
 	      $(activeBtn).toggleClass("active");
 	      view.stop();
 	    }
 	  },
 	
-	  toggleCanvasClickListener: function (activeBtn, active, view, activeText, inactiveText, callback) {
-	    this.disableInactiveBtns(activeBtn);
+	  toggleCanvasClickListener: function (activeBtn, active, view, callback) {
+	    HelperMethods.disableInactiveBtns(activeBtn);
 	    if (!active) {
 	      $('#main-canvas').on("click", function (e) {
 	        callback(e, view, activeBtn);
 	      });
-	      $(activeBtn).text(activeText);
+	      $(activeBtn).text(TextConstants[activeBtn].active);
 	    } else {
-	      this.enableBtns();
-	      $(activeBtn).text(inactiveText);
+	      HelperMethods.enableBtns();
+	      $(activeBtn).text(TextConstants[activeBtn].inactive);
 	    }
 	  },
 	
-	  toggleCanvasDragListener: function (activeBtn, active, view, activeText, inactiveText) {
-	    this.disableInactiveBtns(activeBtn);
+	  toggleCanvasDragListener: function (activeBtn, active, view) {
+	    HelperMethods.disableInactiveBtns(activeBtn);
 	    if (!active) {
 	      $('#main-canvas').on("mousedown", function (e) {
-	        point1 = getPoint(e, view);
+	        point1 = HelperMethods.getPoint(e, view);
 	      }).on("mousemove", function (e) {
-	        point2 = getPoint(e, view);
+	        point2 = HelperMethods.getPoint(e, view);
 	        drawnTrack = this.drawTrack(e, view, point1, point2);
 	      }.bind(this)).on("mouseup", function (e) {
-	        // Will make sure the next drawing will pop the copy of it
 	        if (drawnTrack) {
+	          // Ensures that the track persists
 	          view.main.objects.push(drawnTrack);
 	          trackDrawn = true;
 	        }
 	        point1 = 0;
 	        point2 = 0;
 	      });
-	      $(activeBtn).text(activeText);
+	      $(activeBtn).text(TextConstants[activeBtn].active);
 	    } else {
 	      if (trackDrawn) {
 	        view.main.objects.pop();
 	        trackDrawn = false;
 	      }
-	      ButtonActions.enableBtns();
-	      $(activeBtn).text(inactiveText);
+	      HelperMethods.enableBtns();
+	      $(activeBtn).text(TextConstants[activeBtn].inactive);
 	    }
 	  }
 	};
@@ -895,8 +871,8 @@
 	var BallGenerator = __webpack_require__(8);
 	var Portal = __webpack_require__(5);
 	
-	var demoObjects = [];
 	var createDemoObjects = function (view) {
+	  var demoObjects = [];
 	  var angle = 60;
 	  var radianAngle = angle * (Math.PI / 180);
 	  var velocity = 5;
@@ -923,6 +899,46 @@
 	};
 	
 	module.exports = createDemoObjects;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	var TextConstants = {
+	  '#place-ball-btn': {active: "Stop Placing Balls", inactive: "Place Balls"},
+	  '#draw-tracks-btn': {active: "Stop Drawing Tracks", inactive: "Draw Tracks"},
+	  '#ball-generator-btn': {active: "Stop Making Ball Generators", inactive: "Construct Ball Generators"},
+	  '#portal-btn': {active: "Stop Making Portals", inactive: "Make Portals"},
+	  '#remove-item-btn': {active: "Stop Removing", inactive: "Remove item"}
+	};
+	
+	module.exports = TextConstants;
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	var HelperMethods = {
+	  getPoint: function (event, view) {
+	    var x = event.pageX - view.main.canvas.offsetLeft;
+	    var y = event.pageY - view.main.canvas.offsetTop;
+	    return {x: x, y: y};
+	  },
+	
+	  disableInactiveBtns: function (activeBtn) {
+	    $('.menu-btn').prop("disabled", true);
+	    $(activeBtn).prop("disabled", false);
+	  },
+	
+	  enableBtns: function () {
+	    $('.menu-btn').prop("disabled", false);
+	    $('#main-canvas').off();
+	  }
+	};
+	
+	module.exports = HelperMethods;
 
 
 /***/ }
