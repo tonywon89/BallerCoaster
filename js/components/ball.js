@@ -1,18 +1,21 @@
 var Track = require("./track.js");
 var Bounds = require("../util/bounds.js");
 
-var Ball = function (pos, radius, velocity, main) {
+var Ball = function (pos, radius, velocity, color, main) {
   this.pos = pos;
   this.radius = radius;
   this.velocity = velocity;
   this.acceleration = {x: 0, y: main.gravity};
   this.main = main;
+  this.color = color;
   this.isCollided = false;
 };
 
 Ball.prototype.draw = function (context) {
   context.beginPath();
   context.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+  context.fillStyle = this.color;
+  context.fill();
   context.stroke();
 };
 

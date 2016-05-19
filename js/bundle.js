@@ -315,7 +315,7 @@
 	  addBall: function (event, view) {
 	    var point = HelperMethods.getPoint(event, view);
 	
-	    var ball = new Ball(point, 5, {x: 0, y: 0}, view.main);
+	    var ball = new Ball(point, 5, {x: 0, y: 0}, '#000000', view.main);
 	    view.main.objects.push(ball);
 	    view.main.draw(view.context);
 	  },
@@ -326,8 +326,8 @@
 	    var radianAngle = angle * (Math.PI / 180);
 	    var velocity = parseInt($('#ball-generator-velocity').val());
 	    var frequency = parseInt($('#ball-generator-frequency').val());
-	
-	    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, view.main);
+	    var color = $('#ball-generator-color').val();
+	    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
 	    view.main.objects.push(ballGenerator);
 	    view.main.draw(view.context);
 	  },
@@ -455,12 +455,24 @@
 	  var radianAngle = angle * (Math.PI / 180);
 	  var velocity = 5;
 	  var frequency = 60;
+	  var color = "AB1D0D";
 	
-	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, view.main);
+	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, color, view.main);
+	  demoObjects.push(ballGenerator);
+	
+	  angle = 120;
+	  radianAngle = angle * (Math.PI / 180);
+	  velocity = 8.7;
+	  frequency = 150;
+	  color = "5BAB6D";
+	  ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, view.main);
 	  demoObjects.push(ballGenerator);
 	
 	  var entryPortal = new Portal(1000, true, false, {x: 250, y: 300}, 0, 50, "blue", view.main);
 	  demoObjects.push(entryPortal);
+	
+	  var angle = 60;
+	  var radianAngle = angle * (Math.PI / 180);
 	  var exitPortal = new Portal(1000, false, true, {x: 500, y: 100}, radianAngle, 50, "orange", view.main);
 	  demoObjects.push(exitPortal);
 	
@@ -468,6 +480,8 @@
 	  demoObjects.push(track);
 	  track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
 	  demoObjects.push(track);
+	  // track = new Track({x: 200, y: 50}, {x: 500, y: 200}, view.main.gravity);
+	  // demoObjects.push(track);
 	
 	  entryPortal = new Portal(1001, true, false, {x: 600, y: 550}, 0, 100, "blue", view.main);
 	  demoObjects.push(entryPortal);
@@ -632,18 +646,21 @@
 	var Track = __webpack_require__(15);
 	var Bounds = __webpack_require__(13);
 	
-	var Ball = function (pos, radius, velocity, main) {
+	var Ball = function (pos, radius, velocity, color, main) {
 	  this.pos = pos;
 	  this.radius = radius;
 	  this.velocity = velocity;
 	  this.acceleration = {x: 0, y: main.gravity};
 	  this.main = main;
+	  this.color = color;
 	  this.isCollided = false;
 	};
 	
 	Ball.prototype.draw = function (context) {
 	  context.beginPath();
 	  context.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+	  context.fillStyle = this.color;
+	  context.fill();
 	  context.stroke();
 	};
 	
@@ -732,7 +749,7 @@
 	var Ball = __webpack_require__(16);
 	var Bounds = __webpack_require__(13);
 	
-	var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
+	var BallGenerator = function (pos, angle, ballVelocity, frequency, color, main) {
 	  this.pos = pos;
 	  this.angle = -angle;
 	  this.ballVelocity = ballVelocity;
@@ -740,6 +757,7 @@
 	  this.width = 40;
 	  this.height = 15;
 	  this.radius = 5;
+	  this.color = "#" + color;
 	  this.main = main;
 	  this.time = Math.pow(10, 3);
 	
@@ -772,6 +790,8 @@
 	  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
 	  context.lineTo(fourthX, fourthY);
 	  context.closePath();
+	  context.fillStyle = this.color;
+	  context.fill();
 	  context.stroke();
 	
 	  this.ball.draw(context);
@@ -788,8 +808,7 @@
 	
 	  var velX = this.ballVelocity * Math.cos(this.angle);
 	  var velY = this.ballVelocity * Math.sin(this.angle);
-	
-	  return new Ball({x: posX, y: posY}, this.radius, {x: velX, y: velY}, this.main);
+	  return new Ball({x: posX, y: posY}, this.radius, {x: velX, y: velY}, this.color, this.main);
 	};
 	
 	BallGenerator.prototype.fire = function () {

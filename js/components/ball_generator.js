@@ -1,7 +1,7 @@
 var Ball = require("./ball.js");
 var Bounds = require("../util/bounds.js");
 
-var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
+var BallGenerator = function (pos, angle, ballVelocity, frequency, color, main) {
   this.pos = pos;
   this.angle = -angle;
   this.ballVelocity = ballVelocity;
@@ -9,6 +9,7 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
   this.width = 40;
   this.height = 15;
   this.radius = 5;
+  this.color = "#" + color;
   this.main = main;
   this.time = Math.pow(10, 3);
 
@@ -41,6 +42,8 @@ BallGenerator.prototype.draw = function (context) {
   var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
   context.lineTo(fourthX, fourthY);
   context.closePath();
+  context.fillStyle = this.color;
+  context.fill();
   context.stroke();
 
   this.ball.draw(context);
@@ -57,8 +60,7 @@ BallGenerator.prototype.generateBall = function () {
 
   var velX = this.ballVelocity * Math.cos(this.angle);
   var velY = this.ballVelocity * Math.sin(this.angle);
-
-  return new Ball({x: posX, y: posY}, this.radius, {x: velX, y: velY}, this.main);
+  return new Ball({x: posX, y: posY}, this.radius, {x: velX, y: velY}, this.color, this.main);
 };
 
 BallGenerator.prototype.fire = function () {

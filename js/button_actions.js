@@ -16,7 +16,7 @@ var ButtonActions = {
   addBall: function (event, view) {
     var point = HelperMethods.getPoint(event, view);
 
-    var ball = new Ball(point, 5, {x: 0, y: 0}, view.main);
+    var ball = new Ball(point, 5, {x: 0, y: 0}, '#000000', view.main);
     view.main.objects.push(ball);
     view.main.draw(view.context);
   },
@@ -27,8 +27,8 @@ var ButtonActions = {
     var radianAngle = angle * (Math.PI / 180);
     var velocity = parseInt($('#ball-generator-velocity').val());
     var frequency = parseInt($('#ball-generator-frequency').val());
-
-    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, view.main);
+    var color = $('#ball-generator-color').val();
+    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
     view.main.objects.push(ballGenerator);
     view.main.draw(view.context);
   },
