@@ -1,10 +1,6 @@
 var Main = require("./main.js");
 var View = require("./view.js");
 var ButtonListeners = require("./button_listeners.js");
-var Ball = require("./ball.js");
-var Track = require("./track.js");
-var BallGenerator = require("./ball_generator.js");
-var Portal = require("./portal.js");
 
 $(function () {
   var canvasEl = document.getElementById("main-canvas");
@@ -17,10 +13,10 @@ $(function () {
 
   ButtonListeners.addBallListener(view);
   ButtonListeners.addTrackListener(view);
-  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
-  ButtonListeners.addPortalListener(view, canvasEl, main);
+  ButtonListeners.addBallGeneratorListener(view);
+  ButtonListeners.addPortalListener(view);
   ButtonListeners.addPlayListener(view);
-  ButtonListeners.demoListener(view, canvasEl, main);
+  ButtonListeners.demoListener(view);
   ButtonListeners.addRemoveItemListener(view);
   ButtonListeners.clearListener(view);
 });

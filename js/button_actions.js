@@ -21,23 +21,6 @@ var ButtonActions = {
     view.main.draw(view.context);
   },
 
-  drawTrack: function (event, view, startPoint, endPoint) {
-    if (startPoint) {
-      var track = new Track(startPoint, endPoint, view.main.gravity);
-
-      if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
-        view.main.objects.pop();
-        view.main.objects.push(track);
-        view.main.draw(view.context);
-        return track;
-      } else {
-        view.main.objects.push(track);
-        view.main.draw(view.context);
-        return track;
-      }
-    }
-  },
-
   addBallGenerator: function (event, view) {
     var point = HelperMethods.getPoint(event, view);
     var angle = $('#ball-generator-angle').val();
@@ -130,17 +113,17 @@ var ButtonActions = {
   toggleCanvasDragListener: function (activeBtn, active, view) {
     HelperMethods.disableInactiveBtns(activeBtn);
     if (!active) {
+      var initial = true;
       $('#main-canvas').on("mousedown", function (e) {
         point1 = HelperMethods.getPoint(e, view);
+
       }).on("mousemove", function (e) {
         point2 = HelperMethods.getPoint(e, view);
-        drawnTrack = this.drawTrack(e, view, point1, point2);
+        drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
+        if (drawnTrack) { initial = false; }
+
       }.bind(this)).on("mouseup", function (e) {
-        if (drawnTrack) {
-          // Ensures that the track persists
-          view.main.objects.push(drawnTrack);
-          trackDrawn = true;
-        }
+        trackDrawn = HelperMethods.addTrack(view, drawnTrack);
         point1 = 0;
         point2 = 0;
       });

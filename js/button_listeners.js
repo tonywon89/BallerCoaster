@@ -65,7 +65,7 @@ var ButtonListeners = {
     });
   },
 
-  demoListener: function (view, canvas, main) {
+  demoListener: function (view) {
     var active = false;
 
     $('#demo-btn').click(function (event) {

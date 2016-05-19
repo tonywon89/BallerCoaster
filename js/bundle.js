@@ -47,10 +47,6 @@
 	var Main = __webpack_require__(1);
 	var View = __webpack_require__(6);
 	var ButtonListeners = __webpack_require__(7);
-	var Ball = __webpack_require__(2);
-	var Track = __webpack_require__(3);
-	var BallGenerator = __webpack_require__(8);
-	var Portal = __webpack_require__(5);
 	
 	$(function () {
 	  var canvasEl = document.getElementById("main-canvas");
@@ -63,10 +59,10 @@
 	
 	  ButtonListeners.addBallListener(view);
 	  ButtonListeners.addTrackListener(view);
-	  ButtonListeners.addBallGeneratorListener(view, canvasEl, main);
-	  ButtonListeners.addPortalListener(view, canvasEl, main);
+	  ButtonListeners.addBallGeneratorListener(view);
+	  ButtonListeners.addPortalListener(view);
 	  ButtonListeners.addPlayListener(view);
-	  ButtonListeners.demoListener(view, canvasEl, main);
+	  ButtonListeners.demoListener(view);
 	  ButtonListeners.addRemoveItemListener(view);
 	  ButtonListeners.clearListener(view);
 	});
@@ -578,7 +574,7 @@
 	    });
 	  },
 	
-	  demoListener: function (view, canvas, main) {
+	  demoListener: function (view) {
 	    var active = false;
 	
 	    $('#demo-btn').click(function (event) {
@@ -725,23 +721,6 @@
 	    view.main.draw(view.context);
 	  },
 	
-	  drawTrack: function (event, view, startPoint, endPoint) {
-	    if (startPoint) {
-	      var track = new Track(startPoint, endPoint, view.main.gravity);
-	
-	      if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
-	        view.main.objects.pop();
-	        view.main.objects.push(track);
-	        view.main.draw(view.context);
-	        return track;
-	      } else {
-	        view.main.objects.push(track);
-	        view.main.draw(view.context);
-	        return track;
-	      }
-	    }
-	  },
-	
 	  addBallGenerator: function (event, view) {
 	    var point = HelperMethods.getPoint(event, view);
 	    var angle = $('#ball-generator-angle').val();
@@ -834,17 +813,17 @@
 	  toggleCanvasDragListener: function (activeBtn, active, view) {
 	    HelperMethods.disableInactiveBtns(activeBtn);
 	    if (!active) {
+	      var initial = true;
 	      $('#main-canvas').on("mousedown", function (e) {
 	        point1 = HelperMethods.getPoint(e, view);
+	
 	      }).on("mousemove", function (e) {
 	        point2 = HelperMethods.getPoint(e, view);
-	        drawnTrack = this.drawTrack(e, view, point1, point2);
+	        drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
+	        if (drawnTrack) { initial = false; }
+	
 	      }.bind(this)).on("mouseup", function (e) {
-	        if (drawnTrack) {
-	          // Ensures that the track persists
-	          view.main.objects.push(drawnTrack);
-	          trackDrawn = true;
-	        }
+	        trackDrawn = HelperMethods.addTrack(view, drawnTrack);
 	        point1 = 0;
 	        point2 = 0;
 	      });
@@ -918,8 +897,10 @@
 
 /***/ },
 /* 12 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var Track = __webpack_require__(3);
+	
 	var HelperMethods = {
 	  getPoint: function (event, view) {
 	    var x = event.pageX - view.main.canvas.offsetLeft;
@@ -935,6 +916,26 @@
 	  enableBtns: function () {
 	    $('.menu-btn').prop("disabled", false);
 	    $('#main-canvas').off();
+	  },
+	
+	  drawTrack: function (event, view, startPoint, endPoint, initial) {
+	    if (startPoint) {
+	      var track = new Track(startPoint, endPoint, view.main.gravity);
+	      if (!initial) { view.main.objects.pop(); }
+	      view.main.objects.push(track);
+	      view.main.draw(view.context);
+	      return track;
+	    }
+	    return false;
+	  },
+	
+	  addTrack: function (view, track) {
+	    if (track) {
+	      view.main.objects.push(track);
+	      return true;
+	    }
+	    return false;
+	
 	  }
 	};
 	
