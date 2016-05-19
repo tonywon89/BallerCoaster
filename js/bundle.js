@@ -67,7 +67,7 @@
 	  ButtonListeners.addPortalListener(view, canvasEl, main);
 	  ButtonListeners.addPlayListener(view);
 	  ButtonListeners.demoListener(view, canvasEl, main);
-	  ButtonListeners.addRemoveItemListener(view, canvasEl);
+	  ButtonListeners.addRemoveItemListener(view);
 	  ButtonListeners.clearListener(view);
 	});
 
@@ -587,27 +587,12 @@
 	  },
 	
 	  addPlayListener: function (view) {
-	    var isPlaying = false;
+	    var active = false;
 	    var canvas = view.main.canvas;
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
-	      if (!isPlaying) {
-	        ButtonActions.disableInactiveBtns('#play-btn');
-	        isPlaying = true;
-	        $(this).text("Stop");
-	        $(this).toggleClass("active");
-	        view.start();
-	
-	        $('#main-canvas').on("click", function (e) {
-	          ButtonActions.addBall(e, view);
-	        });
-	      } else {
-	        ButtonActions.enableBtns();
-	        isPlaying = false;
-	        $(this).text("Play");
-	        $(this).toggleClass("active");
-	        view.stop();
-	      }
+	      ButtonActions.play(view, '#play-btn', active);
+	      active = !active;
 	    });
 	  },
 	
@@ -692,26 +677,12 @@
 	    });
 	  },
 	
-	  addRemoveItemListener: function (view, canvas) {
-	    var isRemoving = false;
-	
+	  addRemoveItemListener: function (view) {
+	    var active = false;
 	    $('#remove-item-btn').click(function (event) {
 	      event.preventDefault();
-	
-	      if (!isRemoving) {
-	        ButtonActions.disableInactiveBtns('#remove-item-btn');
-	        $(this).text("Stop Removing");
-	        isRemoving = true;
-	        $('#main-canvas').on("click", function (e) {
-	          var x = e.pageX - canvas.offsetLeft;
-	          var y = e.pageY - canvas.offsetTop;
-	          view.main.removeObject({x: x, y: y}, view.context);
-	        });
-	      } else {
-	        ButtonActions.enableBtns();
-	        isRemoving = false;
-	        $(this).text("Remove item");
-	      }
+	      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, "Stop Removing", "Remove item", ButtonActions.removeObject);
+	      active = !active;
 	    });
 	  },
 	
@@ -903,11 +874,35 @@
 	    }
 	  },
 	
+	  removeObject: function (event, view) {
+	    var x = event.pageX - view.main.canvas.offsetLeft;
+	    var y = event.pageY - view.main.canvas.offsetTop;
+	    view.main.removeObject({x: x, y: y}, view.context);
+	  },
+	
+	  play: function (view, activeBtn, active) {
+	    if (!active) {
+	      this.disableInactiveBtns('#play-btn');
+	      $('#play-btn').text("Stop");
+	      $('#play-btn').toggleClass("active");
+	      view.start();
+	
+	      $('#main-canvas').on("click", function (e) {
+	        this.addBall(e, view);
+	      }.bind(this));
+	    } else {
+	      this.enableBtns();
+	      $('#play-btn').text("Play");
+	      $('#play-btn').toggleClass("active");
+	      view.stop();
+	    }
+	  },
+	
 	  toggleCanvasClickListener: function (activeBtn, active, view, activeText, inactiveText, callback) {
 	    this.disableInactiveBtns(activeBtn);
 	    if (!active) {
 	      $('#main-canvas').on("click", function (e) {
-	        callback(e, view);
+	        callback(e, view, activeBtn);
 	      });
 	      $(activeBtn).text(activeText);
 	    } else {

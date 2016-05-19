@@ -81,11 +81,35 @@ var ButtonActions = {
     }
   },
 
+  removeObject: function (event, view) {
+    var x = event.pageX - view.main.canvas.offsetLeft;
+    var y = event.pageY - view.main.canvas.offsetTop;
+    view.main.removeObject({x: x, y: y}, view.context);
+  },
+
+  play: function (view, activeBtn, active) {
+    if (!active) {
+      this.disableInactiveBtns('#play-btn');
+      $('#play-btn').text("Stop");
+      $('#play-btn').toggleClass("active");
+      view.start();
+
+      $('#main-canvas').on("click", function (e) {
+        this.addBall(e, view);
+      }.bind(this));
+    } else {
+      this.enableBtns();
+      $('#play-btn').text("Play");
+      $('#play-btn').toggleClass("active");
+      view.stop();
+    }
+  },
+
   toggleCanvasClickListener: function (activeBtn, active, view, activeText, inactiveText, callback) {
     this.disableInactiveBtns(activeBtn);
     if (!active) {
       $('#main-canvas').on("click", function (e) {
-        callback(e, view);
+        callback(e, view, activeBtn);
       });
       $(activeBtn).text(activeText);
     } else {

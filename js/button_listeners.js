@@ -74,27 +74,12 @@ var ButtonListeners = {
   },
 
   addPlayListener: function (view) {
-    var isPlaying = false;
+    var active = false;
     var canvas = view.main.canvas;
     $('#play-btn').click(function(event) {
       event.preventDefault();
-      if (!isPlaying) {
-        ButtonActions.disableInactiveBtns('#play-btn');
-        isPlaying = true;
-        $(this).text("Stop");
-        $(this).toggleClass("active");
-        view.start();
-
-        $('#main-canvas').on("click", function (e) {
-          ButtonActions.addBall(e, view);
-        });
-      } else {
-        ButtonActions.enableBtns();
-        isPlaying = false;
-        $(this).text("Play");
-        $(this).toggleClass("active");
-        view.stop();
-      }
+      ButtonActions.play(view, '#play-btn', active);
+      active = !active;
     });
   },
 
@@ -179,26 +164,12 @@ var ButtonListeners = {
     });
   },
 
-  addRemoveItemListener: function (view, canvas) {
-    var isRemoving = false;
-
+  addRemoveItemListener: function (view) {
+    var active = false;
     $('#remove-item-btn').click(function (event) {
       event.preventDefault();
-
-      if (!isRemoving) {
-        ButtonActions.disableInactiveBtns('#remove-item-btn');
-        $(this).text("Stop Removing");
-        isRemoving = true;
-        $('#main-canvas').on("click", function (e) {
-          var x = e.pageX - canvas.offsetLeft;
-          var y = e.pageY - canvas.offsetTop;
-          view.main.removeObject({x: x, y: y}, view.context);
-        });
-      } else {
-        ButtonActions.enableBtns();
-        isRemoving = false;
-        $(this).text("Remove item");
-      }
+      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, "Stop Removing", "Remove item", ButtonActions.removeObject);
+      active = !active;
     });
   },
 

@@ -21,6 +21,6 @@ $(function () {
   ButtonListeners.addPortalListener(view, canvasEl, main);
   ButtonListeners.addPlayListener(view);
   ButtonListeners.demoListener(view, canvasEl, main);
-  ButtonListeners.addRemoveItemListener(view, canvasEl);
+  ButtonListeners.addRemoveItemListener(view);
   ButtonListeners.clearListener(view);
 });
