@@ -1,4 +1,4 @@
-var Track = require("./track.js");
+var Track = require("../components/track.js");
 
 var HelperMethods = {
   getPoint: function (event, view) {
@@ -34,7 +34,6 @@ var HelperMethods = {
       return true;
     }
     return false;
-
   }
 };
 

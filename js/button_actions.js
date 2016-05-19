@@ -1,9 +1,9 @@
-var Ball = require("./ball.js");
-var Track = require("./track.js");
-var BallGenerator = require("./ball_generator.js");
-var Portal = require("./portal.js");
-var TextConstants = require("./text_constants.js");
-var HelperMethods = require("./helper_methods.js");
+var Ball = require("./components/ball.js");
+var Track = require("./components/track.js");
+var BallGenerator = require("./components/ball_generator.js");
+var Portal = require("./components/portal.js");
+var TextConstants = require("./constants/text_constants.js");
+var HelperMethods = require("./util/helper_methods.js");
 
 var placingFirstPortal = true;
 var placingSecondPortal = false;

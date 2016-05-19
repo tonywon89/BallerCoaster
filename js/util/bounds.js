@@ -1,4 +1,4 @@
-var Utils = {
+var Bounds = {
   circleBounds: function (object) {
     var left, right, top, bottom;
 
@@ -45,4 +45,4 @@ var Utils = {
   },
 };
 
-module.exports = Utils;
+module.exports = Bounds;

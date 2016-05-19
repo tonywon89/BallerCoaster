@@ -1,5 +1,5 @@
-var Ball = require("./ball.js");
-var Portal = require("./portal.js");
+var Ball = require("./components/ball.js");
+var Portal = require("./components/portal.js");
 
 var Main = function (gravity, objects, canvas) {
   this.gravity = gravity;

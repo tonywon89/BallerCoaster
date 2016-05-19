@@ -1,5 +1,5 @@
 var Ball = require("./ball.js");
-var Utils = require("./utils.js");
+var Bounds = require("../util/bounds.js");
 
 var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
   this.portalId = portalId;
@@ -63,13 +63,13 @@ Portal.prototype.isCollideWith = function (otherObject) {
   if (this.entry) {
     if (otherObject instanceof Ball) {
       var ball = otherObject;
-      var ballBounds = Utils.circleBounds(ball);
+      var ballBounds = Bounds.circleBounds(ball);
       var topVertex = { x: ball.pos.x, y: ballBounds.top };
       var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom };
       var leftVertex = { x: ballBounds.left, y: ball.pos.y };
       var rightVertex = { x: ballBounds.right, y: ball.pos.y };
 
-      var portalBounds = Utils.rectBounds(this);
+      var portalBounds = Bounds.rectBounds(this);
 
       if (bottomVertex.x >= portalBounds.left && bottomVertex.x <= portalBounds.right && bottomVertex.y >= portalBounds.top && bottomVertex.y <= portalBounds.bottom) {
         return true;
@@ -91,7 +91,7 @@ Portal.prototype.isCollideWith = function (otherObject) {
 Portal.prototype.collideWith = function (otherObject) {
   var exitPortal = this.findPair();
   var ball = otherObject;
-  var portalBounds = Utils.rectBounds(exitPortal);
+  var portalBounds = Bounds.rectBounds(exitPortal);
   var width = (portalBounds.right + portalBounds.left) / 2 ;
   var height = (portalBounds.bottom + portalBounds.top) / 2;
 
@@ -105,7 +105,7 @@ Portal.prototype.collideWith = function (otherObject) {
 };
 
 Portal.prototype.containPoint = function (pos) {
-  return Utils.containRect(this, pos);
+  return Bounds.containRect(this, pos);
 };
 
 module.exports = Portal;

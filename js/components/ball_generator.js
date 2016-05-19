@@ -1,5 +1,5 @@
 var Ball = require("./ball.js");
-var Utils = require("./utils.js");
+var Bounds = require("../util/bounds.js");
 
 var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
   this.pos = pos;
@@ -29,7 +29,6 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, main) {
 };
 
 BallGenerator.prototype.draw = function (context) {
-
   context.beginPath();
   context.moveTo(this.pos.x, this.pos.y);
   var secondX = this.pos.x + this.width * Math.cos(this.angle);
@@ -45,7 +44,7 @@ BallGenerator.prototype.draw = function (context) {
   context.stroke();
 
   this.ball.draw(context);
-}
+};
 
 BallGenerator.prototype.generateBall = function () {
   var secondX = this.pos.x + this.width * Math.cos(this.angle);
@@ -73,11 +72,10 @@ BallGenerator.prototype.step = function () {
     this.ball = this.generateBall();
     this.time = 0;
   }
-
 },
 
 BallGenerator.prototype.containPoint = function (pos) {
-  return Utils.containRect(this, pos);
+  return Bounds.containRect(this, pos);
 };
 
 module.exports = BallGenerator;

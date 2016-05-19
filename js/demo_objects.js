@@ -1,6 +1,6 @@
-var Track = require("./track.js");
-var BallGenerator = require("./ball_generator.js");
-var Portal = require("./portal.js");
+var Track = require("./components/track.js");
+var BallGenerator = require("./components/ball_generator.js");
+var Portal = require("./components/portal.js");
 
 var createDemoObjects = function (view) {
   var demoObjects = [];
