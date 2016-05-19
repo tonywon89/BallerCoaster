@@ -16,60 +16,11 @@ var ButtonListeners = {
   },
 
   addTrackListener: function (view) {
-    var isDrawingTracks = false;
-    var point1, point2, track;
-    var trackDrawn = false;
-    var canvas = view.main.canvas;
-
+    var active = false;
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
-      ButtonActions.disableInactiveBtns('#draw-tracks-btn');
-      if (!isDrawingTracks) {
-        $('#main-canvas').on("mousedown", function (e) {
-          var x = e.pageX - canvas.offsetLeft;
-          var y = e.pageY - canvas.offsetTop;
-
-          point1 = {x: x, y: y};
-
-        }).on("mousemove", function (e) {
-          var x = e.pageX - canvas.offsetLeft;
-          var y = e.pageY - canvas.offsetTop;
-          point2 = {x: x, y: y};
-
-          if (point1) {
-            track = new Track(point1, point2, view.main.gravity);
-
-            if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
-              view.main.objects.pop();
-              view.main.objects.push(track);
-              view.main.draw(view.context);
-            } else {
-              view.main.objects.push(track);
-              view.main.draw(view.context);
-            }
-          }
-        }).on("mouseup", function (e) {
-          // Will make sure the next drawing will pop the copy of it
-          if (track) {
-            view.main.objects.push(track);
-            trackDrawn = true;
-          }
-
-          point1 = 0;
-          point2 = 0;
-        });
-        $(this).text("Stop Drawing Tracks");
-        isDrawingTracks = true;
-      } else {
-        isDrawingTracks = false;
-        if (trackDrawn) {
-          view.main.objects.pop();
-          trackDrawn = false;
-        }
-        ButtonActions.enableBtns();
-
-        $(this).text("Draw Tracks");
-      }
+      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view, "Stop Drawing Tracks", "Draw Tracks");
+      active = !active;
     });
   },
 
@@ -116,20 +67,17 @@ var ButtonListeners = {
   },
 
   demoListener: function (view, canvas, main) {
-    var isDemoing = false;
+    var active = false;
 
     $('#demo-btn').click(function (event) {
       event.preventDefault();
 
-      if (!isDemoing) {
-        $('.menu-btn').prop("disabled", true);
-        $(this).prop("disabled", false);
-        $(this).text("Stop Demo");
-        $(this).toggleClass("active");
-        isDemoing = true;
+      if (!active) {
+        ButtonActions.disableInactiveBtns('#demo-btn');
+        active = true;
+        
         main.objects = [];
         main.draw(view.context);
-        var ballGenerator;
 
         var angle = 60;
         var radianAngle = angle * (Math.PI / 180);
@@ -153,12 +101,15 @@ var ButtonListeners = {
         view.main.objects.push(entryPortal);
         exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", main);
         view.main.objects.push(exitPortal);
+
+        $(this).text("Stop Demo");
+        $(this).toggleClass("active");
         view.start();
       } else {
         $('.menu-btn').prop("disabled", false);
         $(this).text("Demo");
         $(this).toggleClass("active");
-        isDemoing = false;
+        active = false;
         view.stop();
       }
     });

@@ -529,60 +529,11 @@
 	  },
 	
 	  addTrackListener: function (view) {
-	    var isDrawingTracks = false;
-	    var point1, point2, track;
-	    var trackDrawn = false;
-	    var canvas = view.main.canvas;
-	
+	    var active = false;
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.disableInactiveBtns('#draw-tracks-btn');
-	      if (!isDrawingTracks) {
-	        $('#main-canvas').on("mousedown", function (e) {
-	          var x = e.pageX - canvas.offsetLeft;
-	          var y = e.pageY - canvas.offsetTop;
-	
-	          point1 = {x: x, y: y};
-	
-	        }).on("mousemove", function (e) {
-	          var x = e.pageX - canvas.offsetLeft;
-	          var y = e.pageY - canvas.offsetTop;
-	          point2 = {x: x, y: y};
-	
-	          if (point1) {
-	            track = new Track(point1, point2, view.main.gravity);
-	
-	            if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
-	              view.main.objects.pop();
-	              view.main.objects.push(track);
-	              view.main.draw(view.context);
-	            } else {
-	              view.main.objects.push(track);
-	              view.main.draw(view.context);
-	            }
-	          }
-	        }).on("mouseup", function (e) {
-	          // Will make sure the next drawing will pop the copy of it
-	          if (track) {
-	            view.main.objects.push(track);
-	            trackDrawn = true;
-	          }
-	
-	          point1 = 0;
-	          point2 = 0;
-	        });
-	        $(this).text("Stop Drawing Tracks");
-	        isDrawingTracks = true;
-	      } else {
-	        isDrawingTracks = false;
-	        if (trackDrawn) {
-	          view.main.objects.pop();
-	          trackDrawn = false;
-	        }
-	        ButtonActions.enableBtns();
-	
-	        $(this).text("Draw Tracks");
-	      }
+	      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view, "Stop Drawing Tracks", "Draw Tracks");
+	      active = !active;
 	    });
 	  },
 	
@@ -629,20 +580,17 @@
 	  },
 	
 	  demoListener: function (view, canvas, main) {
-	    var isDemoing = false;
+	    var active = false;
 	
 	    $('#demo-btn').click(function (event) {
 	      event.preventDefault();
 	
-	      if (!isDemoing) {
-	        $('.menu-btn').prop("disabled", true);
-	        $(this).prop("disabled", false);
-	        $(this).text("Stop Demo");
-	        $(this).toggleClass("active");
-	        isDemoing = true;
+	      if (!active) {
+	        ButtonActions.disableInactiveBtns('#demo-btn');
+	        active = true;
+	        
 	        main.objects = [];
 	        main.draw(view.context);
-	        var ballGenerator;
 	
 	        var angle = 60;
 	        var radianAngle = angle * (Math.PI / 180);
@@ -666,12 +614,15 @@
 	        view.main.objects.push(entryPortal);
 	        exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", main);
 	        view.main.objects.push(exitPortal);
+	
+	        $(this).text("Stop Demo");
+	        $(this).toggleClass("active");
 	        view.start();
 	      } else {
 	        $('.menu-btn').prop("disabled", false);
 	        $(this).text("Demo");
 	        $(this).toggleClass("active");
-	        isDemoing = false;
+	        active = false;
 	        view.stop();
 	      }
 	    });
@@ -800,6 +751,15 @@
 	var placingSecondPortal = false;
 	var portalId = 0;
 	
+	var point1, point2, drawnTrack;
+	var trackDrawn = false;
+	
+	var getPoint = function (event, view) {
+	  var x = event.pageX - view.main.canvas.offsetLeft;
+	  var y = event.pageY - view.main.canvas.offsetTop;
+	  return {x: x, y: y};
+	};
+	
 	var ButtonActions = {
 	  disableInactiveBtns: function (activeBtn) {
 	    $('.menu-btn').prop("disabled", true);
@@ -818,6 +778,23 @@
 	    var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
 	    view.main.objects.push(ball);
 	    view.main.draw(view.context);
+	  },
+	
+	  drawTrack: function (event, view, startPoint, endPoint) {
+	    if (startPoint) {
+	      var track = new Track(startPoint, endPoint, view.main.gravity);
+	
+	      if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
+	        view.main.objects.pop();
+	        view.main.objects.push(track);
+	        view.main.draw(view.context);
+	        return track;
+	      } else {
+	        view.main.objects.push(track);
+	        view.main.draw(view.context);
+	        return track;
+	      }
+	    }
 	  },
 	
 	  addBallGenerator: function (event, view) {
@@ -907,6 +884,34 @@
 	      $(activeBtn).text(activeText);
 	    } else {
 	      this.enableBtns();
+	      $(activeBtn).text(inactiveText);
+	    }
+	  },
+	
+	  toggleCanvasDragListener: function (activeBtn, active, view, activeText, inactiveText) {
+	    this.disableInactiveBtns(activeBtn);
+	    if (!active) {
+	      $('#main-canvas').on("mousedown", function (e) {
+	        point1 = getPoint(e, view);
+	      }).on("mousemove", function (e) {
+	        point2 = getPoint(e, view);
+	        drawnTrack = this.drawTrack(e, view, point1, point2);
+	      }.bind(this)).on("mouseup", function (e) {
+	        // Will make sure the next drawing will pop the copy of it
+	        if (drawnTrack) {
+	          view.main.objects.push(drawnTrack);
+	          trackDrawn = true;
+	        }
+	        point1 = 0;
+	        point2 = 0;
+	      });
+	      $(activeBtn).text(activeText);
+	    } else {
+	      if (trackDrawn) {
+	        view.main.objects.pop();
+	        trackDrawn = false;
+	      }
+	      ButtonActions.enableBtns();
 	      $(activeBtn).text(inactiveText);
 	    }
 	  }

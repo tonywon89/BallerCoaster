@@ -7,6 +7,15 @@ var placingFirstPortal = true;
 var placingSecondPortal = false;
 var portalId = 0;
 
+var point1, point2, drawnTrack;
+var trackDrawn = false;
+
+var getPoint = function (event, view) {
+  var x = event.pageX - view.main.canvas.offsetLeft;
+  var y = event.pageY - view.main.canvas.offsetTop;
+  return {x: x, y: y};
+};
+
 var ButtonActions = {
   disableInactiveBtns: function (activeBtn) {
     $('.menu-btn').prop("disabled", true);
@@ -25,6 +34,23 @@ var ButtonActions = {
     var ball = new Ball({x: x, y: y}, 5, {x: 0, y: 0}, view.main);
     view.main.objects.push(ball);
     view.main.draw(view.context);
+  },
+
+  drawTrack: function (event, view, startPoint, endPoint) {
+    if (startPoint) {
+      var track = new Track(startPoint, endPoint, view.main.gravity);
+
+      if (view.main.objects[view.main.objects.length - 1] instanceof Track) {
+        view.main.objects.pop();
+        view.main.objects.push(track);
+        view.main.draw(view.context);
+        return track;
+      } else {
+        view.main.objects.push(track);
+        view.main.draw(view.context);
+        return track;
+      }
+    }
   },
 
   addBallGenerator: function (event, view) {
@@ -114,6 +140,34 @@ var ButtonActions = {
       $(activeBtn).text(activeText);
     } else {
       this.enableBtns();
+      $(activeBtn).text(inactiveText);
+    }
+  },
+
+  toggleCanvasDragListener: function (activeBtn, active, view, activeText, inactiveText) {
+    this.disableInactiveBtns(activeBtn);
+    if (!active) {
+      $('#main-canvas').on("mousedown", function (e) {
+        point1 = getPoint(e, view);
+      }).on("mousemove", function (e) {
+        point2 = getPoint(e, view);
+        drawnTrack = this.drawTrack(e, view, point1, point2);
+      }.bind(this)).on("mouseup", function (e) {
+        // Will make sure the next drawing will pop the copy of it
+        if (drawnTrack) {
+          view.main.objects.push(drawnTrack);
+          trackDrawn = true;
+        }
+        point1 = 0;
+        point2 = 0;
+      });
+      $(activeBtn).text(activeText);
+    } else {
+      if (trackDrawn) {
+        view.main.objects.pop();
+        trackDrawn = false;
+      }
+      ButtonActions.enableBtns();
       $(activeBtn).text(inactiveText);
     }
   }
