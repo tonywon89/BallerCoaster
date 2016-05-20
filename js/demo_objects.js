@@ -16,18 +16,31 @@ var createDemoObjects = function (view) {
   angle = 120;
   radianAngle = angle * (Math.PI / 180);
   velocity = 8.7;
-  frequency = 150;
+  frequency = 40;
   color = "5BAB6D";
   ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, view.main);
   demoObjects.push(ballGenerator);
+  ballGenerator = new BallGenerator({x: 700, y: 250}, radianAngle, velocity, frequency, "534782", view.main);
+  demoObjects.push(ballGenerator);
 
-  var entryPortal = new Portal(1000, true, false, {x: 300, y: 300}, 0, 50, "blue", view.main);
+  var entryPortal = new Portal(1002, true, false, {x: 50, y: 350}, 0, 50, "blue", view.main);
   demoObjects.push(entryPortal);
 
-  var angle = 60;
-  var radianAngle = angle * (Math.PI / 180);
-  var exitPortal = new Portal(1000, false, true, {x: 500, y: 100}, radianAngle, 50, "orange", view.main);
+  angle = 120;
+  radianAngle = angle * (Math.PI / 180);
+  var exitPortal = new Portal(1002, false, true, {x: 400, y: 300}, radianAngle, 50, "orange", view.main);
   demoObjects.push(exitPortal);
+
+  var track = new Track({x: 300, y: 100}, {x: 100, y: 300}, view.main.gravity);
+  demoObjects.push(track);
+  //
+  // entryPortal = new Portal(1000, true, false, {x: 300, y: 300}, 0, 50, "blue", view.main);
+  // demoObjects.push(entryPortal);
+  //
+  // angle = 60;
+  // radianAngle = angle * (Math.PI / 180);
+  // exitPortal = new Portal(1000, false, true, {x: 500, y: 300}, radianAngle, 50, "orange", view.main);
+  // demoObjects.push(exitPortal);
 
   var track = new Track({x: 800, y: 300}, {x: 500, y: 400}, view.main.gravity);
   demoObjects.push(track);

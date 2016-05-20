@@ -36,7 +36,6 @@ Portal.prototype.step = function () {
   if (this.pulseInterval >= 1) {
     this.pulseInterval = 0;
   }
-  debugger;
 };
 
 Portal.prototype.findPair = function () {
