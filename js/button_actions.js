@@ -121,31 +121,29 @@ var ButtonActions = {
     });
   },
 
-  toggleCanvasDragListener: function (activeBtn, active, view) {
+  toggleCanvasDragListener: function (activeBtn, view) {
     HelperMethods.disableInactiveBtns(activeBtn);
-    if (!active) {
-      var initial = true;
-      $('#main-canvas').on("mousedown", function (e) {
-        point1 = HelperMethods.getPoint(e, view);
 
-      }).on("mousemove", function (e) {
-        point2 = HelperMethods.getPoint(e, view);
-        drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
-        if (drawnTrack) { initial = false; }
+    var initial = true;
+    $('#main-canvas').on("mousedown", function (event) {
+      point1 = HelperMethods.getPoint(event, view);
 
-      }.bind(this)).on("mouseup", function (e) {
-        trackDrawn = HelperMethods.addTrack(view, drawnTrack);
-        point1 = 0;
-        point2 = 0;
-      });
-      $(activeBtn).text(TextConstants[activeBtn].active);
-    } else {
-      if (trackDrawn) {
-        view.main.objects.pop();
-        trackDrawn = false;
-      }
-      HelperMethods.enableBtns();
-      $(activeBtn).text(TextConstants[activeBtn].inactive);
+    }).on("mousemove", function (e) {
+      point2 = HelperMethods.getPoint(e, view);
+      drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
+      if (drawnTrack) { initial = false; }
+
+    }).on("mouseup", function () {
+      trackDrawn = HelperMethods.addTrack(view, drawnTrack);
+      point1 = 0;
+      point2 = 0;
+    });
+  },
+
+  popLastTrack: function (view) {
+    if (trackDrawn) {
+      view.main.objects.pop();
+      trackDrawn = false;
     }
   }
 };

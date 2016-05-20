@@ -9,17 +9,21 @@ var resetDemo = function (view) {
   view.main.objects = createDemoObjects(view);
 };
 
-var populateDetail = function (actionBtn, view) {
+var populateDetail = function (actionBtn, view, trackDraw, callback, active) {
   $('#menu-detail').fadeToggle();
   $('.menu').fadeToggle();
-  ButtonActions.addCanvasClickListener(actionBtn, view, ButtonActions.addBall);
+  if (!trackDraw) {
+    ButtonActions.addCanvasClickListener(actionBtn, view, callback);
+  } else {
+    ButtonActions.toggleCanvasDragListener(actionBtn, view);
+  }
 };
 
 var ButtonListeners = {
   addBallListener: function (view) {
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      populateDetail('#place-ball-btn', view);
+      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, true);
     });
   },
 
@@ -27,8 +31,7 @@ var ButtonListeners = {
     var active = false;
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
-      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view);
-      active = !active;
+      populateDetail('#draw-tracks-btn', view, true, null, active);
     });
   },
 
@@ -40,6 +43,7 @@ var ButtonListeners = {
       ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
       $('#menu-detail').fadeOut();
       $('.menu').fadeIn();
+      ButtonActions.popLastTrack(view);
       active = !active;
     });
   },
@@ -79,6 +83,7 @@ var ButtonListeners = {
       ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
       $('#menu-detail').fadeOut();
       $('.menu').fadeIn();
+      ButtonActions.popLastTrack(view);
       active = !active;
     });
   },
@@ -87,6 +92,7 @@ var ButtonListeners = {
     var active = false;
     $('#remove-item-btn').click(function (event) {
       event.preventDefault();
+      $(this).toggleClass("active");
       ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, ButtonActions.removeObject);
       active = !active;
     });
@@ -100,11 +106,12 @@ var ButtonListeners = {
     });
   },
 
-  closeListener: function () {
+  closeListener: function (view) {
     $('.close-detail').click(function (event) {
       event.preventDefault();
       $('#menu-detail').fadeToggle();
       $('.menu').fadeToggle();
+      ButtonActions.popLastTrack(view);
       HelperMethods.enableBtns();
     });
   }

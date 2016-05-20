@@ -24,8 +24,8 @@ var cancelAnimationFrame =
 
 var requestId;
 View.prototype.animate = function () {
-    this.main.draw(this.context);
     this.main.step();
+    this.main.draw(this.context);
     requestId = requestAnimationFrame(this.animate.bind(this));
 };
 
@@ -33,14 +33,14 @@ View.prototype.start = function () {
   if (!requestId) {
     this.animate();
   }
-}
+};
 
 View.prototype.stop = function () {
   if (requestId) {
     cancelAnimationFrame(requestId);
     requestId = undefined;
   }
-}
+};
 
 
 View.prototype.step = function () {

@@ -65,7 +65,7 @@
 	  ButtonListeners.demoListener(view);
 	  ButtonListeners.addRemoveItemListener(view);
 	  ButtonListeners.clearListener(view);
-	  ButtonListeners.closeListener();
+	  ButtonListeners.closeListener(view);
 	
 	});
 
@@ -164,8 +164,8 @@
 	
 	var requestId;
 	View.prototype.animate = function () {
-	    this.main.draw(this.context);
 	    this.main.step();
+	    this.main.draw(this.context);
 	    requestId = requestAnimationFrame(this.animate.bind(this));
 	};
 	
@@ -173,14 +173,14 @@
 	  if (!requestId) {
 	    this.animate();
 	  }
-	}
+	};
 	
 	View.prototype.stop = function () {
 	  if (requestId) {
 	    cancelAnimationFrame(requestId);
 	    requestId = undefined;
 	  }
-	}
+	};
 	
 	
 	View.prototype.step = function () {
@@ -207,17 +207,21 @@
 	  view.main.objects = createDemoObjects(view);
 	};
 	
-	var populateDetail = function (actionBtn, view) {
+	var populateDetail = function (actionBtn, view, trackDraw, callback, active) {
 	  $('#menu-detail').fadeToggle();
 	  $('.menu').fadeToggle();
-	  ButtonActions.addCanvasClickListener(actionBtn, view, ButtonActions.addBall);
+	  if (!trackDraw) {
+	    ButtonActions.addCanvasClickListener(actionBtn, view, callback);
+	  } else {
+	    ButtonActions.toggleCanvasDragListener(actionBtn, view);
+	  }
 	};
 	
 	var ButtonListeners = {
 	  addBallListener: function (view) {
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      populateDetail('#place-ball-btn', view);
+	      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, true);
 	    });
 	  },
 	
@@ -225,8 +229,7 @@
 	    var active = false;
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.toggleCanvasDragListener('#draw-tracks-btn', active, view);
-	      active = !active;
+	      populateDetail('#draw-tracks-btn', view, true, null, active);
 	    });
 	  },
 	
@@ -238,6 +241,7 @@
 	      ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
 	      $('#menu-detail').fadeOut();
 	      $('.menu').fadeIn();
+	      ButtonActions.popLastTrack(view);
 	      active = !active;
 	    });
 	  },
@@ -277,6 +281,7 @@
 	      ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
 	      $('#menu-detail').fadeOut();
 	      $('.menu').fadeIn();
+	      ButtonActions.popLastTrack(view);
 	      active = !active;
 	    });
 	  },
@@ -285,6 +290,7 @@
 	    var active = false;
 	    $('#remove-item-btn').click(function (event) {
 	      event.preventDefault();
+	      $(this).toggleClass("active");
 	      ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, ButtonActions.removeObject);
 	      active = !active;
 	    });
@@ -298,11 +304,12 @@
 	    });
 	  },
 	
-	  closeListener: function () {
+	  closeListener: function (view) {
 	    $('.close-detail').click(function (event) {
 	      event.preventDefault();
 	      $('#menu-detail').fadeToggle();
 	      $('.menu').fadeToggle();
+	      ButtonActions.popLastTrack(view);
 	      HelperMethods.enableBtns();
 	    });
 	  }
@@ -441,31 +448,29 @@
 	    });
 	  },
 	
-	  toggleCanvasDragListener: function (activeBtn, active, view) {
+	  toggleCanvasDragListener: function (activeBtn, view) {
 	    HelperMethods.disableInactiveBtns(activeBtn);
-	    if (!active) {
-	      var initial = true;
-	      $('#main-canvas').on("mousedown", function (e) {
-	        point1 = HelperMethods.getPoint(e, view);
 	
-	      }).on("mousemove", function (e) {
-	        point2 = HelperMethods.getPoint(e, view);
-	        drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
-	        if (drawnTrack) { initial = false; }
+	    var initial = true;
+	    $('#main-canvas').on("mousedown", function (event) {
+	      point1 = HelperMethods.getPoint(event, view);
 	
-	      }.bind(this)).on("mouseup", function (e) {
-	        trackDrawn = HelperMethods.addTrack(view, drawnTrack);
-	        point1 = 0;
-	        point2 = 0;
-	      });
-	      $(activeBtn).text(TextConstants[activeBtn].active);
-	    } else {
-	      if (trackDrawn) {
-	        view.main.objects.pop();
-	        trackDrawn = false;
-	      }
-	      HelperMethods.enableBtns();
-	      $(activeBtn).text(TextConstants[activeBtn].inactive);
+	    }).on("mousemove", function (e) {
+	      point2 = HelperMethods.getPoint(e, view);
+	      drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
+	      if (drawnTrack) { initial = false; }
+	
+	    }).on("mouseup", function () {
+	      trackDrawn = HelperMethods.addTrack(view, drawnTrack);
+	      point1 = 0;
+	      point2 = 0;
+	    });
+	  },
+	
+	  popLastTrack: function (view) {
+	    if (trackDrawn) {
+	      view.main.objects.pop();
+	      trackDrawn = false;
 	    }
 	  }
 	};

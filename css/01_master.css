@@ -136,6 +136,10 @@ input[type="number"] {
   background-color: teal;
 }
 
+#remove-item-btn.active {
+  background-color: red;
+}
+
 .top-btns {
   display: flex;
   flex-direction: column;

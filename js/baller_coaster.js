@@ -19,6 +19,6 @@ $(function () {
   ButtonListeners.demoListener(view);
   ButtonListeners.addRemoveItemListener(view);
   ButtonListeners.clearListener(view);
-  ButtonListeners.closeListener();
+  ButtonListeners.closeListener(view);
 
 });
