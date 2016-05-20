@@ -322,7 +322,7 @@
 	
 	  addBallGenerator: function (event, view) {
 	    var point = HelperMethods.getPoint(event, view);
-	    var angle = $('#ball-generator-angle').val();
+	    var angle = parseInt($('#ball-generator-angle').val());
 	    var radianAngle = angle * (Math.PI / 180);
 	    var velocity = parseInt($('#ball-generator-velocity').val());
 	    var frequency = parseInt($('#ball-generator-frequency').val());
@@ -339,7 +339,7 @@
 	    var portalColor = isEntry ? "blue" : "orange";
 	
 	    var point = HelperMethods.getPoint(event, view);
-	    var angle = $(portalAngleId).val();
+	    var angle = parseInt($(portalAngleId).val());
 	    var radianAngle = angle * (Math.PI / 180);
 	    var width = parseInt($(portalWidthId).val());
 	
@@ -468,7 +468,7 @@
 	  ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, view.main);
 	  demoObjects.push(ballGenerator);
 	
-	  var entryPortal = new Portal(1000, true, false, {x: 250, y: 300}, 0, 50, "blue", view.main);
+	  var entryPortal = new Portal(1000, true, false, {x: 300, y: 300}, 0, 50, "blue", view.main);
 	  demoObjects.push(entryPortal);
 	
 	  var angle = 60;
@@ -480,10 +480,8 @@
 	  demoObjects.push(track);
 	  track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
 	  demoObjects.push(track);
-	  // track = new Track({x: 200, y: 50}, {x: 500, y: 200}, view.main.gravity);
-	  // demoObjects.push(track);
 	
-	  entryPortal = new Portal(1001, true, false, {x: 600, y: 550}, 0, 100, "blue", view.main);
+	  entryPortal = new Portal(1001, true, false, {x: 700, y: 550}, 0, 100, "blue", view.main);
 	  demoObjects.push(entryPortal);
 	  exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", view.main);
 	  demoObjects.push(exitPortal);
@@ -513,12 +511,10 @@
 	
 	  rectBounds: function (object) {
 	    var left, right, top, bottom;
+	    var first = this.computeFirstCorner(object);
 	
-	    var firstX = object.pos.x;
-	    var firstY = object.pos.y;
-	
-	    var secondX = object.pos.x + object.width * Math.cos(object.angle);
-	    var secondY = object.pos.y + object.width * Math.sin(object.angle);
+	    var secondX = first.x + object.width * Math.cos(object.angle);
+	    var secondY = first.y + object.width * Math.sin(object.angle);
 	
 	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
 	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
@@ -526,8 +522,8 @@
 	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
 	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
 	
-	    var xPositions = [firstX, secondX, thirdX, fourthX];
-	    var yPositions = [firstY, secondY, thirdY, fourthY];
+	    var xPositions = [first.x, secondX, thirdX, fourthX];
+	    var yPositions = [first.y, secondY, thirdY, fourthY];
 	    left = Math.min(...xPositions);
 	    right = Math.max(...xPositions);
 	    top = Math.min(...yPositions);
@@ -544,6 +540,13 @@
 	      return false;
 	    }
 	  },
+	
+	  computeFirstCorner: function (object) {
+	    var center = {x: object.pos.x, y: object.pos.y};
+	    var y = center.y - object.width/2 * Math.sin(object.angle) + object.height/2 * Math.sin(object.angle - Math.PI / 2);
+	    var x = center.x - object.width/2 * Math.cos(object.angle) + object.height/2 * Math.cos(object.angle - Math.PI / 2 );
+	    return {x: x, y: y};
+	  }
 	};
 	
 	module.exports = Bounds;
@@ -851,30 +854,14 @@
 	};
 	
 	Portal.prototype.draw = function (context) {
+	  var firstCorner = Bounds.computeFirstCorner(this);
 	  context.beginPath();
-	  context.moveTo(this.pos.x, this.pos.y);
-	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
-	  context.lineTo(secondX, secondY);
-	  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
-	  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
-	  context.lineTo(thirdX, thirdY);
-	  var fourthX = thirdX + this.width * Math.cos(this.angle + Math.PI);
-	  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
-	  context.lineTo(fourthX, fourthY);
+	  context.ellipse(this.pos.x, this.pos.y, this.width/2, this.height/2, this.angle, 0, Math.PI * 2, false);
 	  context.closePath();
 	  context.fillStyle = this.color;
 	  context.stroke();
 	  context.fill();
 	  context.fillStyle = "none";
-	  if (this.exit) {
-	    context.strokeStyle = "yellow";
-	    context.beginPath();
-	    context.moveTo(thirdX, thirdY);
-	    context.lineTo(fourthX, fourthY);
-	    context.stroke();
-	    context.strokeStyle = "black";
-	  }
 	};
 	
 	Portal.prototype.step = function () {

@@ -21,7 +21,7 @@ var createDemoObjects = function (view) {
   ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, view.main);
   demoObjects.push(ballGenerator);
 
-  var entryPortal = new Portal(1000, true, false, {x: 250, y: 300}, 0, 50, "blue", view.main);
+  var entryPortal = new Portal(1000, true, false, {x: 300, y: 300}, 0, 50, "blue", view.main);
   demoObjects.push(entryPortal);
 
   var angle = 60;
@@ -33,10 +33,8 @@ var createDemoObjects = function (view) {
   demoObjects.push(track);
   track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
   demoObjects.push(track);
-  // track = new Track({x: 200, y: 50}, {x: 500, y: 200}, view.main.gravity);
-  // demoObjects.push(track);
 
-  entryPortal = new Portal(1001, true, false, {x: 600, y: 550}, 0, 100, "blue", view.main);
+  entryPortal = new Portal(1001, true, false, {x: 700, y: 550}, 0, 100, "blue", view.main);
   demoObjects.push(entryPortal);
   exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", view.main);
   demoObjects.push(exitPortal);

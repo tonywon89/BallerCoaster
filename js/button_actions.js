@@ -23,7 +23,7 @@ var ButtonActions = {
 
   addBallGenerator: function (event, view) {
     var point = HelperMethods.getPoint(event, view);
-    var angle = $('#ball-generator-angle').val();
+    var angle = parseInt($('#ball-generator-angle').val());
     var radianAngle = angle * (Math.PI / 180);
     var velocity = parseInt($('#ball-generator-velocity').val());
     var frequency = parseInt($('#ball-generator-frequency').val());
@@ -40,7 +40,7 @@ var ButtonActions = {
     var portalColor = isEntry ? "blue" : "orange";
 
     var point = HelperMethods.getPoint(event, view);
-    var angle = $(portalAngleId).val();
+    var angle = parseInt($(portalAngleId).val());
     var radianAngle = angle * (Math.PI / 180);
     var width = parseInt($(portalWidthId).val());
 

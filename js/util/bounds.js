@@ -12,12 +12,10 @@ var Bounds = {
 
   rectBounds: function (object) {
     var left, right, top, bottom;
+    var first = this.computeFirstCorner(object);
 
-    var firstX = object.pos.x;
-    var firstY = object.pos.y;
-
-    var secondX = object.pos.x + object.width * Math.cos(object.angle);
-    var secondY = object.pos.y + object.width * Math.sin(object.angle);
+    var secondX = first.x + object.width * Math.cos(object.angle);
+    var secondY = first.y + object.width * Math.sin(object.angle);
 
     var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
     var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
@@ -25,8 +23,8 @@ var Bounds = {
     var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
     var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
 
-    var xPositions = [firstX, secondX, thirdX, fourthX];
-    var yPositions = [firstY, secondY, thirdY, fourthY];
+    var xPositions = [first.x, secondX, thirdX, fourthX];
+    var yPositions = [first.y, secondY, thirdY, fourthY];
     left = Math.min(...xPositions);
     right = Math.max(...xPositions);
     top = Math.min(...yPositions);
@@ -43,6 +41,13 @@ var Bounds = {
       return false;
     }
   },
+
+  computeFirstCorner: function (object) {
+    var center = {x: object.pos.x, y: object.pos.y};
+    var y = center.y - object.width/2 * Math.sin(object.angle) + object.height/2 * Math.sin(object.angle - Math.PI / 2);
+    var x = center.x - object.width/2 * Math.cos(object.angle) + object.height/2 * Math.cos(object.angle - Math.PI / 2 );
+    return {x: x, y: y};
+  }
 };
 
 module.exports = Bounds;

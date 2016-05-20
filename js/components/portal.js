@@ -14,30 +14,14 @@ var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
 };
 
 Portal.prototype.draw = function (context) {
+  var firstCorner = Bounds.computeFirstCorner(this);
   context.beginPath();
-  context.moveTo(this.pos.x, this.pos.y);
-  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-  var secondY = this.pos.y + this.width * Math.sin(this.angle);
-  context.lineTo(secondX, secondY);
-  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
-  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
-  context.lineTo(thirdX, thirdY);
-  var fourthX = thirdX + this.width * Math.cos(this.angle + Math.PI);
-  var fourthY = thirdY + this.width * Math.sin(this.angle + Math.PI);
-  context.lineTo(fourthX, fourthY);
+  context.ellipse(this.pos.x, this.pos.y, this.width/2, this.height/2, this.angle, 0, Math.PI * 2, false);
   context.closePath();
   context.fillStyle = this.color;
   context.stroke();
   context.fill();
   context.fillStyle = "none";
-  if (this.exit) {
-    context.strokeStyle = "yellow";
-    context.beginPath();
-    context.moveTo(thirdX, thirdY);
-    context.lineTo(fourthX, fourthY);
-    context.stroke();
-    context.strokeStyle = "black";
-  }
 };
 
 Portal.prototype.step = function () {
