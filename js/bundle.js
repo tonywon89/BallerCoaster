@@ -203,11 +203,10 @@
 	var resetDemo = function (view) {
 	  view.main.objects = [];
 	  view.main.draw(view.context);
-	
 	  view.main.objects = createDemoObjects(view);
 	};
 	
-	var populateDetail = function (actionBtn, view, trackDraw, callback, active) {
+	var populateDetail = function (actionBtn, view, trackDraw, callback) {
 	  $('#menu-detail').fadeToggle();
 	  $('.menu').fadeToggle();
 	  if (!trackDraw) {
@@ -221,7 +220,7 @@
 	  addBallListener: function (view) {
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, true);
+	      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall);
 	    });
 	  },
 	
@@ -229,7 +228,7 @@
 	    var active = false;
 	    $('#draw-tracks-btn').click(function (event) {
 	      event.preventDefault();
-	      populateDetail('#draw-tracks-btn', view, true, null, active);
+	      populateDetail('#draw-tracks-btn', view, true);
 	    });
 	  },
 	
@@ -406,6 +405,7 @@
 	  play: function (view, activeBtn, activeText, inactiveText, active, callback) {
 	    if (!active) {
 	      HelperMethods.disableInactiveBtns(activeBtn);
+	      $('#main-canvas').off();
 	      $(activeBtn).text(activeText);
 	      $(activeBtn).toggleClass("active");
 	      if (callback) {

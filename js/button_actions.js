@@ -79,6 +79,7 @@ var ButtonActions = {
   play: function (view, activeBtn, activeText, inactiveText, active, callback) {
     if (!active) {
       HelperMethods.disableInactiveBtns(activeBtn);
+      $('#main-canvas').off();
       $(activeBtn).text(activeText);
       $(activeBtn).toggleClass("active");
       if (callback) {
