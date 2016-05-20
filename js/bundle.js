@@ -840,7 +840,6 @@
 
 	var Ball = __webpack_require__(16);
 	var Bounds = __webpack_require__(13);
-	
 	var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
 	  this.portalId = portalId;
 	  this.entry = entry;
@@ -851,6 +850,7 @@
 	  this.height = 10;
 	  this.color = color;
 	  this.main = main;
+	  this.pulseInterval = 0;
 	};
 	
 	Portal.prototype.draw = function (context) {
@@ -862,10 +862,22 @@
 	  context.stroke();
 	  context.fill();
 	  context.fillStyle = "none";
+	  context.beginPath();
+	  context.ellipse(this.pos.x, this.pos.y, this.width/2 * this.pulseInterval , this.height/2 * this.pulseInterval, this.angle, 0, Math.PI * 2, false)
+	  context.closePath();
+	  context.strokeStyle = "white";
+	  context.stroke();
+	  context.strokeStyle = "black";
+	
+	
 	};
 	
 	Portal.prototype.step = function () {
-	
+	  this.pulseInterval += 0.05;
+	  if (this.pulseInterval >= 1) {
+	    this.pulseInterval = 0;
+	  }
+	  debugger;
 	};
 	
 	Portal.prototype.findPair = function () {
