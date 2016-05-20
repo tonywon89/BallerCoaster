@@ -9,11 +9,13 @@ var HelperMethods = {
 
   disableInactiveBtns: function (activeBtn) {
     $('.menu-btn').prop("disabled", true);
+    $('.header-btn').prop("disabled", true);
     $(activeBtn).prop("disabled", false);
   },
 
   enableBtns: function () {
     $('.menu-btn').prop("disabled", false);
+    $('.header-btn').prop("disabled", false);
     $('#main-canvas').off();
   },
 

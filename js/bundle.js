@@ -580,11 +580,13 @@
 	
 	  disableInactiveBtns: function (activeBtn) {
 	    $('.menu-btn').prop("disabled", true);
+	    $('.header-btn').prop("disabled", true);
 	    $(activeBtn).prop("disabled", false);
 	  },
 	
 	  enableBtns: function () {
 	    $('.menu-btn').prop("disabled", false);
+	    $('.header-btn').prop("disabled", false);
 	    $('#main-canvas').off();
 	  },
 	
@@ -786,7 +788,7 @@
 	  this.angle = -angle;
 	  this.ballVelocity = ballVelocity;
 	  this.frequency = frequency;
-	  this.width = 40;
+	  this.width = 20;
 	  this.height = 15;
 	  this.radius = 5;
 	  this.color = "#" + color;

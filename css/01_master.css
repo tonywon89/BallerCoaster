@@ -23,6 +23,22 @@ body {
   background-color: white;
 }
 
+.main .header-btns {
+  margin-left: 50px;
+}
+
+.header-btn {
+  padding: 3px 10px;
+  border: 1px solid black;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.header-btn.play {
+  width: 80px;
+  padding: 3px 5px;
+}
+
 .main .menu {
   margin: 10px;
   height: 570px;
@@ -44,14 +60,15 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
-.menu-btn:disabled {
+.menu-btn:disabled, .header-btn:disabled {
   opacity: 0.5;
 }
 
-.menu-btn[disabled]:hover {
+.menu-btn[disabled]:hover, .header-btn[disabled]:hover {
   background-color: Transparent;
 }
-.menu-btn:hover {
+
+.menu-btn:hover, .header-btn:hover {
   background-color: white;
 }
 
@@ -112,13 +129,26 @@ input[type="number"] {
   background-color: green;
 }
 
+#play-btn:hover, #demo-btn:hover {
+  background-color: white;
+}
+
+#play-btn[disabled]:hover {
+  background-color: green;
+}
+
+ #demo-btn[disabled]:hover {
+   background-color: teal;
+ }
+
 #play-btn.active, #demo-btn.active {
   background-color: red;
 }
 
-#play-btn:hover, #demo-btn:hover  {
+#play-btn.active:hover, #demo-btn.active:hover {
   background-color: white;
 }
+
 
 #demo-btn {
   background-color: teal;

@@ -14,6 +14,12 @@
   <body>
     <div class="main">
       <h1>Baller Coaster</h1>
+      <div class="header-btns">
+        <button type="button" id="play-btn" class="header-btn play">Play</button>
+        <button type="button" id="demo-btn" class="header-btn play">Demo</button>
+        <button type="button" id="clear-btn" class="header-btn">Clear All</button>
+        <button type="button" id="remove-item-btn" class="header-btn">Remove item</button>
+      </div>
       <div class="content">
         <canvas id="main-canvas"></canvas>
         <div class="menu">
@@ -62,18 +68,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="bottom-btns">
-            <button type="button" id="play-btn" class="menu-btn" data-toggle="collapse" data-target="#play-content" aria-expanded="false" aria-controls="play-content">Play</button>
-            <div id="play-content" class="collapse btn-content">Click on the canvas to place live balls</div>
-            <button type="button" id="demo-btn" class="menu-btn">Demo</button>
-            <div class="remove-items-wrapper">
-              <button type="button" id="clear-btn" class="menu-btn">Clear All</button>
-              <button type="button" id="remove-item-btn" class="menu-btn" data-toggle="collapse" data-target="#remove-item-txt" aria-expanded="false" aria-controls="remove-item-txt">Remove item</button>
-            </div>
-            <div id="remove-item-txt" class="collapse btn-content">
-              Click on an item to remove it
             </div>
           </div>
         </div>
