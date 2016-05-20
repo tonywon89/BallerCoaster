@@ -13,7 +13,6 @@ body {
 }
 
 .main .content {
-  display: flex;
 }
 .main canvas {
   display: inline-block;
@@ -40,10 +39,12 @@ body {
 }
 
 .main .menu {
-  margin: 10px;
+  display: block;
+  position: absolute;
+  top: 117px;
+  right: 44px;
   height: 570px;
   width: 25%;
-  top: 10%;
   border: 1px solid black;
   background-color: #BFBEBE;
   overflow-y: auto;
@@ -147,10 +148,9 @@ input[type="number"] {
   position: absolute;
   top: 117px;
   right: 44px;
-  width: 26%;
+  width: 25%;
   height: 570px;
-  background-color: white;
-  border: 2px solid black;
-  background-color: #D6D5D5;
+  border: 1px solid black;
+  background-color: #BFBEBE;
   z-index: 2;
 }

@@ -82,7 +82,10 @@ var ButtonActions = {
       $(activeBtn).text(activeText);
       $(activeBtn).toggleClass("active");
       if (callback) {
+        $('#play-btn').prop("disabled", true);
         callback(view);
+      } else {
+        $('#demo-btn').prop("disabled", true);
       }
       view.start();
 
@@ -103,11 +106,19 @@ var ButtonActions = {
       $('#main-canvas').on("click", function (e) {
         callback(e, view, activeBtn);
       });
+      $(".play").prop("disabled", true);
       $(activeBtn).text(TextConstants[activeBtn].active);
     } else {
       HelperMethods.enableBtns();
       $(activeBtn).text(TextConstants[activeBtn].inactive);
     }
+  },
+
+  addCanvasClickListener: function (activeBtn, view, callback) {
+    HelperMethods.disableInactiveBtns(activeBtn);
+    $('#main-canvas').on("click", function (e) {
+      callback(e, view, activeBtn);
+    });
   },
 
   toggleCanvasDragListener: function (activeBtn, active, view) {

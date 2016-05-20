@@ -66,6 +66,7 @@
 	  ButtonListeners.addRemoveItemListener(view);
 	  ButtonListeners.clearListener(view);
 	  ButtonListeners.closeListener();
+	
 	});
 
 
@@ -197,6 +198,7 @@
 
 	var ButtonActions = __webpack_require__(9);
 	var createDemoObjects = __webpack_require__(10);
+	var HelperMethods = __webpack_require__(14);
 	
 	var resetDemo = function (view) {
 	  view.main.objects = [];
@@ -205,19 +207,17 @@
 	  view.main.objects = createDemoObjects(view);
 	};
 	
-	var populateDetail = function (actionBtn, active, view) {
+	var populateDetail = function (actionBtn, view) {
 	  $('#menu-detail').fadeToggle();
 	  $('.menu').fadeToggle();
-	  ButtonActions.toggleCanvasClickListener(actionBtn, active, view, ButtonActions.addBall);
+	  ButtonActions.addCanvasClickListener(actionBtn, view, ButtonActions.addBall);
 	};
 	
 	var ButtonListeners = {
 	  addBallListener: function (view) {
-	    var active = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      populateDetail('#place-ball-btn', active, view);
-	      active = !active;
+	      populateDetail('#place-ball-btn', view);
 	    });
 	  },
 	
@@ -236,6 +236,8 @@
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
 	      ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
+	      $('#menu-detail').fadeOut();
+	      $('.menu').fadeIn();
 	      active = !active;
 	    });
 	  },
@@ -270,10 +272,11 @@
 	
 	  demoListener: function (view) {
 	    var active = false;
-	
 	    $('#demo-btn').click(function (event) {
 	      event.preventDefault();
 	      ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
+	      $('#menu-detail').fadeOut();
+	      $('.menu').fadeIn();
 	      active = !active;
 	    });
 	  },
@@ -300,6 +303,7 @@
 	      event.preventDefault();
 	      $('#menu-detail').fadeToggle();
 	      $('.menu').fadeToggle();
+	      HelperMethods.enableBtns();
 	    });
 	  }
 	
@@ -398,7 +402,10 @@
 	      $(activeBtn).text(activeText);
 	      $(activeBtn).toggleClass("active");
 	      if (callback) {
+	        $('#play-btn').prop("disabled", true);
 	        callback(view);
+	      } else {
+	        $('#demo-btn').prop("disabled", true);
 	      }
 	      view.start();
 	
@@ -419,11 +426,19 @@
 	      $('#main-canvas').on("click", function (e) {
 	        callback(e, view, activeBtn);
 	      });
+	      $(".play").prop("disabled", true);
 	      $(activeBtn).text(TextConstants[activeBtn].active);
 	    } else {
 	      HelperMethods.enableBtns();
 	      $(activeBtn).text(TextConstants[activeBtn].inactive);
 	    }
+	  },
+	
+	  addCanvasClickListener: function (activeBtn, view, callback) {
+	    HelperMethods.disableInactiveBtns(activeBtn);
+	    $('#main-canvas').on("click", function (e) {
+	      callback(e, view, activeBtn);
+	    });
 	  },
 	
 	  toggleCanvasDragListener: function (activeBtn, active, view) {
@@ -598,6 +613,7 @@
 	  disableInactiveBtns: function (activeBtn) {
 	    $('.menu-btn').prop("disabled", true);
 	    $('.header-btn').prop("disabled", true);
+	    $('.play').prop("disabled", false);
 	    $(activeBtn).prop("disabled", false);
 	  },
 	

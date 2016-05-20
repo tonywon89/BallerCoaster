@@ -1,5 +1,6 @@
 var ButtonActions = require("./button_actions.js");
 var createDemoObjects = require("./demo_objects.js");
+var HelperMethods = require("./util/helper_methods.js");
 
 var resetDemo = function (view) {
   view.main.objects = [];
@@ -8,19 +9,17 @@ var resetDemo = function (view) {
   view.main.objects = createDemoObjects(view);
 };
 
-var populateDetail = function (actionBtn, active, view) {
+var populateDetail = function (actionBtn, view) {
   $('#menu-detail').fadeToggle();
   $('.menu').fadeToggle();
-  ButtonActions.toggleCanvasClickListener(actionBtn, active, view, ButtonActions.addBall);
+  ButtonActions.addCanvasClickListener(actionBtn, view, ButtonActions.addBall);
 };
 
 var ButtonListeners = {
   addBallListener: function (view) {
-    var active = false;
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      populateDetail('#place-ball-btn', active, view);
-      active = !active;
+      populateDetail('#place-ball-btn', view);
     });
   },
 
@@ -39,6 +38,8 @@ var ButtonListeners = {
     $('#play-btn').click(function(event) {
       event.preventDefault();
       ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
+      $('#menu-detail').fadeOut();
+      $('.menu').fadeIn();
       active = !active;
     });
   },
@@ -73,10 +74,11 @@ var ButtonListeners = {
 
   demoListener: function (view) {
     var active = false;
-
     $('#demo-btn').click(function (event) {
       event.preventDefault();
       ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
+      $('#menu-detail').fadeOut();
+      $('.menu').fadeIn();
       active = !active;
     });
   },
@@ -103,6 +105,7 @@ var ButtonListeners = {
       event.preventDefault();
       $('#menu-detail').fadeToggle();
       $('.menu').fadeToggle();
+      HelperMethods.enableBtns();
     });
   }
 

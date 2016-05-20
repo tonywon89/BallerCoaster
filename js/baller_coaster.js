@@ -20,4 +20,5 @@ $(function () {
   ButtonListeners.addRemoveItemListener(view);
   ButtonListeners.clearListener(view);
   ButtonListeners.closeListener();
+
 });
