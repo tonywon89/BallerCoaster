@@ -29,7 +29,6 @@ Portal.prototype.draw = function (context) {
   context.stroke();
   context.strokeStyle = "black";
 
-
 };
 
 Portal.prototype.step = function () {

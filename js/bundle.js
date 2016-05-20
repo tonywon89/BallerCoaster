@@ -139,7 +139,7 @@
 	var View = function (context, main) {
 	  this.context = context;
 	  this.main = main;
-	}; 
+	};
 	
 	var requestAnimationFrame =
 	    window.requestAnimationFrame ||
@@ -162,8 +162,8 @@
 	
 	var requestId;
 	View.prototype.animate = function () {
-	    this.main.step();
 	    this.main.draw(this.context);
+	    this.main.step();
 	    requestId = requestAnimationFrame(this.animate.bind(this));
 	};
 	
@@ -695,13 +695,24 @@
 	
 	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2));
 	
+	    if (Ey <= this.pos.y) {
+	      var overlap = this.radius + LEC;
+	    } else {
+	      var overlap = this.radius - LEC;
+	    }
+	
+	    var speed = Math.sqrt(Math.pow((this.velocity.x), 2) + Math.pow((this.velocity.y), 2));
+	
+	    var scale = -overlap / speed;
+	    this.backupVector = {x: scale * this.velocity.x, y: scale * this.velocity.y};
+	
 	    var largerX = B.x > A.x ? B.x : A.x;
 	    var smallerX = B.x >= A.x ? A.x : B.x;
 	
 	    var largerY = B.y > A.y ? B.y : A.y;
 	    var smallerY = B.y >= A.y ? A.y : B.y;
 	
-	    if (LEC <= 1.3 * this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
+	    if (LEC <= this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
 	      this.collidedObject = otherObject;
 	      return true;
 	    } else {
@@ -709,6 +720,7 @@
 	        this.collidedObject = undefined;
 	        this.isCollided = false;
 	        this.acceleration = { x: 0, y: this.main.gravity };
+	        this.backupVector = null;
 	        return false;
 	      } else {
 	        this.acceleration = { x: 0, y: this.main.gravity };
@@ -723,6 +735,10 @@
 	Ball.prototype.collideWith = function (otherObject) {
 	  if (otherObject instanceof Track) {
 	    if (!this.isCollided) {
+	        if (this.backupVector) {
+	          this.pos.x += this.backupVector.x;
+	          this.pos.y += this.backupVector.y;
+	        }
 	        this.isCollided = true;
 	        this.velocity.x = 0;
 	        this.velocity.y = 0;
@@ -868,7 +884,6 @@
 	  context.strokeStyle = "white";
 	  context.stroke();
 	  context.strokeStyle = "black";
-	
 	
 	};
 	

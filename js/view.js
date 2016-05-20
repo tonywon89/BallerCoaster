@@ -1,7 +1,7 @@
 var View = function (context, main) {
   this.context = context;
   this.main = main;
-}; 
+};
 
 var requestAnimationFrame =
     window.requestAnimationFrame ||
@@ -24,8 +24,8 @@ var cancelAnimationFrame =
 
 var requestId;
 View.prototype.animate = function () {
-    this.main.step();
     this.main.draw(this.context);
+    this.main.step();
     requestId = requestAnimationFrame(this.animate.bind(this));
 };
 
