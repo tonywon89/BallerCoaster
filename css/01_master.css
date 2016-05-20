@@ -7,7 +7,7 @@ body {
 }
 
 .main h1 {
-  text-align: center;
+  margin-left: 100px;
   font-size: 45px;
   font-weight: bold;
 }
@@ -18,13 +18,13 @@ body {
 .main canvas {
   display: inline-block;
   margin: 10px;
-  margin-left: 50px;
+  margin-left: 100px;
   border: 1px solid black;
   background-color: white;
 }
 
 .main .header-btns {
-  margin-left: 50px;
+  margin-left: 100px;
 }
 
 .header-btn {
@@ -107,24 +107,6 @@ input[type="number"] {
   align-items: center;
 }
 
-.remove-items-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 85%;
-}
-
-.remove-items-wrapper button {
-  width: 100%;
-}
-
-.bottom-btns {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin-top: 120px;
-}
-
 #play-btn {
   background-color: green;
 }
@@ -149,7 +131,6 @@ input[type="number"] {
   background-color: white;
 }
 
-
 #demo-btn {
   background-color: teal;
 }
@@ -159,4 +140,17 @@ input[type="number"] {
   flex-direction: column;
   align-items: center;
   width: 100%;
+}
+
+.menu-detail {
+  display: none;
+  position: absolute;
+  top: 117px;
+  right: 44px;
+  width: 26%;
+  height: 570px;
+  background-color: white;
+  border: 2px solid black;
+  background-color: #D6D5D5;
+  z-index: 2;
 }

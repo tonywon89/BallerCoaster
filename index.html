@@ -24,8 +24,7 @@
         <canvas id="main-canvas"></canvas>
         <div class="menu">
           <div class="top-btns">
-            <button type="button" id="place-ball-btn" class="menu-btn" data-toggle="collapse" data-target="#place-ball-content" aria-expanded="false" aria-controls="place-ball-content">Place Balls</button>
-            <div id="place-ball-content" class="collapse btn-content">Click the canvas to place balls!</div>
+            <button type="button" id="place-ball-btn" class="menu-btn">Place Balls</button>
             <button type="button" id="draw-tracks-btn" class="menu-btn" data-toggle="collapse" data-target="#draw-tracks-content" aria-expanded="false" aria-controls="draw-tracks-content">Draw Tracks</button>
             <div id="draw-tracks-content" class="collapse btn-content">Click and drag to draw tracks!</div>
             <button type="button" id="ball-generator-btn" class="menu-btn" data-toggle="collapse" data-target="#ball-generator-menu" aria-expanded="false" aria-controls="ball-generator-menu">Construct Ball Generators</button>
@@ -72,6 +71,8 @@
           </div>
         </div>
       </div>
+      <div class="menu-detail" id="menu-detail">
+        <button type="button" class="close-detail">Close</button>
       </div>
     </div>
     <script src="libraries/bootstrap.min.js"></script>

@@ -65,6 +65,7 @@
 	  ButtonListeners.demoListener(view);
 	  ButtonListeners.addRemoveItemListener(view);
 	  ButtonListeners.clearListener(view);
+	  ButtonListeners.closeListener();
 	});
 
 
@@ -204,12 +205,18 @@
 	  view.main.objects = createDemoObjects(view);
 	};
 	
+	var populateDetail = function (actionBtn, active, view) {
+	  $('#menu-detail').fadeToggle();
+	  $('.menu').fadeToggle();
+	  ButtonActions.toggleCanvasClickListener(actionBtn, active, view, ButtonActions.addBall);
+	};
+	
 	var ButtonListeners = {
 	  addBallListener: function (view) {
 	    var active = false;
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.toggleCanvasClickListener('#place-ball-btn', active, view, ButtonActions.addBall);
+	      populateDetail('#place-ball-btn', active, view);
 	      active = !active;
 	    });
 	  },
@@ -286,7 +293,17 @@
 	      view.main.objects = [];
 	      view.main.draw(view.context);
 	    });
+	  },
+	
+	  closeListener: function () {
+	    $('.close-detail').click(function (event) {
+	      event.preventDefault();
+	      $('#menu-detail').fadeToggle();
+	      $('.menu').fadeToggle();
+	    });
 	  }
+	
+	
 	};
 	
 	module.exports = ButtonListeners;
