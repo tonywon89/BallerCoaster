@@ -14,6 +14,7 @@ var populateDetail = function (actionBtn, view, trackDraw, callback) {
   $('.menu').fadeToggle();
   ButtonListeners.closeListener(view);
   if (!trackDraw) {
+    ButtonActions.ballPreview(view);
     ButtonActions.addCanvasClickListener(actionBtn, view, callback);
   } else {
     ButtonActions.toggleCanvasDragListener(actionBtn, view);

@@ -12,17 +12,44 @@ var portalId = 0;
 var point1, point2, drawnTrack;
 var trackDrawn = false;
 
+var addBallPreview = function (ballPreview, view, context) {
+  var x = ballPreview.width/2;
+  var y = ballPreview.height/2;
+  var point = {x: x, y: y};
+  var size = parseInt($('#ball-size').val());
+  var color= '#' + $('#ball-color').val();
+  var ball = new Ball(point, size, {x: 0, y: 0}, color, view.main);
+  ball.draw(context);
+};
+
 var ButtonActions = {
   addBall: function (event, view) {
-    var point = HelperMethods.getPoint(event, view);
-
-    var ball = new Ball(point, 5, {x: 0, y: 0}, '#000000', view.main);
+    var point = HelperMethods.getPoint(event, view.main.canvas);
+    var size = parseInt($('#ball-size').val());
+    var color= '#' + $('#ball-color').val();
+    var ball = new Ball(point, size, {x: 0, y: 0}, color, view.main);
     view.main.objects.push(ball);
     view.main.draw(view.context);
   },
 
+  ballPreview: function (view) {
+    var ballPreview = document.getElementById("ball-preview");
+    ballPreview.width = 150;
+    ballPreview.height = 150;
+    var context =ballPreview.getContext('2d');
+    addBallPreview(ballPreview, view, context);
+    $('#ball-size').on('propertychange input', function (e) {
+      context.clearRect(0, 0, ballPreview.width, ballPreview.height);
+      addBallPreview(ballPreview, view, context);
+    });
+    $('#hidden-ball-color').change(function (e) {
+      context.clearRect(0, 0, ballPreview.width, ballPreview.height);
+      addBallPreview(ballPreview, view, context);
+    });
+  },
+
   addBallGenerator: function (event, view) {
-    var point = HelperMethods.getPoint(event, view);
+    var point = HelperMethods.getPoint(event, view.main.canvas);
     var angle = parseInt($('#ball-generator-angle').val());
     var radianAngle = angle * (Math.PI / 180);
     var velocity = parseInt($('#ball-generator-velocity').val());
@@ -39,7 +66,7 @@ var ButtonActions = {
     var portalWidthId = isEntry ? '#first-portal-width' : '#second-portal-width';
     var portalColor = isEntry ? "blue" : "orange";
 
-    var point = HelperMethods.getPoint(event, view);
+    var point = HelperMethods.getPoint(event, view.main.canvas);
     var angle = parseInt($(portalAngleId).val());
     var radianAngle = angle * (Math.PI / 180);
     var width = parseInt($(portalWidthId).val());
@@ -127,7 +154,7 @@ var ButtonActions = {
 
     var initial = true;
     $('#main-canvas').on("mousedown", function (event) {
-      point1 = HelperMethods.getPoint(event, view);
+      point1 = HelperMethods.getPoint(event, view.main.canvas);
 
     }).on("mousemove", function (e) {
       point2 = HelperMethods.getPoint(e, view);

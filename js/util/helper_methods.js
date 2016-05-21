@@ -1,9 +1,9 @@
 var Track = require("../components/track.js");
 
 var HelperMethods = {
-  getPoint: function (event, view) {
-    var x = event.pageX - view.main.canvas.offsetLeft;
-    var y = event.pageY - view.main.canvas.offsetTop;
+  getPoint: function (event, canvas) {
+    var x = event.pageX - canvas.offsetLeft;
+    var y = event.pageY - canvas.offsetTop;
     return {x: x, y: y};
   },
 

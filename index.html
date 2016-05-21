@@ -81,14 +81,21 @@
             <h5>Preview</h5>
             <canvas id="ball-preview"></canvas>
             <h5>Color:</h5>
-            <input id="ball-color" class='jscolor' value='000000' />
+            <input id="ball-color" type="text" class='jscolor {onFineChange:"update(this)"}' value='000000' />
+            <input id="hidden-ball-color" type="hidden" value="000000">
             <br /><br />
             <h5>Size:</h5>
-            <input type="range" class="menu-detail-range" id="ball-size" value="5" min="5" max="30" step="1" />
+            <input type="range" class="menu-detail-range" id="ball-size" value="5" min="5" max="20" step="1" />
           </div>
         </div>
       </div>
     </div>
+    <script>
+      function update(jscolor) {
+        $('#hidden-ball-color').val(jscolor);
+        $('#hidden-ball-color').trigger("change");
+      }
+    </script>
     <script src="libraries/bootstrap.min.js"></script>
     <script src="libraries/jscolor.min.js"></script>
   </body>
