@@ -151,23 +151,3 @@ input[type="number"] {
   align-items: center;
   width: 100%;
 }
-
-.menu-detail {
-  display: none;
-  position: absolute;
-  top: 126px;
-  right: 44px;
-  width: 25%;
-  height: 555px;
-  border: 1px solid black;
-  background-color: #BFBEBE;
-  z-index: 2;
-}
-
-.menu-detail-content {
-  text-align: center;
-}
-
-.menu-detail-content > h3 {
-  font-size: 30px;
-}

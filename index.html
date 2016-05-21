@@ -8,6 +8,8 @@
     <link href='https://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/00_reset.css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="css/01_master.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="css/03_menu_detail.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="css/02_range_style.css" media="screen" title="no title" charset="utf-8">
     <script src="./libraries/jquery-2.2.3.min.js"></script>
     <script src="./js/bundle.js"></script>
   </head>
@@ -74,15 +76,15 @@
         <div class="menu-detail" id="ball-detail">
           <button type="button" class="close-detail">Close</button>
           <div class="menu-detail-content">
-            <h3>Ball Placement<h3><h4>Click on the canvas to place the ball</h4>
-            <br />
-
+            <h3>Ball Placement<h3>
+            <h4>Click on the canvas to place the ball</h4>
+            <h5>Preview</h5>
+            <canvas id="ball-preview"></canvas>
             <h5>Color:</h5>
             <input id="ball-color" class='jscolor' value='000000' />
             <br /><br />
             <h5>Size:</h5>
-            <input type="range" />
-
+            <input type="range" class="menu-detail-range" id="ball-size" value="5" min="5" max="30" step="1" />
           </div>
         </div>
       </div>
