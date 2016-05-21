@@ -5,7 +5,7 @@ var ButtonListeners = require("./button_listeners.js");
 $(function () {
   var canvasEl = document.getElementById("main-canvas");
   canvasEl.width = 850;
-  canvasEl.height = 570;
+  canvasEl.height = 555;
   var context = canvasEl.getContext('2d');
 
   var main = new Main(0.2, [], canvasEl);

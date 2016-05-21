@@ -51,7 +51,7 @@
 	$(function () {
 	  var canvasEl = document.getElementById("main-canvas");
 	  canvasEl.width = 850;
-	  canvasEl.height = 570;
+	  canvasEl.height = 555;
 	  var context = canvasEl.getContext('2d');
 	
 	  var main = new Main(0.2, [], canvasEl);
@@ -199,6 +199,7 @@
 	var ButtonActions = __webpack_require__(9);
 	var createDemoObjects = __webpack_require__(10);
 	var HelperMethods = __webpack_require__(14);
+	var DetailConstants = __webpack_require__(21);
 	
 	var resetDemo = function (view) {
 	  view.main.objects = [];
@@ -207,8 +208,9 @@
 	};
 	
 	var populateDetail = function (actionBtn, view, trackDraw, callback) {
-	  $('#menu-detail').fadeToggle();
+	  $(DetailConstants[actionBtn]).fadeToggle();
 	  $('.menu').fadeToggle();
+	  ButtonListeners.closeListener(view);
 	  if (!trackDraw) {
 	    ButtonActions.addCanvasClickListener(actionBtn, view, callback);
 	  } else {
@@ -238,7 +240,7 @@
 	    $('#play-btn').click(function(event) {
 	      event.preventDefault();
 	      ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
-	      $('#menu-detail').fadeOut();
+	      $('.menu-detail').fadeOut();
 	      $('.menu').fadeIn();
 	      ButtonActions.popLastTrack(view);
 	      active = !active;
@@ -278,7 +280,7 @@
 	    $('#demo-btn').click(function (event) {
 	      event.preventDefault();
 	      ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
-	      $('#menu-detail').fadeOut();
+	      $('.menu-detail').fadeOut();
 	      $('.menu').fadeIn();
 	      ButtonActions.popLastTrack(view);
 	      active = !active;
@@ -306,8 +308,8 @@
 	  closeListener: function (view) {
 	    $('.close-detail').click(function (event) {
 	      event.preventDefault();
-	      $('#menu-detail').fadeToggle();
-	      $('.menu').fadeToggle();
+	      $('.menu-detail').fadeOut();
+	      $('.menu').fadeIn();
 	      ButtonActions.popLastTrack(view);
 	      HelperMethods.enableBtns();
 	    });
@@ -1027,6 +1029,21 @@
 	};
 	
 	module.exports = TextConstants;
+
+
+/***/ },
+/* 20 */,
+/* 21 */
+/***/ function(module, exports) {
+
+	var DetailConstants = {
+	  '#place-ball-btn': '#ball-detail',
+	  '#draw-tracks-btn': 'track-detail',
+	  '#ball-generator-btn': 'ball-generator-detail',
+	  '#portal-btn': 'portal-detail',
+	};
+	
+	module.exports = DetailConstants;
 
 
 /***/ }

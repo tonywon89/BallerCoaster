@@ -13,13 +13,15 @@
   </head>
   <body>
     <div class="main">
-      <h1>Baller Coaster</h1>
-      <div class="header-btns">
-        <button type="button" id="play-btn" class="header-btn play">Play</button>
-        <button type="button" id="demo-btn" class="header-btn play">Demo</button>
-        <button type="button" id="clear-btn" class="header-btn">Clear All</button>
-        <button type="button" id="remove-item-btn" class="header-btn">Remove item</button>
-      </div>
+      <header>
+        <h1>Baller Coaster</h1>
+        <div class="header-btns">
+          <button type="button" id="play-btn" class="header-btn play">Play</button>
+          <button type="button" id="demo-btn" class="header-btn play">Demo</button>
+          <button type="button" id="clear-btn" class="header-btn">Clear All</button>
+          <button type="button" id="remove-item-btn" class="header-btn">Remove item</button>
+        </div>
+      </header>
       <div class="content">
         <canvas id="main-canvas"></canvas>
         <div class="menu">
@@ -69,8 +71,19 @@
             </div>
           </div>
         </div>
-        <div class="menu-detail" id="menu-detail">
+        <div class="menu-detail" id="ball-detail">
           <button type="button" class="close-detail">Close</button>
+          <div class="menu-detail-content">
+            <h3>Ball Placement<h3><h4>Click on the canvas to place the ball</h4>
+            <br />
+
+            <h5>Color:</h5>
+            <input id="ball-color" class='jscolor' value='000000' />
+            <br /><br />
+            <h5>Size:</h5>
+            <input type="range" />
+
+          </div>
         </div>
       </div>
     </div>

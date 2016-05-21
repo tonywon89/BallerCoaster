@@ -1,6 +1,7 @@
 var ButtonActions = require("./button_actions.js");
 var createDemoObjects = require("./demo_objects.js");
 var HelperMethods = require("./util/helper_methods.js");
+var DetailConstants = require("./constants/detail_constants.js");
 
 var resetDemo = function (view) {
   view.main.objects = [];
@@ -9,8 +10,9 @@ var resetDemo = function (view) {
 };
 
 var populateDetail = function (actionBtn, view, trackDraw, callback) {
-  $('#menu-detail').fadeToggle();
+  $(DetailConstants[actionBtn]).fadeToggle();
   $('.menu').fadeToggle();
+  ButtonListeners.closeListener(view);
   if (!trackDraw) {
     ButtonActions.addCanvasClickListener(actionBtn, view, callback);
   } else {
@@ -40,7 +42,7 @@ var ButtonListeners = {
     $('#play-btn').click(function(event) {
       event.preventDefault();
       ButtonActions.play(view, '#play-btn', "Stop", "Play", active);
-      $('#menu-detail').fadeOut();
+      $('.menu-detail').fadeOut();
       $('.menu').fadeIn();
       ButtonActions.popLastTrack(view);
       active = !active;
@@ -80,7 +82,7 @@ var ButtonListeners = {
     $('#demo-btn').click(function (event) {
       event.preventDefault();
       ButtonActions.play(view, '#demo-btn', "Stop Demo", "Demo", active, resetDemo);
-      $('#menu-detail').fadeOut();
+      $('.menu-detail').fadeOut();
       $('.menu').fadeIn();
       ButtonActions.popLastTrack(view);
       active = !active;
@@ -108,8 +110,8 @@ var ButtonListeners = {
   closeListener: function (view) {
     $('.close-detail').click(function (event) {
       event.preventDefault();
-      $('#menu-detail').fadeToggle();
-      $('.menu').fadeToggle();
+      $('.menu-detail').fadeOut();
+      $('.menu').fadeIn();
       ButtonActions.popLastTrack(view);
       HelperMethods.enableBtns();
     });
