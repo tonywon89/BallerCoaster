@@ -70,7 +70,7 @@
             <input id="hidden-ball-color" type="hidden" value="000000">
             <br /><br />
             <h5>Size:</h5>
-            <input type="range" class="menu-detail-range" id="ball-size" value="5" min="5" max="20" step="1" />
+            <span>Small<input type="range" class="menu-detail-range" id="ball-size" value="5" min="5" max="20" step="1" />Big</span>
           </div>
         </div>
         <div class="menu-detail" id="track-detail">
@@ -93,13 +93,15 @@
             <input id="hidden-ball-generator-color" type="hidden" value="000000">
 
             <h5> Angle (degrees): </h5>
-            <input type="range" class="menu-detail-range" id="ball-generator-angle" value="60" min="0" max="360" step="1" />
+             <span>0<input type="range" class="menu-detail-range" id="ball-generator-angle" value="60" min="0" max="360" step="1" />360</span>
 
             <h5> Ball Velocity: </h5>
-            <input type="number" id="ball-generator-velocity" value="5"/>
+            <span>Low<input type="range" class="menu-detail-range" id="ball-generator-velocity" value="5" min="1" max="20" step="1" />High</span>
 
-            <div> Frequency </div>
-            <input type="number" id="ball-generator-frequency" value="50" />
+            <h5> Frequency </h5>
+            <span>Slow<input type="range" class="menu-detail-range" id="ball-generator-frequency" value="50" min="1" max="175" step="1" />Fast</span>
+            <h5> Ball Size </h5>
+            <span>Small<input type="range" class="menu-detail-range" id="ball-generator-size" value="5" min="5" max="20" step="1" />Big</span>
           </div>
         </div>
       </div>

@@ -31,6 +31,7 @@ var addGeneratorPreview = function (generatorPreview, view, context) {
   var velocity = parseInt($('#ball-generator-velocity').val());
   var frequency = parseInt($('#ball-generator-frequency').val());
   var color = $('#hidden-ball-generator-color').val();
+  var size = parseInt($('#ball-generator-size').val());
   var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
   ballGenerator.draw(context);
 };
