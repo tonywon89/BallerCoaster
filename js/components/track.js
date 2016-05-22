@@ -19,6 +19,10 @@ Track.prototype.step = function () {
 
 };
 
+Track.prototype.findY = function (x) {
+  return this.point1.y - (this.point1.x - x) * Math.tan(this.theta);
+};
+
 Track.prototype.containPoint =  function (point) {
   return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
 };

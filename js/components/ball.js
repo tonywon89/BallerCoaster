@@ -46,8 +46,7 @@ Ball.prototype.isCollideWith = function (otherObject) {
     var Ey = t * Dy + A.y;
 
     var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2));
-
-    if (Ey <= this.pos.y) {
+    if (Ey < this.pos.y) {
       var overlap = this.radius + LEC;
     } else {
       var overlap = this.radius - LEC;
@@ -56,15 +55,14 @@ Ball.prototype.isCollideWith = function (otherObject) {
     var speed = Math.sqrt(Math.pow((this.velocity.x), 2) + Math.pow((this.velocity.y), 2));
 
     var scale = -overlap / speed;
-    this.backupVector = {x: scale * this.velocity.x, y: scale * this.velocity.y};
+    var x = scale * this.velocity.x;
+    var y = scale * this.velocity.y;
+    this.backupVector = {x: x, y: y};
 
     var largerX = B.x > A.x ? B.x : A.x;
     var smallerX = B.x >= A.x ? A.x : B.x;
 
-    var largerY = B.y > A.y ? B.y : A.y;
-    var smallerY = B.y >= A.y ? A.y : B.y;
-
-    if (LEC <= this.radius && (this.pos.x <= largerX && this.pos.x >= smallerX) && (this.pos.y <= largerY && this.pos.y >= smallerY)) {
+    if (LEC <= this.radius && (this.pos.x < largerX && this.pos.x > smallerX)) {
       this.collidedObject = otherObject;
       return true;
     } else {

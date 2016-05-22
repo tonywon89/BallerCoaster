@@ -94,7 +94,10 @@ var ButtonListeners = {
     var active = false;
     $('#remove-item-btn').click(function (event) {
       event.preventDefault();
+      $('#main-canvas').off();
       $(this).toggleClass("active");
+      $('.menu-detail').fadeOut();
+      $('.menu').fadeIn();
       ButtonActions.toggleCanvasClickListener("#remove-item-btn", active, view, ButtonActions.removeObject);
       active = !active;
     });

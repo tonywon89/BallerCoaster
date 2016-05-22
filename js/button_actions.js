@@ -106,6 +106,7 @@ var ButtonActions = {
   play: function (view, activeBtn, activeText, inactiveText, active, callback) {
     if (!active) {
       HelperMethods.disableInactiveBtns(activeBtn);
+      $('#remove-item-btn').prop("disabled", true);
       $('#main-canvas').off();
       $(activeBtn).text(activeText);
       $(activeBtn).toggleClass("active");
@@ -157,7 +158,7 @@ var ButtonActions = {
       point1 = HelperMethods.getPoint(event, view.main.canvas);
 
     }).on("mousemove", function (e) {
-      point2 = HelperMethods.getPoint(e, view);
+      point2 = HelperMethods.getPoint(e, view.main.canvas);
       drawnTrack = HelperMethods.drawTrack(e, view, point1, point2, initial);
       if (drawnTrack) { initial = false; }
 

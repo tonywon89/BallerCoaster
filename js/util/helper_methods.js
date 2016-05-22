@@ -11,6 +11,7 @@ var HelperMethods = {
     $('.menu-btn').prop("disabled", true);
     $('.header-btn').prop("disabled", true);
     $('.play').prop("disabled", false);
+    $('#remove-item-btn').prop("disabled", false);
     $(activeBtn).prop("disabled", false);
   },
 
