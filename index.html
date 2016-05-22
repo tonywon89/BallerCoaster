@@ -31,31 +31,7 @@
             <button type="button" id="place-ball-btn" class="menu-btn">Place Balls</button>
             <button type="button" id="draw-tracks-btn" class="menu-btn">Draw Tracks</button>
             <button type="button" id="ball-generator-btn" class="menu-btn">Construct Ball Generators</button>
-            <button type="button" id="portal-btn" class="menu-btn" data-toggle="collapse" data-target="#portal-menu" aria-expanded="false" aria-controls="portal-menu">Make Portals</button>
-            <div id="portal-menu" class="collapse btn-content">
-              <div>
-                <div id="place-portal-txt">Make Entry Portal</div>
-                <div class="wrapper">
-                  <div>
-                    <h4>Entry Portal</h4>
-                    <div class="title"> Angle (degrees): </div>
-                    <input type="number" id="first-portal-angle" value="0"/>
-
-                    <div class="title"> Width </div>
-                    <input type="number" id="first-portal-width" value="50"/>
-                  </div>
-
-                  <div>
-                    <h4>Exit Portal</h4>
-                    <div class="title"> Angle (degrees): </div>
-                    <input type="number" id="second-portal-angle" value="60"/>
-
-                    <div class="title"> Width </div>
-                    <input type="number" id="second-portal-width" value="50"/>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button type="button" id="portal-btn" class="menu-btn">Make Portals</button>
           </div>
         </div>
         <div class="menu-detail" id="ball-detail">
@@ -76,7 +52,7 @@
         <div class="menu-detail" id="track-detail">
           <button type="button" class="close-detail">Close</button>
           <div class="menu-detail-content">
-            <h3>Draw Tracks</h3>
+            <h3>Tracks</h3>
             <h4>Click and drag to draw tracks</h4>
           </div>
         </div>
@@ -95,7 +71,7 @@
             <h5> Angle (degrees): </h5>
             <span>0<input type="range" class="menu-detail-range" id="ball-generator-angle" value="60" min="0" max="360" step="1" />360</span>
 
-            <h5> Ball Size </h5>
+            <h5> Ball Size: </h5>
             <span>Small<input type="range" class="menu-detail-range" id="ball-generator-size" value="5" min="5" max="20" step="1" />Big</span>
 
             <h5> Ball Velocity: </h5>
@@ -105,8 +81,33 @@
             <span>Slow<input type="range" class="menu-detail-range" id="ball-generator-frequency" value="50" min="1" max="175" step="1" />Fast</span>
           </div>
         </div>
+        <div class="menu-detail" id="entry-portal-detail">
+          <button type="button" class="close-detail">Close</button>
+          <div class="menu-detail-content ">
+            <h3>Make Entry Portal</h3>
+            <canvas id="entry-portal-preview"></canvas>
+            <div class="title"> Angle (degrees): </div>
+            <input type="number" id="first-portal-angle" value="0"/>
+
+            <div class="title"> Width </div>
+            <input type="number" id="first-portal-width" value="50"/>
+
+          </div>
+        </div>
+        <div class="menu-detail" id="exit-portal-detail">
+          <button type="button" class="close-detail"></button>
+          <div class="menu-detail-content ">
+            <h3>Make Exit Portal</h3>
+            <canvas id="exit-portal-preview"></canvas>
+            <div class="title"> Angle (degrees): </div>
+            <input type="number" id="second-portal-angle" value="60"/>
+
+            <div class="title"> Width </div>
+            <input type="number" id="second-portal-width" value="50"/>
+        </div>
       </div>
     </div>
+
     <script>
       function updateBallColor(jscolor) {
         $('#hidden-ball-color').val(jscolor);

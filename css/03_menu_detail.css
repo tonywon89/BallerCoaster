@@ -34,3 +34,13 @@
   width: 100px;
   height: 100px;
 }
+
+.portal-detail {
+  display: inline-block;
+  width: 40%;
+  border: 1px solid black;
+}
+
+#exit-portal-detail > .menu-detail-content {
+
+}

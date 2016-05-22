@@ -9,23 +9,11 @@ var resetDemo = function (view) {
   view.main.objects = createDemoObjects(view);
 };
 
-var populateDetail = function (actionBtn, view, trackDraw, callback, detailCallback) {
-  $(DetailConstants[actionBtn]).fadeToggle();
-  $('.menu').fadeToggle();
-  ButtonListeners.closeListener(view);
-  if (!trackDraw) {
-    detailCallback(view);
-    ButtonActions.addCanvasClickListener(actionBtn, view, callback);
-  } else {
-    ButtonActions.toggleCanvasDragListener(actionBtn, view);
-  }
-};
-
 var ButtonListeners = {
   addBallListener: function (view) {
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, ButtonActions.ballPreview);
+      ButtonActions.populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, ButtonActions.ballPreview);
     });
   },
 
@@ -33,7 +21,7 @@ var ButtonListeners = {
     var active = false;
     $('#draw-tracks-btn').click(function (event) {
       event.preventDefault();
-      populateDetail('#draw-tracks-btn', view, true);
+      ButtonActions.populateDetail('#draw-tracks-btn', view, true);
     });
   },
 
@@ -51,25 +39,17 @@ var ButtonListeners = {
   },
 
   addBallGeneratorListener: function (view) {
-    var active = false;
     $('#ball-generator-btn').click(function (event) {
       event.preventDefault();
-      populateDetail('#ball-generator-btn', view, false, ButtonActions.addBallGenerator, ButtonActions.ballGeneratorPreview);
-      active = !active;
+      ButtonActions.populateDetail('#ball-generator-btn', view, false, ButtonActions.addBallGenerator, ButtonActions.ballGeneratorPreview);
     });
   },
 
   addPortalListener: function (view) {
-    var active = false;
     $("#portal-btn").click(function (event) {
       event.preventDefault();
-      ButtonActions.toggleCanvasClickListener(
-        "#portal-btn",
-        active,
-        view,
-        ButtonActions.addBothPortals.bind(ButtonActions)
-      );
-      active = !active;
+      ButtonActions.populateDetail('#portal-btn', view, false, ButtonActions.addEntryPortal.bind(ButtonActions));
+
     });
   },
 

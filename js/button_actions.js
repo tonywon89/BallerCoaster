@@ -4,9 +4,8 @@ var BallGenerator = require("./components/ball_generator.js");
 var Portal = require("./components/portal.js");
 var TextConstants = require("./constants/text_constants.js");
 var HelperMethods = require("./util/helper_methods.js");
+var DetailConstants = require("./constants/detail_constants.js");
 
-var placingFirstPortal = true;
-var placingSecondPortal = false;
 var portalId = 0;
 
 var point1, point2, drawnTrack;
@@ -37,6 +36,30 @@ var addGeneratorPreview = function (generatorPreview, view, context) {
 };
 
 var ButtonActions = {
+  populateDetail: function (actionBtn, view, trackDraw, callback, detailCallback) {
+    $(DetailConstants[actionBtn]).fadeIn();
+    $('.menu').fadeOut();
+    this.closeListener(view);
+    if (!trackDraw) {
+      if (detailCallback) {
+        detailCallback(view);
+      }
+      this.addCanvasClickListener(actionBtn, view, callback);
+    } else {
+      this.toggleCanvasDragListener(actionBtn, view);
+    }
+  },
+
+  closeListener: function (view) {
+    $('.close-detail').click(function (event) {
+      event.preventDefault();
+      $('.menu-detail').fadeOut();
+      $('.menu').fadeIn();
+      ButtonActions.popLastTrack(view);
+      HelperMethods.enableBtns();
+    });
+  },
+
   addBall: function (event, view) {
     var point = HelperMethods.getPoint(event, view.main.canvas);
     var size = parseInt($('#ball-size').val());
@@ -111,25 +134,20 @@ var ButtonActions = {
     portal.draw(view.context);
   },
 
-  addBothPortals: function (event, view) {
-    if (placingFirstPortal) {
-      $("#portal-btn").prop("disabled", true);
-      $("#place-portal-txt").text("Make Exit Portal");
+  addEntryPortal: function (event, view) {
+    this.addPortal(event, view, 'entry', portalId);
+    $('#entry-portal-detail').fadeOut();
+    $('#main-canvas').off();
+    this.populateDetail('#exit-portal-btn', view, false, this.addExitPortal.bind(this));
+    $('button').prop("disabled", true);
+  },
 
-      this.addPortal(event, view, 'entry', portalId);
-
-      placingFirstPortal = false;
-      placingSecondPortal = true;
-    } else if (placingSecondPortal) {
-      $("#portal-btn").prop("disabled", false);
-      $("#place-portal-txt").text("Make Entry Portal");
-
-      this.addPortal(event, view, 'exit', portalId);
-
-      placingFirstPortal = true;
-      placingSecondPortal = false;
-      portalId += 1;
-    }
+  addExitPortal: function (event, view) {
+    this.addPortal(event, view, 'exit', portalId);
+    portalId += 1;
+    $('#main-canvas').off();
+    $('#exit-portal-detail').fadeOut();
+    this.populateDetail('#portal-btn', view, false, this.addEntryPortal.bind(this));
   },
 
   removeObject: function (event, view) {
