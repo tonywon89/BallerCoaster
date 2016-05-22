@@ -32,7 +32,7 @@ var addGeneratorPreview = function (generatorPreview, view, context) {
   var frequency = parseInt($('#ball-generator-frequency').val());
   var color = $('#hidden-ball-generator-color').val();
   var size = parseInt($('#ball-generator-size').val());
-  var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
+  var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, size, view.main);
   ballGenerator.draw(context);
 };
 
@@ -64,8 +64,8 @@ var ButtonActions = {
 
   ballGeneratorPreview: function (view) {
     var generatorPreview = document.getElementById("ball-generator-preview");
-    generatorPreview.width = 150;
-    generatorPreview.height = 150;
+    generatorPreview.width = 100;
+    generatorPreview.height = 100;
     var context = generatorPreview.getContext('2d');
     addGeneratorPreview(generatorPreview, view, context);
     $('#ball-generator-angle').change(function(e) {
@@ -73,6 +73,10 @@ var ButtonActions = {
       addGeneratorPreview(generatorPreview, view, context);
     });
     $('#hidden-ball-generator-color').change(function(e) {
+      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
+      addGeneratorPreview(generatorPreview, view, context);
+    });
+    $('#ball-generator-size').change(function(e) {
       context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
       addGeneratorPreview(generatorPreview, view, context);
     });
@@ -85,7 +89,8 @@ var ButtonActions = {
     var velocity = parseInt($('#ball-generator-velocity').val());
     var frequency = parseInt($('#ball-generator-frequency').val());
     var color = $('#ball-generator-color').val();
-    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
+    var size = parseInt($('#ball-generator-size').val());
+    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, size, view.main);
     view.main.objects.push(ballGenerator);
     view.main.draw(view.context);
   },

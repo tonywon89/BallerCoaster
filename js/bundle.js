@@ -359,7 +359,7 @@
 	  var frequency = parseInt($('#ball-generator-frequency').val());
 	  var color = $('#hidden-ball-generator-color').val();
 	  var size = parseInt($('#ball-generator-size').val());
-	  var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
+	  var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, size, view.main);
 	  ballGenerator.draw(context);
 	};
 	
@@ -391,8 +391,8 @@
 	
 	  ballGeneratorPreview: function (view) {
 	    var generatorPreview = document.getElementById("ball-generator-preview");
-	    generatorPreview.width = 150;
-	    generatorPreview.height = 150;
+	    generatorPreview.width = 100;
+	    generatorPreview.height = 100;
 	    var context = generatorPreview.getContext('2d');
 	    addGeneratorPreview(generatorPreview, view, context);
 	    $('#ball-generator-angle').change(function(e) {
@@ -400,6 +400,10 @@
 	      addGeneratorPreview(generatorPreview, view, context);
 	    });
 	    $('#hidden-ball-generator-color').change(function(e) {
+	      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
+	      addGeneratorPreview(generatorPreview, view, context);
+	    });
+	    $('#ball-generator-size').change(function(e) {
 	      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
 	      addGeneratorPreview(generatorPreview, view, context);
 	    });
@@ -412,7 +416,8 @@
 	    var velocity = parseInt($('#ball-generator-velocity').val());
 	    var frequency = parseInt($('#ball-generator-frequency').val());
 	    var color = $('#ball-generator-color').val();
-	    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
+	    var size = parseInt($('#ball-generator-size').val());
+	    var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, size, view.main);
 	    view.main.objects.push(ballGenerator);
 	    view.main.draw(view.context);
 	  },
@@ -553,7 +558,7 @@
 	  var frequency = 60;
 	  var color = "AB1D0D";
 	
-	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, color, view.main);
+	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, color, 15, view.main);
 	  demoObjects.push(ballGenerator);
 	
 	  angle = 120;
@@ -561,9 +566,9 @@
 	  velocity = 8.7;
 	  frequency = 40;
 	  color = "5BAB6D";
-	  ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, view.main);
+	  ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, 10, view.main);
 	  demoObjects.push(ballGenerator);
-	  ballGenerator = new BallGenerator({x: 700, y: 250}, radianAngle, velocity, frequency, "534782", view.main);
+	  ballGenerator = new BallGenerator({x: 700, y: 250}, radianAngle, velocity, frequency, "534782",5, view.main);
 	  demoObjects.push(ballGenerator);
 	
 	  var entryPortal = new Portal(1002, true, false, {x: 50, y: 350}, 0, 50, "blue", view.main);
@@ -883,21 +888,20 @@
 	var Ball = __webpack_require__(16);
 	var Bounds = __webpack_require__(13);
 	
-	var BallGenerator = function (pos, angle, ballVelocity, frequency, color, main) {
+	var BallGenerator = function (pos, angle, ballVelocity, frequency, color, size, main) {
 	  this.pos = pos;
 	  this.angle = -angle;
 	  this.ballVelocity = ballVelocity;
 	  this.frequency = frequency;
 	  this.width = 20;
 	  this.height = 15;
-	  this.radius = 5;
+	  this.radius = size;
 	  this.color = "#" + color;
 	  this.main = main;
 	  this.time = Math.pow(10, 3);
 	  this.firstCorner = Bounds.computeFirstCorner(this);
 	
 	  var ball = this.generateBall();
-	
 	  this.ball = ball;
 	};
 	

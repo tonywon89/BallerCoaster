@@ -1,21 +1,20 @@
 var Ball = require("./ball.js");
 var Bounds = require("../util/bounds.js");
 
-var BallGenerator = function (pos, angle, ballVelocity, frequency, color, main) {
+var BallGenerator = function (pos, angle, ballVelocity, frequency, color, size, main) {
   this.pos = pos;
   this.angle = -angle;
   this.ballVelocity = ballVelocity;
   this.frequency = frequency;
   this.width = 20;
   this.height = 15;
-  this.radius = 5;
+  this.radius = size;
   this.color = "#" + color;
   this.main = main;
   this.time = Math.pow(10, 3);
   this.firstCorner = Bounds.computeFirstCorner(this);
 
   var ball = this.generateBall();
-
   this.ball = ball;
 };
 
