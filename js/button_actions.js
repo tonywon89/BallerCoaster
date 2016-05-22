@@ -206,7 +206,7 @@ var ButtonActions = {
         $('#demo-btn').prop("disabled", true);
       }
       view.start();
-
+      $('#play-text').text("Click around to create falling circles!");
       $('#main-canvas').on("click", function (e) {
         this.addBall(e, view);
       }.bind(this));
@@ -214,6 +214,7 @@ var ButtonActions = {
       HelperMethods.enableBtns();
       $(activeBtn).text(inactiveText);
       $(activeBtn).toggleClass("active");
+      $('#play-text').text("");
       view.stop();
     }
   },

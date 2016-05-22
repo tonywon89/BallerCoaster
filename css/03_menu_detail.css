@@ -1,13 +1,34 @@
 .menu-detail {
   display: none;
   position: absolute;
-  top: 126px;
+  top: 131px;
   right: 44px;
   width: 25%;
   height: 555px;
   border: 1px solid black;
   background-color: #BFBEBE;
   z-index: 2;
+}
+
+.close-detail {
+  font-size: 14px;
+  margin-top: 10px;
+  margin-left: 85%;
+  border: 1px solid black;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.close-detail:hover {
+  color: red;
+}
+
+.dummy-btn {
+  margin-top: 10px;
+  margin-left: 85%;
+  height: 18px;
+  padding: 2px 5px;
+  border-radius: 3px;
 }
 
 .menu-detail-content {

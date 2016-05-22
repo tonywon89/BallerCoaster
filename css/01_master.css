@@ -11,6 +11,11 @@ header {
   background-color: #BFBEBE;
 }
 
+header span {
+  font-size: 25px;
+  font-weight: bold;
+}
+
 .main h1 {
   margin-left: 100px;
   font-size: 45px;
@@ -46,7 +51,7 @@ header {
 .main .menu {
   display: block;
   position: absolute;
-  top: 126px;
+  top: 131px;
   right: 44px;
   height: 555px;
   width: 25%;
