@@ -71,15 +71,13 @@ Portal.prototype.isCollideWith = function (otherObject) {
       var leftVertex = { x: ballBounds.left, y: ball.pos.y };
       var rightVertex = { x: ballBounds.right, y: ball.pos.y };
 
-      var portalBounds = Bounds.rectBounds(this);
-
-      if (bottomVertex.x >= portalBounds.left && bottomVertex.x <= portalBounds.right && bottomVertex.y >= portalBounds.top && bottomVertex.y <= portalBounds.bottom) {
+      if (Bounds.containRect(this, bottomVertex)) {
         return true;
-      } else if (topVertex.x >= portalBounds.left && topVertex.x <= portalBounds.right && topVertex.y >= portalBounds.top && topVertex.y <= portalBounds.bottom) {
+      } else if (Bounds.containRect(this, topVertex)) {
         return true;
-      } else if (leftVertex.x >= portalBounds.left && leftVertex.x <= portalBounds.right && leftVertex.y >= portalBounds.top && leftVertex.y <= portalBounds.bottom) {
+      } else if (Bounds.containRect(this, leftVertex)) {
         return true;
-      } else if (rightVertex.x >= portalBounds.left && rightVertex.x <= portalBounds.right && rightVertex.y >= portalBounds.top && rightVertex.y <= portalBounds.bottom) {
+      } else if (Bounds.containRect(this, rightVertex)) {
         return true;
       } else {
         return false;
@@ -96,7 +94,7 @@ Portal.prototype.collideWith = function (otherObject) {
   var portalBounds = Bounds.rectBounds(exitPortal);
   var width = (portalBounds.right + portalBounds.left) / 2 ;
   var height = (portalBounds.bottom + portalBounds.top) / 2;
-
+  
   ball.pos.x = width;
   ball.pos.y = height;
 
