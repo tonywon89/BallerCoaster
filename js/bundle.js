@@ -431,10 +431,20 @@
 	
 	  portalPreview: function (view, isEntry) {
 	    var portalPreview = isEntry ? document.getElementById("entry-portal-preview") : document.getElementById("exit-portal-preview");
+	    var portalAngle = isEntry ? "#first-portal-angle" : '#second-portal-angle';
+	    var portalWidth = isEntry ? "#first-portal-width" : '#second-portal-width';
 	    portalPreview.width = 150;
 	    portalPreview.height = 150;
 	    var context = portalPreview.getContext('2d');
 	    addPortalPreview(portalPreview, view, context, isEntry);
+	    $(portalAngle).change(function (e) {
+	      context.clearRect(0, 0, portalPreview.width, portalPreview.height);
+	      addPortalPreview(portalPreview, view, context, isEntry);
+	    });
+	    $(portalWidth).change(function (e) {
+	      context.clearRect(0, 0, portalPreview.width, portalPreview.height);
+	      addPortalPreview(portalPreview, view, context, isEntry);
+	    });
 	  },
 	
 	  addBallGenerator: function (event, view) {
@@ -1014,12 +1024,20 @@
 	  context.fill();
 	  context.fillStyle = "none";
 	  context.beginPath();
-	  context.ellipse(this.pos.x, this.pos.y, this.width/2 * this.pulseInterval , this.height/2 * this.pulseInterval, this.angle, 0, Math.PI * 2, false)
+	  context.ellipse(this.pos.x, this.pos.y, this.width/2 * this.pulseInterval , this.height/2 * this.pulseInterval, this.angle, 0, Math.PI * 2, false);
 	  context.closePath();
 	  context.strokeStyle = "white";
 	  context.stroke();
 	  context.strokeStyle = "black";
-	
+	  if (this.exit) {
+	    context.beginPath();
+	    context.moveTo(firstCorner.x, firstCorner.y);
+	    var secondX = firstCorner.x + this.width * Math.cos(this.angle);
+	    var secondY = firstCorner.y + this.width * Math.sin(this.angle);
+	    context.lineTo(secondX, secondY);
+	    context.closePath();
+	    context.stroke();
+	  }
 	};
 	
 	Portal.prototype.step = function () {

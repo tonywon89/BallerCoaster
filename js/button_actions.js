@@ -124,10 +124,20 @@ var ButtonActions = {
 
   portalPreview: function (view, isEntry) {
     var portalPreview = isEntry ? document.getElementById("entry-portal-preview") : document.getElementById("exit-portal-preview");
+    var portalAngle = isEntry ? "#first-portal-angle" : '#second-portal-angle';
+    var portalWidth = isEntry ? "#first-portal-width" : '#second-portal-width';
     portalPreview.width = 150;
     portalPreview.height = 150;
     var context = portalPreview.getContext('2d');
     addPortalPreview(portalPreview, view, context, isEntry);
+    $(portalAngle).change(function (e) {
+      context.clearRect(0, 0, portalPreview.width, portalPreview.height);
+      addPortalPreview(portalPreview, view, context, isEntry);
+    });
+    $(portalWidth).change(function (e) {
+      context.clearRect(0, 0, portalPreview.width, portalPreview.height);
+      addPortalPreview(portalPreview, view, context, isEntry);
+    });
   },
 
   addBallGenerator: function (event, view) {
