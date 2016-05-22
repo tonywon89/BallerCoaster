@@ -35,14 +35,31 @@ var addGeneratorPreview = function (generatorPreview, view, context) {
   ballGenerator.draw(context);
 };
 
+var addPortalPreview = function (portalPreview, view, context, isEntry) {
+  var x = portalPreview.width/2;
+  var y = portalPreview.height/2;
+  var point = {x: x, y: y};
+  var portalAngleId = isEntry ? '#first-portal-angle' : '#second-portal-angle';
+  var portalWidthId = isEntry ? '#first-portal-width' : '#second-portal-width';
+  var portalColor = isEntry ? "blue" : "orange";
+
+  var angle = parseInt($(portalAngleId).val());
+  var radianAngle = angle * (Math.PI / 180);
+  var width = parseInt($(portalWidthId).val());
+
+  var portal = new Portal(2000, isEntry, !isEntry, point, radianAngle, width, portalColor, view.main);
+  portal.draw(context);
+};
+
 var ButtonActions = {
-  populateDetail: function (actionBtn, view, trackDraw, callback, detailCallback) {
+  populateDetail: function (actionBtn, view, trackDraw, callback, detailCallback, isEntry) {
     $(DetailConstants[actionBtn]).fadeIn();
     $('.menu').fadeOut();
     this.closeListener(view);
     if (!trackDraw) {
       if (detailCallback) {
-        detailCallback(view);
+
+        detailCallback(view, isEntry);
       }
       this.addCanvasClickListener(actionBtn, view, callback);
     } else {
@@ -105,6 +122,14 @@ var ButtonActions = {
     });
   },
 
+  portalPreview: function (view, isEntry) {
+    var portalPreview = isEntry ? document.getElementById("entry-portal-preview") : document.getElementById("exit-portal-preview");
+    portalPreview.width = 150;
+    portalPreview.height = 150;
+    var context = portalPreview.getContext('2d');
+    addPortalPreview(portalPreview, view, context, isEntry);
+  },
+
   addBallGenerator: function (event, view) {
     var point = HelperMethods.getPoint(event, view.main.canvas);
     var angle = parseInt($('#ball-generator-angle').val());
@@ -138,7 +163,7 @@ var ButtonActions = {
     this.addPortal(event, view, 'entry', portalId);
     $('#entry-portal-detail').fadeOut();
     $('#main-canvas').off();
-    this.populateDetail('#exit-portal-btn', view, false, this.addExitPortal.bind(this));
+    this.populateDetail('#exit-portal-btn', view, false, this.addExitPortal.bind(this), this.portalPreview, false);
     $('button').prop("disabled", true);
   },
 
@@ -147,7 +172,7 @@ var ButtonActions = {
     portalId += 1;
     $('#main-canvas').off();
     $('#exit-portal-detail').fadeOut();
-    this.populateDetail('#portal-btn', view, false, this.addEntryPortal.bind(this));
+    this.populateDetail('#portal-btn', view, false, this.addEntryPortal.bind(this), this.portalPreview, true);
   },
 
   removeObject: function (event, view) {
@@ -160,6 +185,7 @@ var ButtonActions = {
     if (!active) {
       HelperMethods.disableInactiveBtns(activeBtn);
       $('#remove-item-btn').prop("disabled", true);
+      $('#clear-btn').prop("disabled", true);
       $('#main-canvas').off();
       $(activeBtn).text(activeText);
       $(activeBtn).toggleClass("active");

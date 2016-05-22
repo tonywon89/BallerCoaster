@@ -48,7 +48,7 @@ var ButtonListeners = {
   addPortalListener: function (view) {
     $("#portal-btn").click(function (event) {
       event.preventDefault();
-      ButtonActions.populateDetail('#portal-btn', view, false, ButtonActions.addEntryPortal.bind(ButtonActions));
+      ButtonActions.populateDetail('#portal-btn', view, false, ButtonActions.addEntryPortal.bind(ButtonActions), ButtonActions.portalPreview, true);
 
     });
   },

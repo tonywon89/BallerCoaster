@@ -9,9 +9,10 @@ var HelperMethods = {
 
   disableInactiveBtns: function (activeBtn) {
     $('.menu-btn').prop("disabled", true);
-    $('.header-btn').prop("disabled", true);
+    $('.header-btn').prop("disabled", false);
     $('.play').prop("disabled", false);
     $('#remove-item-btn').prop("disabled", false);
+    $('.close-detail').prop("disabled", false);
     $(activeBtn).prop("disabled", false);
   },
 
