@@ -87,10 +87,11 @@
             <h3>Make Entry Portal</h3>
             <canvas id="entry-portal-preview"></canvas>
             <div class="title"> Angle (degrees): </div>
-            <input type="number" id="first-portal-angle" value="0"/>
+            <span>0<input type="range" class="menu-detail-range" id="first-portal-angle" value="0" min="0" max="360" step="1" />360</span>
 
             <div class="title"> Width </div>
-            <input type="number" id="first-portal-width" value="50"/>
+            <span>Thin<input type="range" class="menu-detail-range" id="first-portal-width" value="50" min="10" max="100" step="1" />Wide</span>
+
 
           </div>
         </div>
@@ -100,10 +101,10 @@
             <h3>Make Exit Portal</h3>
             <canvas id="exit-portal-preview"></canvas>
             <div class="title"> Angle (degrees): </div>
-            <input type="number" id="second-portal-angle" value="60"/>
+            <span>0<input type="range" class="menu-detail-range" id="second-portal-angle" value="120" min="0" max="360" step="1" />360</span>
 
             <div class="title"> Width </div>
-            <input type="number" id="second-portal-width" value="50"/>
+            <span>Thin<input type="range" class="menu-detail-range" id="second-portal-width" value="50" min="10" max="100" step="1" />Wide</span>
         </div>
       </div>
     </div>
