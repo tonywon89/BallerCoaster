@@ -9,12 +9,12 @@ var resetDemo = function (view) {
   view.main.objects = createDemoObjects(view);
 };
 
-var populateDetail = function (actionBtn, view, trackDraw, callback) {
+var populateDetail = function (actionBtn, view, trackDraw, callback, detailCallback) {
   $(DetailConstants[actionBtn]).fadeToggle();
   $('.menu').fadeToggle();
   ButtonListeners.closeListener(view);
   if (!trackDraw) {
-    ButtonActions.ballPreview(view);
+    detailCallback(view);
     ButtonActions.addCanvasClickListener(actionBtn, view, callback);
   } else {
     ButtonActions.toggleCanvasDragListener(actionBtn, view);
@@ -25,7 +25,7 @@ var ButtonListeners = {
   addBallListener: function (view) {
     $('#place-ball-btn').click(function (event) {
       event.preventDefault();
-      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall);
+      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, ButtonActions.ballPreview);
     });
   },
 
@@ -54,12 +54,7 @@ var ButtonListeners = {
     var active = false;
     $('#ball-generator-btn').click(function (event) {
       event.preventDefault();
-      ButtonActions.toggleCanvasClickListener(
-        "#ball-generator-btn",
-        active,
-        view,
-        ButtonActions.addBallGenerator
-      );
+      populateDetail('#ball-generator-btn', view, false, ButtonActions.addBallGenerator, ButtonActions.ballGeneratorPreview);
       active = !active;
     });
   },

@@ -12,17 +12,7 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, color, main) 
   this.color = "#" + color;
   this.main = main;
   this.time = Math.pow(10, 3);
-
-  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-  var secondY = this.pos.y + this.width * Math.sin(this.angle);
-
-  var angle = (this.angle + Math.PI / 2) - Math.atan(this.radius/(this.height / 2));
-  var z = Math.sqrt(Math.pow(this.radius, 2) + Math.pow((this.height / 2), 2));
-  var posX = secondX + z * Math.cos(angle);
-  var posY = secondY + z * Math.sin(angle);
-
-  var velX = this.ballVelocity * Math.cos(this.angle);
-  var velY = this.ballVelocity * Math.sin(this.angle);
+  this.firstCorner = Bounds.computeFirstCorner(this);
 
   var ball = this.generateBall();
 
@@ -31,9 +21,9 @@ var BallGenerator = function (pos, angle, ballVelocity, frequency, color, main) 
 
 BallGenerator.prototype.draw = function (context) {
   context.beginPath();
-  context.moveTo(this.pos.x, this.pos.y);
-  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+  context.moveTo(this.firstCorner.x, this.firstCorner.y);
+  var secondX = this.firstCorner.x + this.width * Math.cos(this.angle);
+  var secondY = this.firstCorner.y + this.width * Math.sin(this.angle);
   context.lineTo(secondX, secondY);
   var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
   var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
@@ -50,8 +40,9 @@ BallGenerator.prototype.draw = function (context) {
 };
 
 BallGenerator.prototype.generateBall = function () {
-  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+  var firstCorner = Bounds.computeFirstCorner(this);
+  var secondX = this.firstCorner.x + this.width * Math.cos(this.angle);
+  var secondY = this.firstCorner.y + this.width * Math.sin(this.angle);
 
   var angle = (this.angle + Math.PI / 2) - Math.atan(this.radius/(this.height / 2));
   var z = Math.sqrt(Math.pow(this.radius, 2) + Math.pow((this.height / 2), 2));

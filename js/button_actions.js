@@ -22,6 +22,19 @@ var addBallPreview = function (ballPreview, view, context) {
   ball.draw(context);
 };
 
+var addGeneratorPreview = function (generatorPreview, view, context) {
+  var x = generatorPreview.width/2;
+  var y = generatorPreview.height/2;
+  var point = {x: x, y: y};
+  var angle = parseInt($('#ball-generator-angle').val());
+  var radianAngle = angle * (Math.PI / 180);
+  var velocity = parseInt($('#ball-generator-velocity').val());
+  var frequency = parseInt($('#ball-generator-frequency').val());
+  var color = $('#hidden-ball-generator-color').val();
+  var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
+  ballGenerator.draw(context);
+};
+
 var ButtonActions = {
   addBall: function (event, view) {
     var point = HelperMethods.getPoint(event, view.main.canvas);
@@ -36,7 +49,7 @@ var ButtonActions = {
     var ballPreview = document.getElementById("ball-preview");
     ballPreview.width = 150;
     ballPreview.height = 150;
-    var context =ballPreview.getContext('2d');
+    var context = ballPreview.getContext('2d');
     addBallPreview(ballPreview, view, context);
     $('#ball-size').on('propertychange input', function (e) {
       context.clearRect(0, 0, ballPreview.width, ballPreview.height);
@@ -45,6 +58,22 @@ var ButtonActions = {
     $('#hidden-ball-color').change(function (e) {
       context.clearRect(0, 0, ballPreview.width, ballPreview.height);
       addBallPreview(ballPreview, view, context);
+    });
+  },
+
+  ballGeneratorPreview: function (view) {
+    var generatorPreview = document.getElementById("ball-generator-preview");
+    generatorPreview.width = 150;
+    generatorPreview.height = 150;
+    var context = generatorPreview.getContext('2d');
+    addGeneratorPreview(generatorPreview, view, context);
+    $('#ball-generator-angle').change(function(e) {
+      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
+      addGeneratorPreview(generatorPreview, view, context);
+    });
+    $('#hidden-ball-generator-color').change(function(e) {
+      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
+      addGeneratorPreview(generatorPreview, view, context);
     });
   },
 
@@ -98,8 +127,8 @@ var ButtonActions = {
   },
 
   removeObject: function (event, view) {
-    var x = event.pageX - view.main.canvas.offsetLeft;
-    var y = event.pageY - view.main.canvas.offsetTop;
+    var x = event.offsetX;
+    var y = event.offsetY;
     view.main.removeObject({x: x, y: y}, view.context);
   },
 

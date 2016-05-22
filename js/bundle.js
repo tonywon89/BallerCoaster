@@ -207,12 +207,12 @@
 	  view.main.objects = createDemoObjects(view);
 	};
 	
-	var populateDetail = function (actionBtn, view, trackDraw, callback) {
+	var populateDetail = function (actionBtn, view, trackDraw, callback, detailCallback) {
 	  $(DetailConstants[actionBtn]).fadeToggle();
 	  $('.menu').fadeToggle();
 	  ButtonListeners.closeListener(view);
 	  if (!trackDraw) {
-	    ButtonActions.ballPreview(view);
+	    detailCallback(view);
 	    ButtonActions.addCanvasClickListener(actionBtn, view, callback);
 	  } else {
 	    ButtonActions.toggleCanvasDragListener(actionBtn, view);
@@ -223,7 +223,7 @@
 	  addBallListener: function (view) {
 	    $('#place-ball-btn').click(function (event) {
 	      event.preventDefault();
-	      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall);
+	      populateDetail('#place-ball-btn', view, false, ButtonActions.addBall, ButtonActions.ballPreview);
 	    });
 	  },
 	
@@ -252,12 +252,7 @@
 	    var active = false;
 	    $('#ball-generator-btn').click(function (event) {
 	      event.preventDefault();
-	      ButtonActions.toggleCanvasClickListener(
-	        "#ball-generator-btn",
-	        active,
-	        view,
-	        ButtonActions.addBallGenerator
-	      );
+	      populateDetail('#ball-generator-btn', view, false, ButtonActions.addBallGenerator, ButtonActions.ballGeneratorPreview);
 	      active = !active;
 	    });
 	  },
@@ -354,6 +349,19 @@
 	  ball.draw(context);
 	};
 	
+	var addGeneratorPreview = function (generatorPreview, view, context) {
+	  var x = generatorPreview.width/2;
+	  var y = generatorPreview.height/2;
+	  var point = {x: x, y: y};
+	  var angle = parseInt($('#ball-generator-angle').val());
+	  var radianAngle = angle * (Math.PI / 180);
+	  var velocity = parseInt($('#ball-generator-velocity').val());
+	  var frequency = parseInt($('#ball-generator-frequency').val());
+	  var color = $('#hidden-ball-generator-color').val();
+	  var ballGenerator = new BallGenerator(point, radianAngle, velocity, frequency, color, view.main);
+	  ballGenerator.draw(context);
+	};
+	
 	var ButtonActions = {
 	  addBall: function (event, view) {
 	    var point = HelperMethods.getPoint(event, view.main.canvas);
@@ -368,7 +376,7 @@
 	    var ballPreview = document.getElementById("ball-preview");
 	    ballPreview.width = 150;
 	    ballPreview.height = 150;
-	    var context =ballPreview.getContext('2d');
+	    var context = ballPreview.getContext('2d');
 	    addBallPreview(ballPreview, view, context);
 	    $('#ball-size').on('propertychange input', function (e) {
 	      context.clearRect(0, 0, ballPreview.width, ballPreview.height);
@@ -377,6 +385,22 @@
 	    $('#hidden-ball-color').change(function (e) {
 	      context.clearRect(0, 0, ballPreview.width, ballPreview.height);
 	      addBallPreview(ballPreview, view, context);
+	    });
+	  },
+	
+	  ballGeneratorPreview: function (view) {
+	    var generatorPreview = document.getElementById("ball-generator-preview");
+	    generatorPreview.width = 150;
+	    generatorPreview.height = 150;
+	    var context = generatorPreview.getContext('2d');
+	    addGeneratorPreview(generatorPreview, view, context);
+	    $('#ball-generator-angle').change(function(e) {
+	      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
+	      addGeneratorPreview(generatorPreview, view, context);
+	    });
+	    $('#hidden-ball-generator-color').change(function(e) {
+	      context.clearRect(0, 0, generatorPreview.width, generatorPreview.height);
+	      addGeneratorPreview(generatorPreview, view, context);
 	    });
 	  },
 	
@@ -430,8 +454,8 @@
 	  },
 	
 	  removeObject: function (event, view) {
-	    var x = event.pageX - view.main.canvas.offsetLeft;
-	    var y = event.pageY - view.main.canvas.offsetTop;
+	    var x = event.offsetX;
+	    var y = event.offsetY;
 	    view.main.removeObject({x: x, y: y}, view.context);
 	  },
 	
@@ -644,8 +668,8 @@
 	
 	var HelperMethods = {
 	  getPoint: function (event, canvas) {
-	    var x = event.pageX - canvas.offsetLeft;
-	    var y = event.pageY - canvas.offsetTop;
+	    var x = event.offsetX;
+	    var y = event.offsetY;
 	    return {x: x, y: y};
 	  },
 	
@@ -869,17 +893,7 @@
 	  this.color = "#" + color;
 	  this.main = main;
 	  this.time = Math.pow(10, 3);
-	
-	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
-	
-	  var angle = (this.angle + Math.PI / 2) - Math.atan(this.radius/(this.height / 2));
-	  var z = Math.sqrt(Math.pow(this.radius, 2) + Math.pow((this.height / 2), 2));
-	  var posX = secondX + z * Math.cos(angle);
-	  var posY = secondY + z * Math.sin(angle);
-	
-	  var velX = this.ballVelocity * Math.cos(this.angle);
-	  var velY = this.ballVelocity * Math.sin(this.angle);
+	  this.firstCorner = Bounds.computeFirstCorner(this);
 	
 	  var ball = this.generateBall();
 	
@@ -888,9 +902,9 @@
 	
 	BallGenerator.prototype.draw = function (context) {
 	  context.beginPath();
-	  context.moveTo(this.pos.x, this.pos.y);
-	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+	  context.moveTo(this.firstCorner.x, this.firstCorner.y);
+	  var secondX = this.firstCorner.x + this.width * Math.cos(this.angle);
+	  var secondY = this.firstCorner.y + this.width * Math.sin(this.angle);
 	  context.lineTo(secondX, secondY);
 	  var thirdX = secondX + this.height * Math.cos(this.angle + Math.PI / 2);
 	  var thirdY = secondY + this.height * Math.sin(this.angle + Math.PI / 2);
@@ -907,8 +921,9 @@
 	};
 	
 	BallGenerator.prototype.generateBall = function () {
-	  var secondX = this.pos.x + this.width * Math.cos(this.angle);
-	  var secondY = this.pos.y + this.width * Math.sin(this.angle);
+	  var firstCorner = Bounds.computeFirstCorner(this);
+	  var secondX = this.firstCorner.x + this.width * Math.cos(this.angle);
+	  var secondY = this.firstCorner.y + this.width * Math.sin(this.angle);
 	
 	  var angle = (this.angle + Math.PI / 2) - Math.atan(this.radius/(this.height / 2));
 	  var z = Math.sqrt(Math.pow(this.radius, 2) + Math.pow((this.height / 2), 2));
