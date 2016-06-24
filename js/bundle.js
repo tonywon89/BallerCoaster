@@ -74,8 +74,8 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Ball = __webpack_require__(16);
-	var Portal = __webpack_require__(18);
+	var Ball = __webpack_require__(2);
+	var Portal = __webpack_require__(5);
 	
 	var Main = function (gravity, objects, canvas) {
 	  this.gravity = gravity;
@@ -131,10 +131,386 @@
 
 
 /***/ },
-/* 2 */,
-/* 3 */,
-/* 4 */,
-/* 5 */,
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Track = __webpack_require__(3);
+	var Bounds = __webpack_require__(4);
+	
+	var Ball = function (pos, radius, velocity, color, main) {
+	  this.pos = pos;
+	  this.radius = radius;
+	  this.velocity = velocity;
+	  this.acceleration = {x: 0, y: main.gravity};
+	  this.main = main;
+	  this.color = color;
+	  this.isCollided = false;
+	};
+	
+	Ball.prototype.draw = function (context) {
+	  context.beginPath();
+	  context.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
+	  context.fillStyle = this.color;
+	  context.fill();
+	  context.stroke();
+	};
+	
+	Ball.prototype.step = function () {
+	  this.velocity.y += this.acceleration.y;
+	  this.velocity.x += this.acceleration.x;
+	  this.pos.y += this.velocity.y;
+	  this.pos.x += this.velocity.x;
+	  if (this.pos.y > this.main.canvas.height || this.pos.x > this.main.canvas.width) {
+	    var idx = this.main.objects.indexOf(this);
+	    this.main.objects.splice(idx, 1);
+	  }
+	};
+	
+	Ball.prototype.isCollideWith = function (otherObject) {
+	  if (otherObject instanceof Track) {
+	    var A = { x: otherObject.point1.x, y: otherObject.point1.y };
+	    var B = { x: otherObject.point2.x, y: otherObject.point2.y };
+	    var C = { x: this.pos.x, y: this.pos.y };
+	    var LAB = Math.sqrt(Math.pow((B.x - A.x), 2) + Math.pow((B.y - A.y), 2));
+	
+	    var Dx = (B.x - A.x) / LAB;
+	    var Dy = (B.y - A.y) / LAB;
+	
+	    var t = Dx * (C.x - A.x) + Dy * (C.y - A.y);
+	
+	    var Ex = t * Dx + A.x;
+	    var Ey = t * Dy + A.y;
+	
+	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2));
+	    if (Ey < this.pos.y) {
+	      var overlap = this.radius + LEC;
+	    } else {
+	      var overlap = this.radius - LEC;
+	    }
+	
+	    var speed = Math.sqrt(Math.pow((this.velocity.x), 2) + Math.pow((this.velocity.y), 2));
+	
+	    var scale = -overlap / speed;
+	    var x = scale * this.velocity.x;
+	    var y = scale * this.velocity.y;
+	    this.backupVector = {x: x, y: y};
+	
+	    var largerX = B.x > A.x ? B.x : A.x;
+	    var smallerX = B.x >= A.x ? A.x : B.x;
+	
+	    if (LEC <= this.radius && (this.pos.x < largerX && this.pos.x > smallerX)) {
+	      this.collidedObject = otherObject;
+	      return true;
+	    } else {
+	      if (this.collidedObject === otherObject) {
+	        this.collidedObject = undefined;
+	        this.isCollided = false;
+	        this.acceleration = { x: 0, y: this.main.gravity };
+	        this.backupVector = null;
+	        return false;
+	      } else {
+	        this.acceleration = { x: 0, y: this.main.gravity };
+	        return false;
+	      }
+	    }
+	  } else {
+	    return false;
+	  }
+	};
+	
+	Ball.prototype.collideWith = function (otherObject) {
+	  if (otherObject instanceof Track) {
+	    if (!this.isCollided) {
+	        if (this.backupVector) {
+	          this.pos.x += this.backupVector.x;
+	          this.pos.y += this.backupVector.y;
+	        }
+	        this.isCollided = true;
+	        this.velocity.x = 0;
+	        this.velocity.y = 0;
+	        this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+	    } else {
+	      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
+	    }
+	  }
+	};
+	
+	Ball.prototype.containPoint = function (pos) {
+	  var bounds = Bounds.circleBounds(this);
+	  if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
+	    return true;
+	  } else {
+	    return false;
+	  }
+	};
+	
+	module.exports = Ball;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	var Track = function (point1, point2, gravity) {
+	    this.point1 = point1;
+	    this.point2 = point2;
+	    this.theta = Math.atan2(point2.y - point1.y, point2.x - point1.x);
+	    this.slopeGravity = gravity * Math.sin(this.theta);
+	    this.xAccel = this.slopeGravity * Math.cos(this.theta);
+	    this.yAccel = this.slopeGravity * Math.sin(this.theta);
+	
+	};
+	
+	Track.prototype.draw = function (context) {
+	  context.beginPath();
+	  context.moveTo(this.point1.x, this.point1.y);
+	  context.lineTo(this.point2.x, this.point2.y);
+	  context.stroke();
+	};
+	
+	Track.prototype.step = function () {
+	
+	};
+	
+	Track.prototype.findY = function (x) {
+	  return this.point1.y - (this.point1.x - x) * Math.tan(this.theta);
+	};
+	
+	Track.prototype.containPoint =  function (point) {
+	  return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
+	};
+	
+	Track.prototype.distance = function (point1, point2) {
+	  return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+	};
+	
+	Track.prototype.isCollideWith = function (otherObject) {
+	
+	};
+	
+	Track.prototype.collideWith = function (otherObject) {
+	
+	};
+	
+	module.exports = Track;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var Bounds = {
+	  circleBounds: function (object) {
+	    var left, right, top, bottom;
+	
+	    left = object.pos.x - object.radius;
+	    right = object.pos.x + object.radius;
+	    top = object.pos.y - object.radius;
+	    bottom = object.pos.y + object.radius;
+	
+	    return {left: left, right: right, top: top, bottom: bottom };
+	  },
+	
+	  rectBounds: function (object) {
+	    var left, right, top, bottom;
+	    var first = this.computeFirstCorner(object);
+	
+	    var secondX = first.x + object.width * Math.cos(object.angle);
+	    var secondY = first.y + object.width * Math.sin(object.angle);
+	
+	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
+	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
+	
+	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
+	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
+	
+	    var xPositions = [first.x, secondX, thirdX, fourthX];
+	    var yPositions = [first.y, secondY, thirdY, fourthY];
+	    left = Math.min(...xPositions);
+	    right = Math.max(...xPositions);
+	    top = Math.min(...yPositions);
+	    bottom = Math.max(...yPositions);
+	
+	    return {left: left, right: right, top: top, bottom: bottom };
+	  },
+	
+	  rectCorners: function (object) {
+	    var first = this.computeFirstCorner(object);
+	
+	    var secondX = first.x + object.width * Math.cos(object.angle);
+	    var secondY = first.y + object.width * Math.sin(object.angle);
+	
+	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
+	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
+	
+	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
+	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
+	
+	    return {first: {x: first.x, y: first.y}, second: {x: secondX, y: secondY}, third: {x: thirdX, y: thirdY}, fourth: {x: fourthX, y: fourthY}};
+	  },
+	
+	  containRect: function (object, pos) {
+	    var bounds = this.rectBounds(object);
+	    var corners = this.rectCorners(object);
+	    if (Math.floor(reactangleArea(corners)) === Math.floor(
+	      triangleArea(pos, corners.first, corners.second) + triangleArea(pos, corners.second, corners.third) +
+	      triangleArea(pos, corners.third, corners.fourth) + triangleArea(pos, corners.fourth, corners.first)
+	    )) {
+	      return true;
+	    } else {
+	      return false;
+	    }
+	    // if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
+	    //   return true
+	    // } else {
+	    //   return false;
+	    // }
+	  },
+	
+	  computeFirstCorner: function (object) {
+	    var center = {x: object.pos.x, y: object.pos.y};
+	    var y = center.y - object.width/2 * Math.sin(object.angle) + object.height/2 * Math.sin(object.angle - Math.PI / 2);
+	    var x = center.x - object.width/2 * Math.cos(object.angle) + object.height/2 * Math.cos(object.angle - Math.PI / 2 );
+	    return {x: x, y: y};
+	  }
+	};
+	
+	var reactangleArea = function (corners) {
+	  var width = Math.sqrt(Math.pow(corners.first.y - corners.second.y, 2) + Math.pow(corners.first.x - corners.second.x, 2));
+	  var height = Math.sqrt(Math.pow(corners.second.y - corners.third.y, 2) + Math.pow(corners.second.x - corners.third.x, 2));
+	  return width * height;
+	};
+	
+	var triangleArea = function(pos1, pos2, pos3) {
+	  var side1 = Math.sqrt(Math.pow(pos2.y - pos1.y, 2) + Math.pow(pos2.x - pos1.x, 2));
+	  var side2 = Math.sqrt(Math.pow(pos3.y - pos2.y, 2) + Math.pow(pos3.x - pos2.x, 2));
+	  var side3 = Math.sqrt(Math.pow(pos1.y - pos3.y, 2) + Math.pow(pos1.x - pos3.x, 2));
+	  var perimeter = (side1 + side2 + side3)/2;
+	  var area =  Math.sqrt(perimeter*((perimeter-side1)*(perimeter-side2)*(perimeter-side3)));
+	  return area;
+	};
+	
+	module.exports = Bounds;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Ball = __webpack_require__(2);
+	var Bounds = __webpack_require__(4);
+	var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
+	  this.portalId = portalId;
+	  this.entry = entry;
+	  this.exit = exit;
+	  this.pos = pos;
+	  this.angle = -angle;
+	  this.width = width;
+	  this.height = 10;
+	  this.color = color;
+	  this.main = main;
+	  this.pulseInterval = 0;
+	};
+	
+	Portal.prototype.draw = function (context) {
+	  var firstCorner = Bounds.computeFirstCorner(this);
+	  context.beginPath();
+	  context.ellipse(this.pos.x, this.pos.y, this.width/2, this.height/2, this.angle, 0, Math.PI * 2, false);
+	  context.closePath();
+	  context.fillStyle = this.color;
+	  context.stroke();
+	  context.fill();
+	  context.fillStyle = "none";
+	  context.beginPath();
+	  context.ellipse(this.pos.x, this.pos.y, this.width/2 * this.pulseInterval , this.height/2 * this.pulseInterval, this.angle, 0, Math.PI * 2, false);
+	  context.closePath();
+	  context.strokeStyle = "white";
+	  context.stroke();
+	  context.strokeStyle = "black";
+	  if (this.exit) {
+	    context.beginPath();
+	    context.moveTo(firstCorner.x, firstCorner.y);
+	    var secondX = firstCorner.x + this.width * Math.cos(this.angle);
+	    var secondY = firstCorner.y + this.width * Math.sin(this.angle);
+	    context.lineTo(secondX, secondY);
+	    context.closePath();
+	    context.stroke();
+	  }
+	};
+	
+	Portal.prototype.step = function () {
+	  this.pulseInterval += 0.05;
+	  if (this.pulseInterval >= 1) {
+	    this.pulseInterval = 0;
+	  }
+	};
+	
+	Portal.prototype.findPair = function () {
+	  var pair;
+	  this.main.objects.forEach(function (object) {
+	    if (object === this) return;
+	    if (object instanceof Portal) {
+	      if (object.portalId === this.portalId) {
+	        pair = object;
+	      }
+	    } else {
+	      return;
+	    }
+	  }.bind(this));
+	  return pair;
+	};
+	
+	Portal.prototype.isCollideWith = function (otherObject) {
+	  if (this.entry) {
+	    if (otherObject instanceof Ball) {
+	      var ball = otherObject;
+	      var ballBounds = Bounds.circleBounds(ball);
+	      var topVertex = { x: ball.pos.x, y: ballBounds.top };
+	      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom };
+	      var leftVertex = { x: ballBounds.left, y: ball.pos.y };
+	      var rightVertex = { x: ballBounds.right, y: ball.pos.y };
+	
+	      if (Bounds.containRect(this, bottomVertex)) {
+	        return true;
+	      } else if (Bounds.containRect(this, topVertex)) {
+	        return true;
+	      } else if (Bounds.containRect(this, leftVertex)) {
+	        return true;
+	      } else if (Bounds.containRect(this, rightVertex)) {
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    }
+	  } else {
+	    return false;
+	  }
+	};
+	
+	Portal.prototype.collideWith = function (otherObject) {
+	  var exitPortal = this.findPair();
+	  var ball = otherObject;
+	  var portalBounds = Bounds.rectBounds(exitPortal);
+	  var width = (portalBounds.right + portalBounds.left) / 2 ;
+	  var height = (portalBounds.bottom + portalBounds.top) / 2;
+	  
+	  ball.pos.x = width;
+	  ball.pos.y = height;
+	
+	  var speed = Math.sqrt(Math.pow(ball.velocity.x, 2) + Math.pow(ball.velocity.y, 2));
+	
+	  ball.velocity.x = speed * Math.cos(Math.PI / 2 + exitPortal.angle);
+	  ball.velocity.y = speed * Math.sin(Math.PI / 2 + exitPortal.angle);
+	};
+	
+	Portal.prototype.containPoint = function (pos) {
+	  return Bounds.containRect(this, pos);
+	};
+	
+	module.exports = Portal;
+
+
+/***/ },
 /* 6 */
 /***/ function(module, exports) {
 
@@ -196,10 +572,10 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ButtonActions = __webpack_require__(9);
-	var createDemoObjects = __webpack_require__(10);
-	var HelperMethods = __webpack_require__(14);
-	var DetailConstants = __webpack_require__(21);
+	var ButtonActions = __webpack_require__(8);
+	var createDemoObjects = __webpack_require__(13);
+	var HelperMethods = __webpack_require__(11);
+	var DetailConstants = __webpack_require__(12);
 	
 	var resetDemo = function (view) {
 	  view.main.objects = [];
@@ -301,17 +677,16 @@
 
 
 /***/ },
-/* 8 */,
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Ball = __webpack_require__(16);
-	var Track = __webpack_require__(15);
-	var BallGenerator = __webpack_require__(17);
-	var Portal = __webpack_require__(18);
-	var TextConstants = __webpack_require__(19);
-	var HelperMethods = __webpack_require__(14);
-	var DetailConstants = __webpack_require__(21);
+	var Ball = __webpack_require__(2);
+	var Track = __webpack_require__(3);
+	var BallGenerator = __webpack_require__(9);
+	var Portal = __webpack_require__(5);
+	var TextConstants = __webpack_require__(10);
+	var HelperMethods = __webpack_require__(11);
+	var DetailConstants = __webpack_require__(12);
 	
 	var portalId = 0;
 	
@@ -578,390 +953,11 @@
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Track = __webpack_require__(15);
-	var BallGenerator = __webpack_require__(17);
-	var Portal = __webpack_require__(18);
-	
-	var createDemoObjects = function (view) {
-	  var demoObjects = [];
-	  var angle = 60;
-	  var radianAngle = angle * (Math.PI / 180);
-	  var velocity = 5;
-	  var frequency = 60;
-	  var color = "AB1D0D";
-	
-	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, color, 15, view.main);
-	  demoObjects.push(ballGenerator);
-	
-	  angle = 120;
-	  radianAngle = angle * (Math.PI / 180);
-	  velocity = 8.7;
-	  frequency = 40;
-	  color = "5BAB6D";
-	  ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, 10, view.main);
-	  demoObjects.push(ballGenerator);
-	  ballGenerator = new BallGenerator({x: 700, y: 250}, radianAngle, velocity, frequency, "534782",5, view.main);
-	  demoObjects.push(ballGenerator);
-	
-	  var entryPortal = new Portal(1002, true, false, {x: 50, y: 350}, 0, 50, "blue", view.main);
-	  demoObjects.push(entryPortal);
-	
-	  angle = 120;
-	  radianAngle = angle * (Math.PI / 180);
-	  var exitPortal = new Portal(1002, false, true, {x: 400, y: 300}, radianAngle, 50, "orange", view.main);
-	  demoObjects.push(exitPortal);
-	
-	  var track = new Track({x: 300, y: 100}, {x: 100, y: 300}, view.main.gravity);
-	  demoObjects.push(track);
-	  //
-	  // entryPortal = new Portal(1000, true, false, {x: 300, y: 300}, 0, 50, "blue", view.main);
-	  // demoObjects.push(entryPortal);
-	  //
-	  // angle = 60;
-	  // radianAngle = angle * (Math.PI / 180);
-	  // exitPortal = new Portal(1000, false, true, {x: 500, y: 300}, radianAngle, 50, "orange", view.main);
-	  // demoObjects.push(exitPortal);
-	
-	  var track = new Track({x: 800, y: 300}, {x: 500, y: 400}, view.main.gravity);
-	  demoObjects.push(track);
-	  track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
-	  demoObjects.push(track);
-	
-	  entryPortal = new Portal(1001, true, false, {x: 700, y: 550}, 0, 100, "blue", view.main);
-	  demoObjects.push(entryPortal);
-	  exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", view.main);
-	  demoObjects.push(exitPortal);
-	  return demoObjects;
-	};
-	
-	module.exports = createDemoObjects;
-
-
-/***/ },
-/* 11 */,
-/* 12 */,
-/* 13 */
-/***/ function(module, exports) {
-
-	var Bounds = {
-	  circleBounds: function (object) {
-	    var left, right, top, bottom;
-	
-	    left = object.pos.x - object.radius;
-	    right = object.pos.x + object.radius;
-	    top = object.pos.y - object.radius;
-	    bottom = object.pos.y + object.radius;
-	
-	    return {left: left, right: right, top: top, bottom: bottom };
-	  },
-	
-	  rectBounds: function (object) {
-	    var left, right, top, bottom;
-	    var first = this.computeFirstCorner(object);
-	
-	    var secondX = first.x + object.width * Math.cos(object.angle);
-	    var secondY = first.y + object.width * Math.sin(object.angle);
-	
-	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
-	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
-	
-	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
-	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
-	
-	    var xPositions = [first.x, secondX, thirdX, fourthX];
-	    var yPositions = [first.y, secondY, thirdY, fourthY];
-	    left = Math.min(...xPositions);
-	    right = Math.max(...xPositions);
-	    top = Math.min(...yPositions);
-	    bottom = Math.max(...yPositions);
-	
-	    return {left: left, right: right, top: top, bottom: bottom };
-	  },
-	
-	  rectCorners: function (object) {
-	    var first = this.computeFirstCorner(object);
-	
-	    var secondX = first.x + object.width * Math.cos(object.angle);
-	    var secondY = first.y + object.width * Math.sin(object.angle);
-	
-	    var thirdX = secondX + object.height * Math.cos(object.angle + Math.PI / 2);
-	    var thirdY = secondY + object.height * Math.sin(object.angle + Math.PI / 2);
-	
-	    var fourthX = thirdX + object.width * Math.cos(object.angle + Math.PI);
-	    var fourthY = thirdY + object.width * Math.sin(object.angle + Math.PI);
-	
-	    return {first: {x: first.x, y: first.y}, second: {x: secondX, y: secondY}, third: {x: thirdX, y: thirdY}, fourth: {x: fourthX, y: fourthY}};
-	  },
-	
-	  containRect: function (object, pos) {
-	    var bounds = this.rectBounds(object);
-	    var corners = this.rectCorners(object);
-	    if (Math.floor(reactangleArea(corners)) === Math.floor(
-	      triangleArea(pos, corners.first, corners.second) + triangleArea(pos, corners.second, corners.third) +
-	      triangleArea(pos, corners.third, corners.fourth) + triangleArea(pos, corners.fourth, corners.first)
-	    )) {
-	      return true;
-	    } else {
-	      return false;
-	    }
-	    // if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
-	    //   return true
-	    // } else {
-	    //   return false;
-	    // }
-	  },
-	
-	  computeFirstCorner: function (object) {
-	    var center = {x: object.pos.x, y: object.pos.y};
-	    var y = center.y - object.width/2 * Math.sin(object.angle) + object.height/2 * Math.sin(object.angle - Math.PI / 2);
-	    var x = center.x - object.width/2 * Math.cos(object.angle) + object.height/2 * Math.cos(object.angle - Math.PI / 2 );
-	    return {x: x, y: y};
-	  }
-	};
-	
-	var reactangleArea = function (corners) {
-	  var width = Math.sqrt(Math.pow(corners.first.y - corners.second.y, 2) + Math.pow(corners.first.x - corners.second.x, 2));
-	  var height = Math.sqrt(Math.pow(corners.second.y - corners.third.y, 2) + Math.pow(corners.second.x - corners.third.x, 2));
-	  return width * height;
-	};
-	
-	var triangleArea = function(pos1, pos2, pos3) {
-	  var side1 = Math.sqrt(Math.pow(pos2.y - pos1.y, 2) + Math.pow(pos2.x - pos1.x, 2));
-	  var side2 = Math.sqrt(Math.pow(pos3.y - pos2.y, 2) + Math.pow(pos3.x - pos2.x, 2));
-	  var side3 = Math.sqrt(Math.pow(pos1.y - pos3.y, 2) + Math.pow(pos1.x - pos3.x, 2));
-	  var perimeter = (side1 + side2 + side3)/2;
-	  var area =  Math.sqrt(perimeter*((perimeter-side1)*(perimeter-side2)*(perimeter-side3)));
-	  return area;
-	};
-	
-	module.exports = Bounds;
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Track = __webpack_require__(15);
-	
-	var HelperMethods = {
-	  getPoint: function (event, canvas) {
-	    var x = event.offsetX;
-	    var y = event.offsetY;
-	    return {x: x, y: y};
-	  },
-	
-	  disableInactiveBtns: function (activeBtn) {
-	    $('.menu-btn').prop("disabled", true);
-	    $('.header-btn').prop("disabled", false);
-	    $('.play').prop("disabled", false);
-	    $('#remove-item-btn').prop("disabled", false);
-	    $('.close-detail').prop("disabled", false);
-	    $(activeBtn).prop("disabled", false);
-	  },
-	
-	  enableBtns: function () {
-	    $('.menu-btn').prop("disabled", false);
-	    $('.header-btn').prop("disabled", false);
-	    $('#main-canvas').off();
-	  },
-	
-	  drawTrack: function (event, view, startPoint, endPoint, initial) {
-	    if (startPoint) {
-	      var track = new Track(startPoint, endPoint, view.main.gravity);
-	      if (!initial) { view.main.objects.pop(); }
-	      view.main.objects.push(track);
-	      view.main.draw(view.context);
-	      return track;
-	    }
-	    return false;
-	  },
-	
-	  addTrack: function (view, track) {
-	    if (track) {
-	      view.main.objects.push(track);
-	      return true;
-	    }
-	    return false;
-	  }
-	};
-	
-	module.exports = HelperMethods;
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	var Track = function (point1, point2, gravity) {
-	    this.point1 = point1;
-	    this.point2 = point2;
-	    this.theta = Math.atan2(point2.y - point1.y, point2.x - point1.x);
-	    this.slopeGravity = gravity * Math.sin(this.theta);
-	    this.xAccel = this.slopeGravity * Math.cos(this.theta);
-	    this.yAccel = this.slopeGravity * Math.sin(this.theta);
-	
-	};
-	
-	Track.prototype.draw = function (context) {
-	  context.beginPath();
-	  context.moveTo(this.point1.x, this.point1.y);
-	  context.lineTo(this.point2.x, this.point2.y);
-	  context.stroke();
-	};
-	
-	Track.prototype.step = function () {
-	
-	};
-	
-	Track.prototype.findY = function (x) {
-	  return this.point1.y - (this.point1.x - x) * Math.tan(this.theta);
-	};
-	
-	Track.prototype.containPoint =  function (point) {
-	  return Math.floor(this.distance(this.point1, point) + this.distance(this.point2, point)) === Math.floor(this.distance(this.point1, this.point2));
-	};
-	
-	Track.prototype.distance = function (point1, point2) {
-	  return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
-	};
-	
-	Track.prototype.isCollideWith = function (otherObject) {
-	
-	};
-	
-	Track.prototype.collideWith = function (otherObject) {
-	
-	};
-	
-	module.exports = Track;
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Track = __webpack_require__(15);
-	var Bounds = __webpack_require__(13);
-	
-	var Ball = function (pos, radius, velocity, color, main) {
-	  this.pos = pos;
-	  this.radius = radius;
-	  this.velocity = velocity;
-	  this.acceleration = {x: 0, y: main.gravity};
-	  this.main = main;
-	  this.color = color;
-	  this.isCollided = false;
-	};
-	
-	Ball.prototype.draw = function (context) {
-	  context.beginPath();
-	  context.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2);
-	  context.fillStyle = this.color;
-	  context.fill();
-	  context.stroke();
-	};
-	
-	Ball.prototype.step = function () {
-	  this.velocity.y += this.acceleration.y;
-	  this.velocity.x += this.acceleration.x;
-	  this.pos.y += this.velocity.y;
-	  this.pos.x += this.velocity.x;
-	  if (this.pos.y > this.main.canvas.height || this.pos.x > this.main.canvas.width) {
-	    var idx = this.main.objects.indexOf(this);
-	    this.main.objects.splice(idx, 1);
-	  }
-	};
-	
-	Ball.prototype.isCollideWith = function (otherObject) {
-	  if (otherObject instanceof Track) {
-	    var A = { x: otherObject.point1.x, y: otherObject.point1.y };
-	    var B = { x: otherObject.point2.x, y: otherObject.point2.y };
-	    var C = { x: this.pos.x, y: this.pos.y };
-	    var LAB = Math.sqrt(Math.pow((B.x - A.x), 2) + Math.pow((B.y - A.y), 2));
-	
-	    var Dx = (B.x - A.x) / LAB;
-	    var Dy = (B.y - A.y) / LAB;
-	
-	    var t = Dx * (C.x - A.x) + Dy * (C.y - A.y);
-	
-	    var Ex = t * Dx + A.x;
-	    var Ey = t * Dy + A.y;
-	
-	    var LEC = Math.sqrt(Math.pow((Ex - C.x), 2) + Math.pow((Ey - C.y), 2));
-	    if (Ey < this.pos.y) {
-	      var overlap = this.radius + LEC;
-	    } else {
-	      var overlap = this.radius - LEC;
-	    }
-	
-	    var speed = Math.sqrt(Math.pow((this.velocity.x), 2) + Math.pow((this.velocity.y), 2));
-	
-	    var scale = -overlap / speed;
-	    var x = scale * this.velocity.x;
-	    var y = scale * this.velocity.y;
-	    this.backupVector = {x: x, y: y};
-	
-	    var largerX = B.x > A.x ? B.x : A.x;
-	    var smallerX = B.x >= A.x ? A.x : B.x;
-	
-	    if (LEC <= this.radius && (this.pos.x < largerX && this.pos.x > smallerX)) {
-	      this.collidedObject = otherObject;
-	      return true;
-	    } else {
-	      if (this.collidedObject === otherObject) {
-	        this.collidedObject = undefined;
-	        this.isCollided = false;
-	        this.acceleration = { x: 0, y: this.main.gravity };
-	        this.backupVector = null;
-	        return false;
-	      } else {
-	        this.acceleration = { x: 0, y: this.main.gravity };
-	        return false;
-	      }
-	    }
-	  } else {
-	    return false;
-	  }
-	};
-	
-	Ball.prototype.collideWith = function (otherObject) {
-	  if (otherObject instanceof Track) {
-	    if (!this.isCollided) {
-	        if (this.backupVector) {
-	          this.pos.x += this.backupVector.x;
-	          this.pos.y += this.backupVector.y;
-	        }
-	        this.isCollided = true;
-	        this.velocity.x = 0;
-	        this.velocity.y = 0;
-	        this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
-	    } else {
-	      this.acceleration = {x: otherObject.xAccel, y: otherObject.yAccel};
-	    }
-	  }
-	};
-	
-	Ball.prototype.containPoint = function (pos) {
-	  var bounds = Bounds.circleBounds(this);
-	  if (pos.x >= bounds.left && pos.x <= bounds.right && pos.y >= bounds.top && pos.y <= bounds.bottom) {
-	    return true;
-	  } else {
-	    return false;
-	  }
-	};
-	
-	module.exports = Ball;
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Ball = __webpack_require__(16);
-	var Bounds = __webpack_require__(13);
+	var Ball = __webpack_require__(2);
+	var Bounds = __webpack_require__(4);
 	
 	var BallGenerator = function (pos, angle, ballVelocity, frequency, color, size, main) {
 	  this.pos = pos;
@@ -1036,124 +1032,7 @@
 
 
 /***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Ball = __webpack_require__(16);
-	var Bounds = __webpack_require__(13);
-	var Portal = function (portalId, entry, exit, pos, angle, width, color, main) {
-	  this.portalId = portalId;
-	  this.entry = entry;
-	  this.exit = exit;
-	  this.pos = pos;
-	  this.angle = -angle;
-	  this.width = width;
-	  this.height = 10;
-	  this.color = color;
-	  this.main = main;
-	  this.pulseInterval = 0;
-	};
-	
-	Portal.prototype.draw = function (context) {
-	  var firstCorner = Bounds.computeFirstCorner(this);
-	  context.beginPath();
-	  context.ellipse(this.pos.x, this.pos.y, this.width/2, this.height/2, this.angle, 0, Math.PI * 2, false);
-	  context.closePath();
-	  context.fillStyle = this.color;
-	  context.stroke();
-	  context.fill();
-	  context.fillStyle = "none";
-	  context.beginPath();
-	  context.ellipse(this.pos.x, this.pos.y, this.width/2 * this.pulseInterval , this.height/2 * this.pulseInterval, this.angle, 0, Math.PI * 2, false);
-	  context.closePath();
-	  context.strokeStyle = "white";
-	  context.stroke();
-	  context.strokeStyle = "black";
-	  if (this.exit) {
-	    context.beginPath();
-	    context.moveTo(firstCorner.x, firstCorner.y);
-	    var secondX = firstCorner.x + this.width * Math.cos(this.angle);
-	    var secondY = firstCorner.y + this.width * Math.sin(this.angle);
-	    context.lineTo(secondX, secondY);
-	    context.closePath();
-	    context.stroke();
-	  }
-	};
-	
-	Portal.prototype.step = function () {
-	  this.pulseInterval += 0.05;
-	  if (this.pulseInterval >= 1) {
-	    this.pulseInterval = 0;
-	  }
-	};
-	
-	Portal.prototype.findPair = function () {
-	  var pair;
-	  this.main.objects.forEach(function (object) {
-	    if (object === this) return;
-	    if (object instanceof Portal) {
-	      if (object.portalId === this.portalId) {
-	        pair = object;
-	      }
-	    } else {
-	      return;
-	    }
-	  }.bind(this));
-	  return pair;
-	};
-	
-	Portal.prototype.isCollideWith = function (otherObject) {
-	  if (this.entry) {
-	    if (otherObject instanceof Ball) {
-	      var ball = otherObject;
-	      var ballBounds = Bounds.circleBounds(ball);
-	      var topVertex = { x: ball.pos.x, y: ballBounds.top };
-	      var bottomVertex = { x: ball.pos.x, y: ballBounds.bottom };
-	      var leftVertex = { x: ballBounds.left, y: ball.pos.y };
-	      var rightVertex = { x: ballBounds.right, y: ball.pos.y };
-	
-	      if (Bounds.containRect(this, bottomVertex)) {
-	        return true;
-	      } else if (Bounds.containRect(this, topVertex)) {
-	        return true;
-	      } else if (Bounds.containRect(this, leftVertex)) {
-	        return true;
-	      } else if (Bounds.containRect(this, rightVertex)) {
-	        return true;
-	      } else {
-	        return false;
-	      }
-	    }
-	  } else {
-	    return false;
-	  }
-	};
-	
-	Portal.prototype.collideWith = function (otherObject) {
-	  var exitPortal = this.findPair();
-	  var ball = otherObject;
-	  var portalBounds = Bounds.rectBounds(exitPortal);
-	  var width = (portalBounds.right + portalBounds.left) / 2 ;
-	  var height = (portalBounds.bottom + portalBounds.top) / 2;
-	  
-	  ball.pos.x = width;
-	  ball.pos.y = height;
-	
-	  var speed = Math.sqrt(Math.pow(ball.velocity.x, 2) + Math.pow(ball.velocity.y, 2));
-	
-	  ball.velocity.x = speed * Math.cos(Math.PI / 2 + exitPortal.angle);
-	  ball.velocity.y = speed * Math.sin(Math.PI / 2 + exitPortal.angle);
-	};
-	
-	Portal.prototype.containPoint = function (pos) {
-	  return Bounds.containRect(this, pos);
-	};
-	
-	module.exports = Portal;
-
-
-/***/ },
-/* 19 */
+/* 10 */
 /***/ function(module, exports) {
 
 	var TextConstants = {
@@ -1168,8 +1047,58 @@
 
 
 /***/ },
-/* 20 */,
-/* 21 */
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Track = __webpack_require__(3);
+	
+	var HelperMethods = {
+	  getPoint: function (event, canvas) {
+	    var x = event.offsetX;
+	    var y = event.offsetY;
+	    return {x: x, y: y};
+	  },
+	
+	  disableInactiveBtns: function (activeBtn) {
+	    $('.menu-btn').prop("disabled", true);
+	    $('.header-btn').prop("disabled", false);
+	    $('.play').prop("disabled", false);
+	    $('#remove-item-btn').prop("disabled", false);
+	    $('.close-detail').prop("disabled", false);
+	    $(activeBtn).prop("disabled", false);
+	  },
+	
+	  enableBtns: function () {
+	    $('.menu-btn').prop("disabled", false);
+	    $('.header-btn').prop("disabled", false);
+	    $('#main-canvas').off();
+	  },
+	
+	  drawTrack: function (event, view, startPoint, endPoint, initial) {
+	    if (startPoint) {
+	      var track = new Track(startPoint, endPoint, view.main.gravity);
+	      if (!initial) { view.main.objects.pop(); }
+	      view.main.objects.push(track);
+	      view.main.draw(view.context);
+	      return track;
+	    }
+	    return false;
+	  },
+	
+	  addTrack: function (view, track) {
+	    if (track) {
+	      view.main.objects.push(track);
+	      return true;
+	    }
+	    return false;
+	  }
+	};
+	
+	module.exports = HelperMethods;
+
+
+/***/ },
+/* 12 */
 /***/ function(module, exports) {
 
 	var DetailConstants = {
@@ -1181,6 +1110,69 @@
 	};
 	
 	module.exports = DetailConstants;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Track = __webpack_require__(3);
+	var BallGenerator = __webpack_require__(9);
+	var Portal = __webpack_require__(5);
+	
+	var createDemoObjects = function (view) {
+	  var demoObjects = [];
+	  var angle = 60;
+	  var radianAngle = angle * (Math.PI / 180);
+	  var velocity = 5;
+	  var frequency = 60;
+	  var color = "AB1D0D";
+	
+	  var ballGenerator = new BallGenerator({x: 100, y: 200}, radianAngle, velocity, frequency, color, 15, view.main);
+	  demoObjects.push(ballGenerator);
+	
+	  angle = 120;
+	  radianAngle = angle * (Math.PI / 180);
+	  velocity = 8.7;
+	  frequency = 40;
+	  color = "5BAB6D";
+	  ballGenerator = new BallGenerator({x: 700, y: 200}, radianAngle, velocity, frequency, color, 10, view.main);
+	  demoObjects.push(ballGenerator);
+	  ballGenerator = new BallGenerator({x: 700, y: 250}, radianAngle, velocity, frequency, "534782",5, view.main);
+	  demoObjects.push(ballGenerator);
+	
+	  var entryPortal = new Portal(1002, true, false, {x: 50, y: 350}, 0, 50, "blue", view.main);
+	  demoObjects.push(entryPortal);
+	
+	  angle = 120;
+	  radianAngle = angle * (Math.PI / 180);
+	  var exitPortal = new Portal(1002, false, true, {x: 400, y: 300}, radianAngle, 50, "orange", view.main);
+	  demoObjects.push(exitPortal);
+	
+	  var track = new Track({x: 300, y: 100}, {x: 100, y: 300}, view.main.gravity);
+	  demoObjects.push(track);
+	  //
+	  // entryPortal = new Portal(1000, true, false, {x: 300, y: 300}, 0, 50, "blue", view.main);
+	  // demoObjects.push(entryPortal);
+	  //
+	  // angle = 60;
+	  // radianAngle = angle * (Math.PI / 180);
+	  // exitPortal = new Portal(1000, false, true, {x: 500, y: 300}, radianAngle, 50, "orange", view.main);
+	  // demoObjects.push(exitPortal);
+	
+	  var track = new Track({x: 800, y: 300}, {x: 500, y: 400}, view.main.gravity);
+	  demoObjects.push(track);
+	  track = new Track({x: 400, y: 400}, {x: 600, y: 500}, view.main.gravity);
+	  demoObjects.push(track);
+	
+	  entryPortal = new Portal(1001, true, false, {x: 700, y: 550}, 0, 100, "blue", view.main);
+	  demoObjects.push(entryPortal);
+	  exitPortal = new Portal(1001, false, true, {x: 100, y: 500}, 120 * Math.PI / 180, 50, "orange", view.main);
+	  demoObjects.push(exitPortal);
+	  return demoObjects;
+	};
+	
+	module.exports = createDemoObjects;
 
 
 /***/ }
